@@ -1,9 +1,0 @@
-{
-    "files.associations": {
-        "basic.h": "c",
-        "memory.h": "c",
-        "app.h": "c",
-        "stdio.h": "c",
-        "gtest.h": "c"
-    }
-}
