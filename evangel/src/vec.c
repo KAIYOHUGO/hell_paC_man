@@ -7,18 +7,19 @@
 #include <assert.h>
 #include <stdlib.h>
 
-static Vec raw_vec_new(usize sizeof_T, usize cap) {
-  void *ptr = malloc(cap * sizeof_T);
+static Vec raw_vec_init(usize sizeof_T) {
   Vec v = {
-      .ptr = ptr,
+      .ptr = NULL,
       .len = 0,
-      .cap = cap,
+      .cap = 0,
       .size = sizeof_T,
   };
   return v;
 }
 
 static void raw_vec_free(Vec *v) { free(v->ptr); }
+
+static void raw_vec_clear(Vec *v) { v->len = 0; }
 
 static void *raw_vec_index(Vec *v, usize index) {
   assert(index < v->len);
@@ -77,7 +78,7 @@ static void *raw_vec_push(Vec *v) {
 static void *raw_vec_pop(Vec *v) {
   assert(v->len != 0);
   v->len--;
-  void *ret = v->ptr + v->len;
+  void *ret = v->ptr + v->len * v->size;
   return ret;
 }
 
@@ -107,10 +108,12 @@ static void raw_vec_swap_remove(Vec *v, usize index) {
   memcpy(v->ptr + index * v->size, v->ptr + v->len * v->size, v->size);
 }
 
-struct CVec CVec = {
-    .new = raw_vec_new,
+const struct CVec CVec = {
+    .init = raw_vec_init,
 
     .free = raw_vec_free,
+
+    .clear = raw_vec_clear,
 
     .index = raw_vec_index,
 

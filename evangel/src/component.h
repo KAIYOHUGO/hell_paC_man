@@ -8,9 +8,14 @@ typedef struct {
 } Entity;
 
 typedef struct {
-  Entity entity;
-} IComponent;
 
+} VComponent;
 
+typedef struct {
+  const VComponent *vtable;
+  void *self;
+} PComponent;
+
+struct CComponent {};
 
 #endif // __COMPONENT_H
