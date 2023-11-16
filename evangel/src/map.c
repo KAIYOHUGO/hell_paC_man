@@ -4,9 +4,7 @@
 #include "map.h"
 #include <stdlib.h>
 
-typedef struct MapEntry MapEntry;
-
-Map raw_map_init() {
+Map raw_init() {
   Map map = {
       .len = 0,
       .buckets = vec_init(Vec(MapEntry)),
@@ -14,7 +12,7 @@ Map raw_map_init() {
   return map;
 }
 
-void raw_map_free(Map *m) {
+static void raw_free(Map *m) {
   usize buckets_i = m->buckets.len;
   while (buckets_i--) {
     Vec(T) *entry = vec_index(Vec(MapEntry), &m->buckets, buckets_i);
@@ -23,22 +21,28 @@ void raw_map_free(Map *m) {
   vec_free(Vec(Vec(MapEntry)), &m->buckets);
 }
 
-void *raw_map_get(Map *m, usize key) {
+static void **raw_get(Map *m, usize key) {
   usize bucket_index = key % m->buckets.len;
   Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
   for (usize i = 0; i < bucket->len; i++) {
     MapEntry *entry = vec_index(MapEntry, bucket, i);
     if (entry->key == key) {
-      return entry->value;
+      return &entry->value;
     }
   }
   return NULL;
 }
 
-void raw_map_reserve(Map *m, usize additional) {
+static void raw_reserve(Map *m, usize additional) {
   usize new_size = m->len + additional;
   usize dirty_range = m->buckets.len;
   vec_resize(T, &m->buckets, new_size);
+
+  for (size_t i = dirty_range; i < new_size; i++) {
+    Vec(MapEntry) new_bucket = vec_init(MapEntry);
+    *vec_index(Vec(MapEntry), &m->buckets, i) = new_bucket;
+  }
+
   for (usize bucket_index = 0; bucket_index < dirty_range; bucket_index++) {
     Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
 
@@ -58,10 +62,10 @@ void raw_map_reserve(Map *m, usize additional) {
   }
 }
 
-void *raw_map_insert(Map *m, usize key) {
+static void **raw_insert(Map *m, usize key) {
   usize max_entry = (m->buckets.len * 3 + 3) / 4;
   if (m->len + 1 >= max_entry) {
-    raw_map_reserve(m, m->buckets.len);
+    raw_reserve(m, max(m->buckets.len, 4));
   }
   usize bucket_index = key % m->buckets.len;
   Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
@@ -70,10 +74,34 @@ void *raw_map_insert(Map *m, usize key) {
     if (entry->key != key) {
       continue;
     }
-    vec_swap_remove(MapEntry, bucket, i);
-    break;
+    return &entry->value;
   }
-  return CVec.push(bucket);
+  MapEntry *ptr = (MapEntry *)CVec.push(bucket);
+  ptr->key = key;
+  m->len++;
+  return &ptr->value;
 }
+
+static void raw_remove(Map *m, usize key) {
+  usize bucket_index = key % m->buckets.len;
+  Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
+  for (usize i = 0; i < bucket->len; i++) {
+    MapEntry *entry = vec_index(MapEntry, bucket, i);
+    if (entry->key != key) {
+      continue;
+    }
+    vec_swap_remove(MapEntry, bucket, i);
+  }
+  m->len--;
+}
+
+const struct CMap CMap = {
+    .init = raw_init,
+    .free = raw_free,
+    .get = raw_get,
+    .reserve = raw_reserve,
+    .insert = raw_insert,
+    .remove = raw_remove,
+};
 
 #endif // __MAP_C
