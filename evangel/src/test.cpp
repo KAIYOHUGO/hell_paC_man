@@ -1,3 +1,4 @@
+#include "map.h"
 #include "vec.h"
 #include <gtest/gtest.h>
 
@@ -24,7 +25,7 @@ TEST(VecTest, ResizeAndIndex) {
   vec_resize(isize, &v, 101);
   EXPECT_EQ(101, v.len);
   EXPECT_TRUE(v.cap >= 101);
-  
+
   for (isize i = 0; i <= 100; i++) {
     auto ptr = vec_index(isize, &v, i);
     *ptr = i;
@@ -56,4 +57,26 @@ TEST(VecTest, Remove) {
   }
 
   vec_free(isize, &v);
+}
+
+TEST(MapTest, InsertGetAndRemove) {
+  Map(isize) m = map_init(isize);
+  for (isize i = 0; i < 100; i++) {
+    isize *v = new isize;
+    *v = i;
+    map_insert(isize, &m, i, v);
+  }
+  EXPECT_EQ(m.len, 100);
+
+  for (isize i = 0; i < 100; i++) {
+    auto ptr = map_get(isize, &m, i);
+    EXPECT_EQ(i, **ptr);
+    delete *ptr;
+  }
+  for (isize i = 0; i < 100; i++) {
+    map_remove(isize, &m, i);
+  }
+  EXPECT_EQ(m.len, 0);
+
+  map_free(isize, &m);
 }

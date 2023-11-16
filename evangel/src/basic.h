@@ -19,6 +19,12 @@ typedef int isize;
 typedef double f32;
 typedef long double f64;
 
+typedef u8 bool;
+
+#define false 0
+
+#define true !false
+
 #define max(a, b)                                                              \
   ({                                                                           \
     __typeof__(a) _a = (a);                                                    \

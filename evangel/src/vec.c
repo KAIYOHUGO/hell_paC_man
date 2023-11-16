@@ -7,7 +7,7 @@
 #include <assert.h>
 #include <stdlib.h>
 
-static Vec raw_vec_init(usize sizeof_T) {
+static Vec raw_init(usize sizeof_T) {
   Vec v = {
       .ptr = NULL,
       .len = 0,
@@ -17,16 +17,16 @@ static Vec raw_vec_init(usize sizeof_T) {
   return v;
 }
 
-static void raw_vec_free(Vec *v) { free(v->ptr); }
+static void raw_free(Vec *v) { free(v->ptr); }
 
-static void raw_vec_clear(Vec *v) { v->len = 0; }
+static void raw_clear(Vec *v) { v->len = 0; }
 
-static void *raw_vec_index(Vec *v, usize index) {
+static void *raw_index(Vec *v, usize index) {
   assert(index < v->len);
   return v->ptr + index * v->size;
 }
 
-static void raw_vec_reserve(Vec *v, usize additional) {
+static void raw_reserve(Vec *v, usize additional) {
   usize new_cap = v->cap + additional;
 
   void *new_ptr = malloc(new_cap * v->size);
@@ -38,15 +38,15 @@ static void raw_vec_reserve(Vec *v, usize additional) {
   v->cap = new_cap;
 }
 
-static void raw_vec_resize(Vec *v, usize new_size) {
+static void raw_resize(Vec *v, usize new_size) {
   if (new_size > v->cap) {
     usize additional = max(new_size - v->cap, v->cap);
-    raw_vec_reserve(v, additional);
+    raw_reserve(v, additional);
   }
   v->len = new_size;
 }
 
-static void raw_vec_shrink_to(Vec *v, usize new_size) {
+static void raw_shrink_to(Vec *v, usize new_size) {
   if (new_size >= v->cap) {
     return;
   }
@@ -60,33 +60,33 @@ static void raw_vec_shrink_to(Vec *v, usize new_size) {
   v->len = new_len;
 }
 
-static void raw_vec_shrink_to_fit(Vec *v) { raw_vec_shrink_to(v, v->len); }
+static void raw_shrink_to_fit(Vec *v) { raw_shrink_to(v, v->len); }
 
-static void *raw_vec_push(Vec *v) {
+static void *raw_push(Vec *v) {
   if (v->cap > v->len) {
     void *ret = v->ptr + v->len * v->size;
     v->len++;
     return ret;
   }
   usize additional = max(v->cap, (usize)4);
-  raw_vec_reserve(v, additional);
+  raw_reserve(v, additional);
   void *ret = v->ptr + v->len * v->size;
   v->len++;
   return ret;
 }
 
-static void *raw_vec_pop(Vec *v) {
+static void *raw_pop(Vec *v) {
   assert(v->len != 0);
   v->len--;
   void *ret = v->ptr + v->len * v->size;
   return ret;
 }
 
-static void raw_vec_remove(Vec *v, usize index) {
+static void raw_remove(Vec *v, usize index) {
   assert(index < v->len);
 
   if (index == v->len - 1) {
-    raw_vec_pop(v);
+    raw_pop(v);
     return;
   }
 
@@ -96,11 +96,11 @@ static void raw_vec_remove(Vec *v, usize index) {
   return;
 }
 
-static void raw_vec_swap_remove(Vec *v, usize index) {
+static void raw_swap_remove(Vec *v, usize index) {
   assert(index < v->len);
 
   if (index == v->len - 1) {
-    raw_vec_pop(v);
+    raw_pop(v);
     return;
   }
 
@@ -109,29 +109,29 @@ static void raw_vec_swap_remove(Vec *v, usize index) {
 }
 
 const struct CVec CVec = {
-    .init = raw_vec_init,
+    .init = raw_init,
 
-    .free = raw_vec_free,
+    .free = raw_free,
 
-    .clear = raw_vec_clear,
+    .clear = raw_clear,
 
-    .index = raw_vec_index,
+    .index = raw_index,
 
-    .reserve = raw_vec_reserve,
+    .reserve = raw_reserve,
 
-    .resize = raw_vec_resize,
+    .resize = raw_resize,
 
-    .shrink_to = raw_vec_shrink_to,
+    .shrink_to = raw_shrink_to,
 
-    .shrink_to_fit = raw_vec_shrink_to_fit,
+    .shrink_to_fit = raw_shrink_to_fit,
 
-    .push = raw_vec_push,
+    .push = raw_push,
 
-    .pop = raw_vec_pop,
+    .pop = raw_pop,
 
-    .remove = raw_vec_remove,
+    .remove = raw_remove,
 
-    .swap_remove = raw_vec_swap_remove,
+    .swap_remove = raw_swap_remove,
 
 };
 

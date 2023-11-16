@@ -6,6 +6,9 @@
 
 isize main() {
   hook_app_init();
+  hook_app_on_render();
+  hook_app_on_update();
+  hook_app_free();
   return 0;
 }
 

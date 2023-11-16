@@ -56,7 +56,7 @@ extern const struct CVec CVec;
 
 #define vec_shrink_to_fit(T, v) CVec.shrink_to_fit(v)
 
-#define vec_push(T, v, item) (*(T *)(CVec.push(v)) = item)
+#define vec_push(T, v, item) (*(T *)CVec.push(v) = item)
 
 #define vec_pop(T, v) (*(T *)CVec.pop(v))
 
