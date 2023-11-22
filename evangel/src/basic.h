@@ -1,6 +1,7 @@
 #if !defined(__BASIC_H)
 #define __BASIC_H
 
+#include <stdbool.h>
 #include <stdint.h>
 
 typedef uint8_t u8;
@@ -19,12 +20,6 @@ typedef int isize;
 typedef double f32;
 typedef long double f64;
 
-typedef u8 bool;
-
-#define false 0
-
-#define true !false
-
 #define max(a, b)                                                              \
   ({                                                                           \
     __typeof__(a) _a = (a);                                                    \
@@ -38,5 +33,9 @@ typedef u8 bool;
     __typeof__(b) _b = (b);                                                    \
     _a < _b ? _a : _b;                                                         \
   })
+
+#define move(ptr) ptr
+
+#define borrow(ptr) ptr
 
 #endif // __BASIC_H

@@ -21,6 +21,8 @@ cc_test(
     srcs = [
         "src/basic.c",
         "src/basic.h",
+        "src/bitset.c",
+        "src/bitset.h",
         "src/map.c",
         "src/map.h",
         "src/test.cpp",

@@ -16,7 +16,7 @@ typedef void (*system_fn)();
 
 struct App {
   struct EventQueue event_queue;
-  struct ComponentTree component_tree;
+  struct ComponentStorage component_storage;
   Vec(system_fn) on_update;
 };
 

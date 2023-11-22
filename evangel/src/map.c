@@ -4,9 +4,10 @@
 #include "map.h"
 #include <stdlib.h>
 
-Map raw_init() {
+Map raw_init(usize sizeof_T) {
   Map map = {
       .len = 0,
+      .size = sizeof_T,
       .buckets = vec_init(Vec(MapEntry)),
   };
   return map;
@@ -21,7 +22,7 @@ static void raw_free(Map *m) {
   vec_free(Vec(Vec(MapEntry)), &m->buckets);
 }
 
-static void **raw_get(Map *m, usize key) {
+static void *raw_get(Map *m, usize key) {
   usize bucket_index = key % m->buckets.len;
   Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
   for (usize i = 0; i < bucket->len; i++) {
@@ -39,7 +40,7 @@ static void raw_reserve(Map *m, usize additional) {
   vec_resize(T, &m->buckets, new_size);
 
   for (size_t i = dirty_range; i < new_size; i++) {
-    Vec(MapEntry) new_bucket = vec_init(MapEntry);
+    Vec(MapEntry) new_bucket = CVec.init(sizeof(MapEntry) + m->size);
     *vec_index(Vec(MapEntry), &m->buckets, i) = new_bucket;
   }
 
@@ -62,7 +63,7 @@ static void raw_reserve(Map *m, usize additional) {
   }
 }
 
-static void **raw_insert(Map *m, usize key) {
+static void *raw_insert(Map *m, usize key) {
   usize max_entry = (m->buckets.len * 3 + 3) / 4;
   if (m->len + 1 >= max_entry) {
     raw_reserve(m, max(m->buckets.len, 4));

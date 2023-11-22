@@ -22,8 +22,7 @@ static void raw_free(Vec *v) { free(v->ptr); }
 static void raw_clear(Vec *v) { v->len = 0; }
 
 static void *raw_index(Vec *v, usize index) {
-  assert(index < v->len);
-  return v->ptr + index * v->size;
+  return index < v->len ? v->ptr + index * v->size : NULL;
 }
 
 static void raw_reserve(Vec *v, usize additional) {
@@ -77,6 +76,7 @@ static void *raw_push(Vec *v) {
 
 static void *raw_pop(Vec *v) {
   assert(v->len != 0);
+
   v->len--;
   void *ret = v->ptr + v->len * v->size;
   return ret;

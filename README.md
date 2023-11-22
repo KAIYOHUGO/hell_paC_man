@@ -7,7 +7,9 @@
 
 # Naming
 
-`StructureCamelCase`
-`EnumCamelCase`
-`EnumCamelCase_VariantCamelCase`
+`StructureUpperCamelCase`
+`EnumUpperCamelCase`
+`EnumUpperCamelCase_VariantUpperCamelCase`
+`ItemMacroUpperCamelCase`
 `function_snake_case`
+`fake_typed_function_macro_snake_case`

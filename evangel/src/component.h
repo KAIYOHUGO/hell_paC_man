@@ -1,19 +1,23 @@
 #if !defined(__COMPONENT_H)
 #define __COMPONENT_H
 
+#include "array.h"
 #include "basic.h"
 #include "map.h"
 #include "vec.h"
 
-// forward declaration
-struct ComponentNode;
-
+// random id
 typedef struct {
   usize id;
 } ComponentType;
 
+// xor `ComponentType` id
 typedef struct {
-  struct ComponentNode *ptr;
+  usize id;
+} BundleType;
+
+typedef struct {
+  usize id;
 } Entity;
 
 typedef struct {
@@ -26,19 +30,26 @@ typedef struct {
   void *self;
 } PComponent;
 
-struct ComponentNode {
-  bool is_despawn;
+typedef struct {
   ComponentType ty;
-  PComponent component;
-  Entity parent;
-  Vec(Entity) children;
+  PComponent ptr;
+} TypedComponent;
+
+struct ArchetypeTable {
+  const Map(Entity, usize) entity_col_id_map;
+  Vec(Array) table;
 };
 
-struct ComponentTree {
-  // a lazy clean up map
-  Vec(Vec(struct ComponentNode *)) typeid_component_node_map;
-  // typeid map
-  // Map(ComponentType) entity_typeid_map;
+struct EntityInfo {
+  Entity parent;
+  Vec(Entity) children;
+  usize table, index;
+};
+
+struct ComponentStorage {
+  Vec(ArchetypeTable) database;
+  Map(Entity, EntityInfo) entity_info_map;
+  Map(BundleType, usize) bundle_table_map;
 };
 
 struct CComponent {
