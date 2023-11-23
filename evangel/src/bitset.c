@@ -26,7 +26,8 @@ static void internal_shrink_len(Vec(BITSET_ITEM) * b) {
     BITSET_ITEM last = *vec_index(BITSET_ITEM, b, b->len - 1);
     if (last != 0)
       break;
-    vec_pop(BITSET_ITEM, b);
+    // unused return value
+    (void)vec_pop(BITSET_ITEM, b);
   }
 }
 
@@ -102,7 +103,6 @@ static usize raw_iter_next(BitSetIter *iter) {
     }
     offset_bit_n = 0;
   }
-
   return BITSET_ITER_END;
 }
 

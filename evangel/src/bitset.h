@@ -3,12 +3,13 @@
 
 #include "basic.h"
 #include "vec.h"
+#include <limits.h>
 
 typedef u64 BITSET_ITEM;
 #define BITSET_ITEM_FAST_DIV 6
 #define BITSET_ITEM_BITS ((BITSET_ITEM)1 << (BITSET_ITEM)BITSET_ITEM_FAST_DIV)
 #define BITSET_ITEM_FAST_MOD (BITSET_ITEM_BITS - (BITSET_ITEM)1)
-#define BITSET_ITER_END UINTMAX_MAX
+#define BITSET_ITER_END UINT_MAX
 
 typedef struct {
   Vec(BITSET_ITEM) raw;

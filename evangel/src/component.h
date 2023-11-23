@@ -21,8 +21,8 @@ typedef struct {
 } Entity;
 
 typedef struct {
-  // despawn and free up memory (*self)
-  void (*despawn)(void *self, Entity entity);
+  // despawn it self (don't need free `*self`)
+  void (*despawn)(borrow_ptr(void *) self, Entity entity);
 } VComponent;
 
 typedef struct {
@@ -36,7 +36,7 @@ typedef struct {
 } TypedComponent;
 
 struct ArchetypeTable {
-  const Map(Entity, usize) entity_col_id_map;
+  Map(ComponentType, usize) type_col_id_map;
   Vec(Array) table;
 };
 
@@ -47,19 +47,23 @@ struct EntityInfo {
 };
 
 struct ComponentStorage {
-  Vec(ArchetypeTable) database;
+  Vec(struct ArchetypeTable) database;
   Map(Entity, EntityInfo) entity_info_map;
-  Map(BundleType, usize) bundle_table_map;
+  Map(usize, usize) bundle_table_map;
 };
 
 struct CComponent {
   ComponentType (*add_new_type)();
 
-  Entity (*spawn)(ComponentType typeid, PComponent component);
+  // it don't move the array
+  // but it will move the value inside
+  Entity (*spawn)(borrow_ptr(Array(move_ptr(TypedComponent)) *) bundle);
+
+  void (*despawn)(Entity entity);
 
   void (*add_child)(Entity parent, Entity child);
 
-  void (*despawn)(Entity entity);
+  void (*remove_child)(Entity parent, Entity child);
 };
 
 extern const struct CComponent CComponent;
@@ -69,5 +73,7 @@ extern const struct CComponent CComponent;
   void add_component_type_##T() {                                              \
     ComponentType##T = CComponent.add_new_type();                              \
   }
+
+void internal_component_storage_init();
 
 #endif // __COMPONENT_H

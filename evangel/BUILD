@@ -17,20 +17,46 @@ cc_library(
 # )
 
 cc_test(
-    name = "unit_test",
+    name = "data_structure_test",
     srcs = [
         "src/basic.c",
         "src/basic.h",
         "src/bitset.c",
         "src/bitset.h",
+        "src/data_structure_test.cpp",
         "src/map.c",
         "src/map.h",
-        "src/test.cpp",
         "src/vec.c",
         "src/vec.h",
     ],
     deps = [
         "@gtest",
         "@gtest//:gtest_main",
+    ],
+)
+
+cc_test(
+    name = "component_test",
+    srcs = [
+        "src/app.c",
+        "src/app.h",
+        "src/array.c",
+        "src/array.h",
+        "src/basic.c",
+        "src/basic.h",
+        "src/bitset.c",
+        "src/bitset.h",
+        "src/component.c",
+        "src/component.h",
+        "src/component_test.cpp",
+        "src/event.c",
+        "src/event.h",
+        "src/map.c",
+        "src/map.h",
+        "src/vec.c",
+        "src/vec.h",
+    ],
+    deps = [
+        "@gtest",
     ],
 )

@@ -4,12 +4,11 @@
 #include "app.h"
 #include "basic.h"
 
-isize main() {
-  hook_app_init();
-  hook_app_on_render();
-  hook_app_on_update();
-  hook_app_free();
-  return 0;
+void internal_app_init() {
+  internal_component_storage_init();
+  // todo
 }
+
+struct App App = {};
 
 #endif // __APP_C

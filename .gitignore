@@ -1,3 +1,4 @@
 bazel-*
 external
 compile_commands*
+.vscode

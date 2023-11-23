@@ -26,7 +26,7 @@ void raw_flush() {
   for (usize i = 0; i < App.event_queue.typed_event_map.len; i++) {
     TypedEvent *ptr =
         vec_index(TypedEvent, &App.event_queue.typed_event_map, i);
-    ptr->free(ptr->free);
+    ptr->free(ptr->event);
     ptr->event = NULL;
   }
 
@@ -41,7 +41,7 @@ void raw_flush() {
       continue;
     }
     typed_event->event = in_queue_event->event;
-    vec_remove(InQueueEvent, &App.event_queue.queue, offset);
+    vec_swap_remove(InQueueEvent, &App.event_queue.queue, offset);
   }
 }
 

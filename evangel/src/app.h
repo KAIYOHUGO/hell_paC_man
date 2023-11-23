@@ -26,4 +26,6 @@ extern struct App App;
 
 extern const struct CApp CApp;
 
+void internal_app_init();
+
 #endif // __APP_H

@@ -60,11 +60,36 @@ TEST(VecTest, Remove) {
   vec_free(isize, &v);
 }
 
+TEST(VecTest, SwapRemove) {
+  Vec v = vec_init(isize);
+  vec_resize(isize, &v, 101);
+
+  for (isize i = 0; i <= 100; i++) {
+    auto ptr = vec_index(isize, &v, i);
+    *ptr = i;
+  }
+  vec_swap_remove(isize, &v, 50);
+  EXPECT_EQ(100, v.len);
+  for (isize i = 0; i < 50; i++) {
+    auto ptr = vec_index(isize, &v, i);
+    EXPECT_EQ(i, *ptr);
+  }
+  for (isize i = 51; i < 100; i++) {
+    auto ptr = vec_index(isize, &v, i);
+    EXPECT_EQ(i, *ptr);
+  }
+  auto ptr = vec_index(isize, &v, 50);
+  EXPECT_EQ(100, *ptr);
+
+  vec_free(isize, &v);
+}
+
 TEST(MapTest, InsertGetAndRemove) {
   Map(u64, u64) m = map_init(u64);
   for (u64 i = 0; i < 100; i++) {
     map_insert(u64, &m, i, i);
   }
+
   EXPECT_EQ(m.len, 100);
 
   for (u64 i = 0; i < 100; i++) {
@@ -82,6 +107,29 @@ TEST(MapTest, InsertGetAndRemove) {
     EXPECT_EQ(nullptr, ptr);
   }
 
+  for (u64 i = 0; i < 100; i += 2) {
+    auto ptr = map_get(u64, &m, i);
+    EXPECT_EQ(i, *ptr);
+  }
+
+  map_free(isize, &m);
+}
+
+TEST(MapTest, RandomKey) {
+  Map(usize, u64) m = map_init(u64);
+  Vec(usize) keys = vec_init(usize);
+  for (u64 i = 0; i < 100; i++) {
+    usize key = (rand() << 16) ^ rand();
+    vec_push(usize, &keys, key);
+    map_insert(u64, &m, key, i);
+  }
+  for (u64 i = 0; i < 100; i++) {
+    usize key = *vec_index(usize, &keys, i);
+    u64 *value = map_get(u64, &m, key);
+
+    EXPECT_EQ(*value, i);
+  }
+  vec_free(isize, &keys);
   map_free(isize, &m);
 }
 

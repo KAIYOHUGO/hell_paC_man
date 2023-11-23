@@ -3,6 +3,7 @@
 
 #include "map.h"
 #include <stdlib.h>
+#include <string.h>
 
 Map raw_init(usize sizeof_T) {
   Map map = {
@@ -23,6 +24,8 @@ static void raw_free(Map *m) {
 }
 
 static void *raw_get(Map *m, usize key) {
+  if (m->buckets.len == 0)
+    return NULL;
   usize bucket_index = key % m->buckets.len;
   Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
   for (usize i = 0; i < bucket->len; i++) {
@@ -35,7 +38,7 @@ static void *raw_get(Map *m, usize key) {
 }
 
 static void raw_reserve(Map *m, usize additional) {
-  usize new_size = m->len + additional;
+  usize new_size = m->buckets.len + additional;
   usize dirty_range = m->buckets.len;
   vec_resize(T, &m->buckets, new_size);
 
@@ -47,17 +50,23 @@ static void raw_reserve(Map *m, usize additional) {
   for (usize bucket_index = 0; bucket_index < dirty_range; bucket_index++) {
     Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
 
-    for (usize entry_index = 0; entry_index < bucket->len; entry_index++) {
+    usize entry_len = bucket->len;
+    for (usize i = 0, entry_index = 0;
+         i < entry_len && entry_index < bucket->len; i++) {
       MapEntry *entry = vec_index(MapEntry, bucket, entry_index);
       usize new_bucket_index = entry->key % new_size;
       if (new_bucket_index == bucket_index) {
+        entry_index++;
         continue;
       }
 
       Vec(MapEntry) *new_bucket =
           vec_index(Vec(MapEntry), &m->buckets, new_bucket_index);
 
-      vec_push(MapEntry, new_bucket, *entry);
+      // MapEntry is unsized
+      // so memcpy hack require
+      MapEntry *ptr = (MapEntry *)CVec.push(new_bucket);
+      memcpy(ptr, entry, sizeof(MapEntry) + m->size);
       vec_swap_remove(MapEntry, bucket, entry_index);
     }
   }
@@ -65,7 +74,7 @@ static void raw_reserve(Map *m, usize additional) {
 
 static void *raw_insert(Map *m, usize key) {
   usize max_entry = (m->buckets.len * 3 + 3) / 4;
-  if (m->len + 1 >= max_entry) {
+  if (m->len >= max_entry) {
     raw_reserve(m, max(m->buckets.len, 4));
   }
   usize bucket_index = key % m->buckets.len;
