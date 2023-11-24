@@ -12,27 +12,29 @@ typedef struct {
 struct CVec {
   Vec (*init)(usize sizeof_T);
 
-  void (*free)(Vec *v);
+  void (*free)(mov(Vec *) v);
 
-  void (*clear)(Vec *v);
+  void (*clear)(brw(Vec *) v);
 
-  void *(*index)(Vec *v, usize index);
+  Vec (*clone)(brw(Vec *) v);
 
-  void (*reserve)(Vec *v, usize additional);
+  void *(*index)(brw(Vec *) v, usize index);
 
-  void (*resize)(Vec *v, usize new_size);
+  void (*reserve)(brw(Vec *) v, usize additional);
 
-  void (*shrink_to)(Vec *v, usize new_size);
+  void (*resize)(brw(Vec *) v, usize new_size);
 
-  void (*shrink_to_fit)(Vec *v);
+  void (*shrink_to)(brw(Vec *) v, usize new_size);
 
-  void *(*push)(Vec *v);
+  void (*shrink_to_fit)(brw(Vec *) v);
 
-  void *(*pop)(Vec *v);
+  void *(*push)(brw(Vec *) v);
 
-  void (*remove)(Vec *v, usize index);
+  void *(*pop)(brw(Vec *) v);
 
-  void (*swap_remove)(Vec *v, usize index);
+  void (*remove)(brw(Vec *) v, usize index);
+
+  void (*swap_remove)(brw(Vec *) v, usize index);
 };
 
 extern const struct CVec CVec;
@@ -43,6 +45,8 @@ extern const struct CVec CVec;
 
 // free the element first or it will cause memory leak
 #define vec_free(T, v) CVec.free(v)
+
+#define vec_clone(T, v) CVec.clone(v)
 
 #define vec_clear(T, v) CVec.clear(v)
 

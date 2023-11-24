@@ -34,8 +34,8 @@ typedef long double f64;
     _a < _b ? _a : _b;                                                         \
   })
 
-#define move_ptr(ptr) ptr
+#define mov(ptr) ptr
 
-#define borrow_ptr(ptr) ptr
+#define brw(ptr) ptr
 
 #endif // __BASIC_H

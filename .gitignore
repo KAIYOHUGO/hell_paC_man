@@ -2,3 +2,4 @@ bazel-*
 external
 compile_commands*
 .vscode
+valgrind-out.txt

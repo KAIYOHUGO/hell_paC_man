@@ -3,6 +3,7 @@
 
 #include "array.h"
 #include "basic.h"
+#include "bitset.h"
 #include "map.h"
 #include "vec.h"
 
@@ -22,7 +23,7 @@ typedef struct {
 
 typedef struct {
   // despawn it self (don't need free `*self`)
-  void (*despawn)(borrow_ptr(void *) self, Entity entity);
+  void (*despawn)(brw(void *) self, Entity entity);
 } VComponent;
 
 typedef struct {
@@ -35,9 +36,14 @@ typedef struct {
   PComponent ptr;
 } TypedComponent;
 
+struct ArchetypeRow {
+  Entity entity;
+  Array(PComponent) components;
+};
+
 struct ArchetypeTable {
   Map(ComponentType, usize) type_col_id_map;
-  Vec(Array) table;
+  Vec(struct ArchetypeRow) table;
 };
 
 struct EntityInfo {
@@ -50,20 +56,37 @@ struct ComponentStorage {
   Vec(struct ArchetypeTable) database;
   Map(Entity, EntityInfo) entity_info_map;
   Map(usize, usize) bundle_table_map;
+  Map(ComponentType, BitSet) type_in_table_set_map;
 };
+
+extern struct ComponentStorage ComponentStorage;
+
+typedef struct {
+  BitSetIter table_iter;
+  brw(Array(ComponentType)) components;
+  usize table, row;
+} QueryIter;
 
 struct CComponent {
   ComponentType (*add_new_type)();
 
   // it don't move the array
   // but it will move the value inside
-  Entity (*spawn)(borrow_ptr(Array(move_ptr(TypedComponent)) *) bundle);
+  Entity (*spawn)(brw(Array(mov(TypedComponent)) *) bundle);
 
   void (*despawn)(Entity entity);
 
   void (*add_child)(Entity parent, Entity child);
 
   void (*remove_child)(Entity parent, Entity child);
+
+  brw(QueryIter) (*query)(brw(Array(ComponentType)) components,
+                          brw(Array(ComponentType)) with);
+
+  brw(Entity *) (*query_next)(brw(QueryIter *) iter,
+                              brw(Array(PComponent)) dest);
+
+  void (*query_free)(mov(QueryIter *) iter);
 };
 
 extern const struct CComponent CComponent;

@@ -22,12 +22,23 @@ typedef struct {
 
 struct CBitSet {
   BitSet (*init)();
+
   void (*free)(BitSet *b);
+
+  BitSet (*clone)(brw(BitSet *) b);
+
   bool (*insert)(BitSet *b, usize value);
+
   bool (*contain)(BitSet *b, usize value);
+
   bool (*is_subset)(BitSet *superset, BitSet *subset);
+
+  void (*intersect_with)(brw(BitSet *) self, brw(BitSet *) other);
+
   BitSet (*intersection)(BitSet *a, BitSet *b);
+
   BitSetIter (*iter)(BitSet *b);
+
   usize (*iter_next)(BitSetIter *iter);
 };
 

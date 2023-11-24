@@ -19,6 +19,22 @@ static Vec raw_init(usize sizeof_T) {
 
 static void raw_free(Vec *v) { free(v->ptr); }
 
+static Vec raw_clone(Vec *v) {
+  if (v->len == 0) {
+    return raw_init(v->size);
+  }
+  usize size = v->len * v->size;
+  void *ptr = malloc(size);
+  memcpy(ptr, v->ptr, size);
+  Vec ret = {
+      .ptr = ptr,
+      .len = v->len,
+      .cap = v->len,
+      .size = v->size,
+  };
+  return ret;
+}
+
 static void raw_clear(Vec *v) { v->len = 0; }
 
 static void *raw_index(Vec *v, usize index) {
@@ -39,7 +55,7 @@ static void raw_reserve(Vec *v, usize additional) {
 
 static void raw_resize(Vec *v, usize new_size) {
   if (new_size > v->cap) {
-    usize additional = max(new_size - v->cap, v->cap);
+    usize additional = max(new_size - v->cap, max(v->cap, 4));
     raw_reserve(v, additional);
   }
   v->len = new_size;
@@ -112,6 +128,8 @@ const struct CVec CVec = {
     .init = raw_init,
 
     .free = raw_free,
+
+    .clone = raw_clone,
 
     .clear = raw_clear,
 

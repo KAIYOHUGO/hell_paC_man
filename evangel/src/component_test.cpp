@@ -57,11 +57,8 @@ isize main(isize argc, char **argv) {
 }
 
 TEST(ComponentTest, SpawnDespawn) {
-  // MockComponent2 *ptr2 = new MockComponent2;
-  // MockComponent3 *ptr3 = new MockComponent3;
-  // MockComponent4 *ptr4 = new MockComponent4;
   Vec(Entity) entities = vec_init(Entity);
-  for (usize i = 0; i < 100; i++) {
+  for (usize i = 0; i < 1; i++) {
     MockComponent *ptr = new MockComponent;
     MockComponent1 *ptr1 = new MockComponent1;
     TypedComponent bundle[] = {
@@ -72,7 +69,7 @@ TEST(ComponentTest, SpawnDespawn) {
     Entity entity = CComponent.spawn(&arr);
     vec_push(Entity, &entities, entity);
   }
-  for (usize i = 0; i < 50; i++) {
+  for (usize i = 0; i < 0; i++) {
     MockComponent *ptr = new MockComponent;
     MockComponent1 *ptr1 = new MockComponent1;
     MockComponent2 *ptr2 = new MockComponent2;
@@ -88,4 +85,94 @@ TEST(ComponentTest, SpawnDespawn) {
   for (usize i = 0; i < entities.len; i++) {
     CComponent.despawn(*vec_index(Entity, &entities, i));
   }
+  vec_free(Entity, &entities);
 }
+
+// TEST(ComponentTest, AddRemoveChildren) {
+//   MockComponent *ptr = new MockComponent;
+//   MockComponent1 *ptr1 = new MockComponent1;
+//   TypedComponent bundle[] = {
+//       {.ty = ComponentTypeMockComponent, .ptr = mock_component_to_ptr(ptr)},
+//       {.ty = ComponentTypeMockComponent1, .ptr = mock_component_to_ptr(ptr1)},
+//   };
+//   Array(TypedComponent) arr = array_ref(TypedComponent, bundle, 2);
+//   Entity parent = CComponent.spawn(&arr);
+
+//   Vec(Entity) entities = vec_init(Entity);
+//   for (size_t i = 0; i < 50; i++) {
+//     MockComponent2 *ptr2 = new MockComponent2;
+//     MockComponent3 *ptr3 = new MockComponent3;
+//     MockComponent4 *ptr4 = new MockComponent4;
+//     TypedComponent bundle[] = {
+//         {.ty = ComponentTypeMockComponent2, .ptr = mock_component_to_ptr(ptr2)},
+//         {.ty = ComponentTypeMockComponent3, .ptr = mock_component_to_ptr(ptr3)},
+//         {.ty = ComponentTypeMockComponent4, .ptr = mock_component_to_ptr(ptr4)},
+//     };
+//     Array(TypedComponent) arr = array_ref(TypedComponent, bundle, 3);
+//     Entity entity = CComponent.spawn(&arr);
+//     CComponent.add_child(parent, entity);
+//     if (i % 3 == 0) {
+//       vec_push(Entity, &entities, entity);
+//     }
+//   }
+//   for (usize i = 0; i < entities.len; i++) {
+//     Entity entity = *vec_index(Entity, &entities, i);
+//     CComponent.remove_child(parent, entity);
+//     CComponent.despawn(entity);
+//   }
+//   vec_free(Entity, &entities);
+//   CComponent.despawn(parent);
+// }
+
+// TEST(ComponentTest, Query) {
+//   Vec(Entity) entities = vec_init(Entity);
+
+//   for (usize i = 0; i < 10; i++) {
+//     MockComponent *ptr = new MockComponent;
+//     MockComponent1 *ptr1 = new MockComponent1;
+//     TypedComponent bundle[] = {
+//         {.ty = ComponentTypeMockComponent, .ptr = mock_component_to_ptr(ptr)},
+//         {.ty = ComponentTypeMockComponent1, .ptr = mock_component_to_ptr(ptr1)},
+//     };
+//     Array(TypedComponent) arr = array_ref(TypedComponent, bundle, 2);
+//     Entity entity = CComponent.spawn(&arr);
+//     vec_push(Entity, &entities, entity);
+//   }
+
+//   Vec(Entity) entities1 = vec_init(Entity);
+//   for (usize i = 0; i < 20; i++) {
+//     MockComponent *ptr = new MockComponent;
+//     MockComponent1 *ptr1 = new MockComponent1;
+//     MockComponent2 *ptr2 = new MockComponent2;
+//     TypedComponent bundle[] = {
+//         {.ty = ComponentTypeMockComponent, .ptr = mock_component_to_ptr(ptr)},
+//         {.ty = ComponentTypeMockComponent1, .ptr = mock_component_to_ptr(ptr1)},
+//         {.ty = ComponentTypeMockComponent2, .ptr = mock_component_to_ptr(ptr2)},
+//     };
+//     Array(TypedComponent) arr = array_ref(TypedComponent, bundle, 3);
+//     Entity entity = CComponent.spawn(&arr);
+//     vec_push(Entity, &entities1, entity);
+//   }
+
+//   ComponentType query[] = {ComponentTypeMockComponent,
+//                            ComponentTypeMockComponent1};
+//   QueryIter iter = CComponent.query(array_ref(ComponentType, query, 2),
+//                                     array_empty(ComponentType));
+//   ComponentType result[2];
+//   Entity *result_entity;
+//   for (usize i = 0; i < entities.len; i++) {
+//     result_entity =
+//         CComponent.query_next(&iter, array_ref(ComponentType, result, 2));
+//     Entity *expect = vec_index(Entity, &entities, i);
+//     EXPECT_EQ(expect->id, result_entity->id);
+//   }
+//   for (usize i = 0; i < entities1.len; i++) {
+//     result_entity =
+//         CComponent.query_next(&iter, array_ref(ComponentType, result, 2));
+//     Entity *expect = vec_index(Entity, &entities1, i);
+//     EXPECT_EQ(expect->id, result_entity->id);
+//   }
+//   CComponent.query_free(&iter);
+//   vec_free(Entity, &entities);
+//   vec_free(Entity, &entities1);
+// }

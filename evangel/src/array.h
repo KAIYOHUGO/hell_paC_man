@@ -11,7 +11,9 @@ typedef struct {
 struct CArray {
   Array (*init)(usize size_of_T, usize len);
 
-  Array (*ref)(borrow_ptr(void *) ptr, usize size_of_T, usize len);
+  Array (*ref)(brw(void *) ptr, usize size_of_T, usize len);
+
+  Array (*empty)();
 
   void (*free)(Array *a);
 
@@ -25,6 +27,8 @@ extern const struct CArray CArray;
 #define array_init(T, len) CArray.init(sizeof(T), len)
 
 #define array_ref(T, ptr, len) CArray.ref(ptr, sizeof(T), len)
+
+#define array_empty(T) CArray.empty()
 
 #define array_free(T, a) CArray.free(a)
 

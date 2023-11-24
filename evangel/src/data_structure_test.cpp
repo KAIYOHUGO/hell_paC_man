@@ -164,3 +164,20 @@ TEST(BitSetTest, Intersection) {
   CBitSet.free(&b);
   CBitSet.free(&c);
 }
+
+TEST(BitSetTest, Iter) {
+  BitSet a = CBitSet.init();
+  for (size_t i = 0; i < 100; i += 1) {
+    if ((i % 2 == 0 || i % 3 == 0) && i % 6 != 0) {
+      CBitSet.insert(&a, i);
+    }
+  }
+  BitSetIter iter = CBitSet.iter(&a);
+  usize next;
+  while ((next = CBitSet.iter_next(&iter)) != BITSET_ITER_END) {
+    EXPECT_TRUE(next % 2 == 0 || next % 3 == 0);
+    EXPECT_TRUE(next % 6 != 0);
+  }
+
+  CBitSet.free(&a);
+}

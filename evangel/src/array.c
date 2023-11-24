@@ -24,6 +24,15 @@ static Array raw_ref(void *ptr, usize size_of_T, usize len) {
   return array;
 }
 
+static Array raw_empty() {
+  Array array = {
+      .ptr = NULL,
+      .len = 0,
+      .size = 0,
+  };
+  return array;
+}
+
 static void raw_free(Array *a) { free(a->ptr); }
 
 static void *raw_index(Array *a, usize index) {
@@ -32,8 +41,13 @@ static void *raw_index(Array *a, usize index) {
 
 const struct CArray CArray = {
     .init = raw_init,
+
     .ref = raw_ref,
+
+    .empty = raw_empty,
+
     .free = raw_free,
+
     .index = raw_index,
 };
 

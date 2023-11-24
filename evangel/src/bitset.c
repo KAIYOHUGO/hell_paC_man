@@ -2,6 +2,7 @@
 #define __BITSET_C
 
 #include "bitset.h"
+#include <stdlib.h>
 
 static BitSet raw_init() {
   BitSet bit_set = {
@@ -10,7 +11,13 @@ static BitSet raw_init() {
   return bit_set;
 }
 
-static void raw_free(BitSet *b) { vec_free(BITSET_ITEM, &b->raw); }
+static void raw_free(mov(BitSet *) b) { vec_free(BITSET_ITEM, &b->raw); }
+
+static BitSet raw_clone(brw(BitSet *) b) {
+  Vec(BITSET_ITEM) new_raw = vec_clone(BITSET_ITEM, &b->raw);
+  BitSet bit_set = {.raw = new_raw};
+  return bit_set;
+}
 
 static void internal_resize(BitSet *b, usize vec_len) {
   usize old_len = b->raw.len;
@@ -21,7 +28,7 @@ static void internal_resize(BitSet *b, usize vec_len) {
   }
 }
 
-static void internal_shrink_len(Vec(BITSET_ITEM) * b) {
+static void internal_shrink_len(brw(Vec(BITSET_ITEM) *) b) {
   while (b->len > 0) {
     BITSET_ITEM last = *vec_index(BITSET_ITEM, b, b->len - 1);
     if (last != 0)
@@ -31,9 +38,9 @@ static void internal_shrink_len(Vec(BITSET_ITEM) * b) {
   }
 }
 
-static bool raw_insert(BitSet *b, usize value) {
+static bool raw_insert(brw(BitSet *) b, usize value) {
   usize index = value >> BITSET_ITEM_FAST_DIV;
-  usize bit = 1 << (value & BITSET_ITEM_FAST_MOD);
+  BITSET_ITEM bit = (BITSET_ITEM)1 << (value & BITSET_ITEM_FAST_MOD);
   if (index >= b->raw.len) {
     internal_resize(b, index + 1);
   }
@@ -43,9 +50,9 @@ static bool raw_insert(BitSet *b, usize value) {
   return ret;
 }
 
-static bool raw_contain(BitSet *b, usize value) {
+static bool raw_contain(brw(BitSet *) b, usize value) {
   usize index = value >> BITSET_ITEM_FAST_DIV;
-  usize bit = 1 << (value & BITSET_ITEM_FAST_MOD);
+  BITSET_ITEM bit = (BITSET_ITEM)1 << (value & BITSET_ITEM_FAST_MOD);
   if (index >= b->raw.len) {
     return false;
   }
@@ -53,7 +60,7 @@ static bool raw_contain(BitSet *b, usize value) {
   return *ptr & bit;
 }
 
-static bool raw_is_subset(BitSet *superset, BitSet *subset) {
+static bool raw_is_subset(brw(BitSet *) superset, brw(BitSet *) subset) {
   if (superset->raw.len < subset->raw.len) {
     return false;
   }
@@ -67,26 +74,31 @@ static bool raw_is_subset(BitSet *superset, BitSet *subset) {
   return true;
 }
 
-static BitSet raw_intersection(BitSet *a, BitSet *b) {
-  usize len = min(a->raw.len, b->raw.len);
-  Vec(BITSET_ITEM) ret = vec_init(BITSET_ITEM);
-  vec_resize(BITSET_ITEM, &ret, len);
+static void raw_intersect_with(brw(BitSet *) self, brw(BitSet *) other) {
+  usize len = min(self->raw.len, other->raw.len);
+  internal_resize(self, len);
   for (usize i = 0; i < len; i++) {
-    BITSET_ITEM a_item = *vec_index(BITSET_ITEM, &a->raw, i);
-    BITSET_ITEM b_item = *vec_index(BITSET_ITEM, &b->raw, i);
-    *vec_index(BITSET_ITEM, &ret, i) = a_item & b_item;
+    *vec_index(BITSET_ITEM, &self->raw, i) &=
+        *vec_index(BITSET_ITEM, &other->raw, i);
   }
-  internal_shrink_len(&ret);
-  BitSet bit_set = {.raw = ret};
+  internal_shrink_len(&self->raw);
+}
+
+static BitSet raw_intersection(brw(BitSet *) a, brw(BitSet *) b) {
+  BitSet bit_set = raw_clone(a);
+  raw_intersect_with(&bit_set, b);
   return bit_set;
 }
 
-static BitSetIter raw_iter(BitSet *b) {
+static brw(BitSetIter) raw_iter(brw(BitSet *) b) {
   BitSetIter iter = {.ptr = b, .offset = 0};
   return iter;
 }
 
-static usize raw_iter_next(BitSetIter *iter) {
+static usize raw_iter_next(brw(BitSetIter *) iter) {
+  if (iter->ptr == NULL)
+    return BITSET_ITER_END;
+
   usize offset_index = iter->offset >> BITSET_ITEM_FAST_DIV;
   usize offset_bit_n = iter->offset & BITSET_ITEM_FAST_MOD;
   for (usize i = offset_index; i < iter->ptr->raw.len; i++) {
@@ -94,26 +106,40 @@ static usize raw_iter_next(BitSetIter *iter) {
     if (bits == 0) {
       continue;
     }
-    for (usize j = offset_bit_n + 1; j < 64; j++) {
-      BITSET_ITEM bit_mask = 1 << j;
+    for (usize j = offset_bit_n; j < 64; j++) {
+      BITSET_ITEM bit_mask = (BITSET_ITEM)1 << j;
 
       if ((bits & bit_mask) != 0) {
-        return i * BITSET_ITEM_BITS + j;
+        usize offset = i * BITSET_ITEM_BITS + j;
+        iter->offset = offset + 1;
+        return offset;
       }
     }
     offset_bit_n = 0;
   }
+  iter->ptr = NULL;
   return BITSET_ITER_END;
 }
 
 const struct CBitSet CBitSet = {
     .init = raw_init,
+
     .free = raw_free,
+
+    .clone = raw_clone,
+
     .insert = raw_insert,
+
     .contain = raw_contain,
+
     .is_subset = raw_is_subset,
+
+    .intersect_with = raw_intersect_with,
+
     .intersection = raw_intersection,
+
     .iter = raw_iter,
+
     .iter_next = raw_iter_next,
 };
 
