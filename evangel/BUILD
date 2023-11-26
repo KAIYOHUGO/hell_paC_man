@@ -38,8 +38,6 @@ cc_test(
 cc_test(
     name = "component_test",
     srcs = [
-        "src/app.c",
-        "src/app.h",
         "src/array.c",
         "src/array.h",
         "src/basic.c",
@@ -49,8 +47,28 @@ cc_test(
         "src/component.c",
         "src/component.h",
         "src/component_test.cpp",
+        "src/map.c",
+        "src/map.h",
+        "src/vec.c",
+        "src/vec.h",
+    ],
+    deps = [
+        "@gtest",
+    ],
+)
+
+cc_test(
+    name = "event_test",
+    srcs = [
+        "src/array.c",
+        "src/array.h",
+        "src/basic.c",
+        "src/basic.h",
+        "src/bitset.c",
+        "src/bitset.h",
         "src/event.c",
         "src/event.h",
+        "src/event_test.cpp",
         "src/map.c",
         "src/map.h",
         "src/vec.c",

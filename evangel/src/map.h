@@ -21,6 +21,7 @@ struct CMap {
   void (*reserve)(Map *m, usize additional);
   void *(*insert)(Map *m, usize key);
   void (*remove)(Map *m, usize key);
+  void (*clear)(Map *m);
 };
 
 extern const struct CMap CMap;
@@ -40,5 +41,7 @@ extern const struct CMap CMap;
 
 // free the element first or it will cause memory leak
 #define map_remove(T, m, key) CMap.remove(m, key)
+
+#define map_clear(T, m) CMap.clear(m)
 
 #endif // __MAP_H

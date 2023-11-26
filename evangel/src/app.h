@@ -15,7 +15,6 @@ extern void hook_app_free();
 typedef void (*system_fn)();
 
 struct App {
-  struct EventQueue event_queue;
   Vec(system_fn) on_update;
 };
 

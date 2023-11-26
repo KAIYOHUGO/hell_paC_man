@@ -105,6 +105,14 @@ static void raw_remove(Map *m, usize key) {
   m->len--;
 }
 
+static void raw_clear(Map *m) {
+  for (usize i = 0; i < m->buckets.len; i++) {
+    Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, i);
+    vec_clear(Vec(MapEntry), bucket);
+  }
+  m->len = 0;
+}
+
 const struct CMap CMap = {
     .init = raw_init,
     .free = raw_free,
@@ -112,6 +120,7 @@ const struct CMap CMap = {
     .reserve = raw_reserve,
     .insert = raw_insert,
     .remove = raw_remove,
+    .clear = raw_clear,
 };
 
 #endif // __MAP_C

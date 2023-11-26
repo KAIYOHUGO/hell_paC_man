@@ -2,43 +2,51 @@
 #define __EVENT_H
 
 #include "basic.h"
+#include "map.h"
 #include "vec.h"
 
 typedef struct {
   usize id;
 } EventType;
 
+typedef struct {
+  void *self;
+} PEvent;
+
 struct InQueueEvent {
   EventType ty;
-  void *event;
+  PEvent event;
 };
 
 typedef void (*event_free)(void *);
 
-struct TypedEvent {
-  event_free free;
-  void *event;
-};
-
 struct EventQueue {
-  Vec(TypedEvent) typed_event_map;
+  Vec(Vec(struct PEvent)) type_event_map;
   Vec(InQueueEvent) queue;
 };
 
 struct CEvent {
   EventType (*add_new_type)();
 
-  void (*emit)(EventType typeid, void *event);
-  
+  void (*emit)(EventType ty, PEvent event);
+
   void (*flush)();
-  
-  void *(*listen)(EventType typeid);
+
+  brw(Vec(PEvent) *) (*listen)(EventType ty);
 };
+
+extern struct EventQueue EventQueue;
 
 extern const struct CEvent CEvent;
 
-#define AddEventType(T)                                                        \
-  EventType EventType##T;                                                      \
-  void add_event_type_##T() { EventType##T = CEvent.add_new_type(); }
+#define ETy(T) EventType##T
+
+#define DeclareEventType(T)                                                    \
+  EventType ETy(T);                                                            \
+  void add_event_type_##T() { ETy(T) = CEvent.add_new_type(); }
+
+#define add_event_type(T) add_event_type_##T()
+
+void internal_event_queue_init(void);
 
 #endif // __EVENT_H

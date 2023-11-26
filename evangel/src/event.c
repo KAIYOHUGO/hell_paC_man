@@ -2,52 +2,60 @@
 #define __EVENT_C
 
 #include "event.h"
-#include "app.h"
 #include <stdlib.h>
 
 typedef struct InQueueEvent InQueueEvent;
-typedef struct TypedEvent TypedEvent;
+
+struct EventQueue EventQueue = {};
+
+void internal_event_queue_init(void) {
+  struct EventQueue queue = {
+      .type_event_map = vec_init(Vec(TypedEvent)),
+      .queue = vec_init(InQueueEvent),
+  };
+  EventQueue = queue;
+}
 
 EventType raw_add_new_type() {
-  vec_push(Vec(void *), &App.event_queue.typed_event_map, vec_init(void *));
-  EventType typeid = {App.event_queue.typed_event_map.len - 1};
+  usize id = EventQueue.type_event_map.len;
+  vec_push(Vec(PEvent), &EventQueue.type_event_map, vec_init(PEvent));
+  EventType typeid = {.id = id};
   return typeid;
 }
 
-void raw_emit(EventType typeid, void *event) {
+void raw_emit(EventType ty, PEvent event) {
   InQueueEvent element = {
-      .ty = typeid,
+      .ty = ty,
       .event = event,
   };
-  vec_push(InQueueEvent, &App.event_queue.queue, element);
+  vec_push(InQueueEvent, &EventQueue.queue, element);
 }
 
 void raw_flush() {
-  for (usize i = 0; i < App.event_queue.typed_event_map.len; i++) {
-    TypedEvent *ptr =
-        vec_index(TypedEvent, &App.event_queue.typed_event_map, i);
-    ptr->free(ptr->event);
-    ptr->event = NULL;
+  usize map_len = EventQueue.type_event_map.len;
+  for (usize i = 0; i < map_len; i++) {
+    Vec(PEvent) *p_events =
+        vec_index(Vec(PEvent), &EventQueue.type_event_map, i);
+    for (usize j = 0; j < p_events->len; j++) {
+      PEvent *p_event = vec_index(PEvent, p_events, j);
+      free(p_event->self);
+    }
+    vec_clear(PEvent, p_events);
   }
 
-  usize queue_len = App.event_queue.queue.len;
-  for (usize i = 0, offset = 0; i < queue_len; i++) {
+  usize queue_len = EventQueue.queue.len;
+  for (usize i = 0; i < queue_len; i++) {
     InQueueEvent *in_queue_event =
-        vec_index(InQueueEvent, &App.event_queue.queue, offset);
-    TypedEvent *typed_event = vec_index(
-        TypedEvent, &App.event_queue.typed_event_map, in_queue_event->ty.id);
-    if (typed_event->event != NULL) {
-      offset++;
-      continue;
-    }
-    typed_event->event = in_queue_event->event;
-    vec_swap_remove(InQueueEvent, &App.event_queue.queue, offset);
+        vec_index(InQueueEvent, &EventQueue.queue, i);
+    Vec(PEvent) *p_events = vec_index(Vec(PEvent), &EventQueue.type_event_map,
+                                      in_queue_event->ty.id);
+    vec_push(PEvent, p_events, in_queue_event->event);
   }
+  vec_clear(InQueueEvent, &EventQueue.queue);
 }
 
-void *raw_listen(EventType typeid) {
-  return vec_index(TypedEvent, &App.event_queue.typed_event_map, typeid.id)
-      ->event;
+mov(Vec(PEvent) *) raw_listen(EventType ty) {
+  return vec_index(Vec(PEvent), &EventQueue.type_event_map, ty.id);
 }
 
 const struct CEvent CEvent = {

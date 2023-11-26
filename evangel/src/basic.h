@@ -20,6 +20,8 @@ typedef int isize;
 typedef double f32;
 typedef long double f64;
 
+usize internal_rand();
+
 #define max(a, b)                                                              \
   ({                                                                           \
     __typeof__(a) _a = (a);                                                    \
@@ -37,5 +39,10 @@ typedef long double f64;
 #define mov(ptr) ptr
 
 #define brw(ptr) ptr
+
+// https://stackoverflow.com/questions/1082192/how-to-generate-random-variable-names-in-c-using-macros
+#define InternalConcatIdent(A, B) InternalConcatIdent_(A, B)
+
+#define InternalConcatIdent_(A, B) A##B
 
 #endif // __BASIC_H

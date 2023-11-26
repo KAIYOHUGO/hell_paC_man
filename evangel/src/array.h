@@ -26,7 +26,7 @@ extern const struct CArray CArray;
 
 #define array_init(T, len) CArray.init(sizeof(T), len)
 
-#define array_ref(T, ptr, len) CArray.ref(ptr, sizeof(T), len)
+#define array_ref(T, ptr) CArray.ref(ptr, sizeof(T), sizeof(ptr) / sizeof(T))
 
 #define array_empty(T) CArray.empty()
 

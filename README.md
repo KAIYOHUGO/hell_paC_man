@@ -17,8 +17,9 @@
 
 - `StructureUpperCamelCase`
 - `EnumUpperCamelCase`
--`EnumUpperCamelCase_VariantUpperCamelCase`
+- `EnumUpperCamelCase_VariantUpperCamelCase`
 - `ItemMacroUpperCamelCase`
 - `function_snake_case`
 - `Type(FakeGeneric)`
 - `fake_typed_function_macro_snake_case`
+- `OverLoadingMacroCamelCase`

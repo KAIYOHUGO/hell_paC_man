@@ -2,7 +2,6 @@
 #define __COMPONENT_C
 
 #include "component.h"
-#include "app.h"
 #include "array.h"
 #include "bitset.h"
 #include <assert.h>
@@ -11,8 +10,6 @@
 typedef struct ArchetypeTable ArchetypeTable;
 typedef struct ArchetypeRow ArchetypeRow;
 typedef struct EntityInfo EntityInfo;
-
-static usize internal_rand() { return (rand() << 16) ^ rand(); }
 
 struct ComponentStorage ComponentStorage = {};
 
@@ -34,10 +31,10 @@ static ComponentType raw_add_new_type() {
   return ty;
 }
 
-static Entity raw_spawn(brw(Array(move_ptr(TypedComponent)) *) bundle) {
+static Entity raw_spawn(brw(Array(move_ptr(TypedComponent))) bundle) {
   usize bundle_id = 0;
-  TypedComponent *typed_bundle = array_typed(TypedComponent, bundle);
-  for (usize i = 0; i < bundle->len; i++) {
+  TypedComponent *typed_bundle = array_typed(TypedComponent, &bundle);
+  for (usize i = 0; i < bundle.len; i++) {
     bundle_id ^= typed_bundle[i].ty.id;
   }
   usize *table_id_ptr =
@@ -49,7 +46,7 @@ static Entity raw_spawn(brw(Array(move_ptr(TypedComponent)) *) bundle) {
     table_id = ComponentStorage.database.len;
 
     // add in_table_set_map
-    for (usize i = 0; i < bundle->len; i++) {
+    for (usize i = 0; i < bundle.len; i++) {
       BitSet *set = map_get(BitSet, &ComponentStorage.type_in_table_set_map,
                             typed_bundle[i].ty.id);
       // valgrind think this leak memory
@@ -64,8 +61,8 @@ static Entity raw_spawn(brw(Array(move_ptr(TypedComponent)) *) bundle) {
     // create table
     // create table type_col_id_map
     Map(ComponentType, usize) type_col_id_map = map_init(usize);
-    map_reserve(usize, &type_col_id_map, bundle->len);
-    for (usize i = 0; i < bundle->len; i++) {
+    map_reserve(usize, &type_col_id_map, bundle.len);
+    for (usize i = 0; i < bundle.len; i++) {
       map_insert(usize, &type_col_id_map, typed_bundle[i].ty.id, i);
     }
 
@@ -82,8 +79,8 @@ static Entity raw_spawn(brw(Array(move_ptr(TypedComponent)) *) bundle) {
   // add new row into table
   ArchetypeTable *table =
       vec_index(ArchetypeTable, &ComponentStorage.database, table_id);
-  Array(PComponent) row_components = array_init(PComponent, bundle->len);
-  for (usize i = 0; i < bundle->len; i++) {
+  Array(PComponent) row_components = array_init(PComponent, bundle.len);
+  for (usize i = 0; i < bundle.len; i++) {
     // should not be null
     usize col_index =
         *map_get(usize, &table->type_col_id_map, typed_bundle[i].ty.id);
@@ -191,8 +188,8 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
 
   if (components.len == 0) {
     QueryIter iter = {
-        .table_iter = NULL,
-        .table = 0,
+        .table_iter = {.offset = 0, .ptr = NULL},
+        .table = BITSET_ITER_END,
         .row = 0,
     };
     return iter;
