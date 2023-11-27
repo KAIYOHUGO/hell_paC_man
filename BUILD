@@ -1,6 +1,6 @@
 cc_binary(
     name = "main",
-    srcs = ["src/main.c"],
+    srcs = glob(["src/*.c","src/*.h"]),
     deps = ["//evangel"],
 )
 

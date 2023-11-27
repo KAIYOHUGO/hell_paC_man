@@ -54,7 +54,7 @@ void raw_flush() {
   vec_clear(InQueueEvent, &EventQueue.queue);
 }
 
-mov(Vec(PEvent) *) raw_listen(EventType ty) {
+brw(Vec(PEvent) *) raw_listen(EventType ty) {
   return vec_index(Vec(PEvent), &EventQueue.type_event_map, ty.id);
 }
 

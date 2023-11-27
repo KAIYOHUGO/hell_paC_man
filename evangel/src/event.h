@@ -45,6 +45,10 @@ extern const struct CEvent CEvent;
   EventType ETy(T);                                                            \
   void add_event_type_##T() { ETy(T) = CEvent.add_new_type(); }
 
+#define ExportEventType(T)                                                     \
+  extern EventType ETy(T);                                                            \
+  void add_event_type_##T();
+
 #define add_event_type(T) add_event_type_##T()
 
 void internal_event_queue_init(void);

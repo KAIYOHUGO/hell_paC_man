@@ -80,6 +80,8 @@ struct CComponent {
                               brw(Array(PComponent)) dest);
 
   void (*query_free)(mov(QueryIter *) iter);
+
+  PComponent (*default_vtable)(void *component);
 };
 
 extern struct ComponentStorage ComponentStorage;
@@ -89,10 +91,12 @@ extern const struct CComponent CComponent;
 #define CTy(T) ComponentType##T
 
 #define DeclareComponentType(T)                                                \
-  ComponentType CTy(T);                                              \
-  void add_component_type_##T() {                                              \
-    CTy(T) = CComponent.add_new_type();                              \
-  }
+  ComponentType CTy(T);                                                        \
+  void add_component_type_##T() { CTy(T) = CComponent.add_new_type(); }
+
+#define ExportComponentType(T)                                                 \
+  extern ComponentType CTy(T);                                                 \
+  void add_component_type_##T();
 
 #define add_component_type(T) add_component_type_##T()
 

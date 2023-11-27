@@ -2,28 +2,36 @@
 #define __APP_H
 
 #include "basic.h"
-#include "component.h"
-#include "event.h"
-#include "map.h"
 #include "vec.h"
 
 extern void hook_app_init();
-extern void hook_app_on_update();
-extern void hook_app_on_render();
+
+extern void hook_app_before_update();
+extern void hook_app_after_update();
+extern void hook_app_before_render();
+extern void hook_app_after_render();
+
+extern void hook_app_render();
 extern void hook_app_free();
 
-typedef void (*system_fn)();
+typedef void (*SystemFn)();
 
 struct App {
-  Vec(system_fn) on_update;
+  Vec(SystemFn) on_update;
+  Vec(SystemFn) on_render;
+  f64 standard_delta;
+  f64 time_delta;
+  bool is_exit;
 };
 
-struct CApp {};
+struct CApp {
+  void (*add_update_system)(SystemFn fn);
+  void (*add_render_system)(SystemFn fn);
+};
+
+void app_start();
 
 extern struct App App;
 
 extern const struct CApp CApp;
-
-void internal_app_init();
-
 #endif // __APP_H

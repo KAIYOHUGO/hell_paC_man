@@ -23,3 +23,6 @@
 - `Type(FakeGeneric)`
 - `fake_typed_function_macro_snake_case`
 - `OverLoadingMacroCamelCase`
+
+
+[DOC](https://docs.google.com/document/d/1pbmqKgjQ75Juk1BeeBKcBVxS9AebBml3H2rgWHhogiw/edit)

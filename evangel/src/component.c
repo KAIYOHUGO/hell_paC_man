@@ -169,7 +169,8 @@ static void raw_despawn(Entity entity) {
   // despawn components
   for (size_t i = 0; i < row->components.len; i++) {
     PComponent *ptr = array_index(PComponent, &row->components, i);
-    ptr->vtable->despawn(ptr->self, entity);
+    if (ptr->vtable->despawn != NULL)
+      ptr->vtable->despawn(ptr->self, entity);
     free(ptr->self);
   }
   array_free(PComponent, &row->components);
@@ -253,6 +254,13 @@ static brw(Entity *)
 
 void raw_query_free(mov(QueryIter *) iter) { free(iter->table_iter.ptr); }
 
+static VComponent DefaultVComponent = {.despawn = NULL};
+
+static PComponent raw_default_vtable(void *component) {
+  PComponent p = {.vtable = &DefaultVComponent, .self = component};
+  return p;
+}
+
 const struct CComponent CComponent = {
     .add_new_type = raw_add_new_type,
 
@@ -269,6 +277,8 @@ const struct CComponent CComponent = {
     .query_next = raw_query_next,
 
     .query_free = raw_query_free,
+
+    .default_vtable = raw_default_vtable,
 };
 
 #endif // __COMPONENT_C
