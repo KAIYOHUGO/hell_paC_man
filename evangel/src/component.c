@@ -11,7 +11,7 @@ typedef struct ArchetypeTable ArchetypeTable;
 typedef struct ArchetypeRow ArchetypeRow;
 typedef struct EntityInfo EntityInfo;
 
-struct ComponentStorage ComponentStorage = {};
+static struct ComponentStorage ComponentStorage = {};
 
 void internal_component_storage_init() {
   struct ComponentStorage storage = {
@@ -216,7 +216,7 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
   usize table = CBitSet.iter_next(&table_iter);
   QueryIter iter = {
       .table_iter = table_iter,
-      .components = components,
+      .components = array_clone(ComponentType, &components),
       .table = table,
       .row = 0,
   };
@@ -252,7 +252,10 @@ static brw(Entity *)
   return &row->entity;
 }
 
-void raw_query_free(mov(QueryIter *) iter) { free(iter->table_iter.ptr); }
+void raw_query_free(mov(QueryIter *) iter) {
+  free(iter->table_iter.ptr);
+  array_free(ComponentType, &iter->components);
+}
 
 static VComponent DefaultVComponent = {.despawn = NULL};
 

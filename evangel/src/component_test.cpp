@@ -65,7 +65,7 @@ TEST(ComponentTest, SpawnDespawn) {
         {.ty = CTy(MockComponent), .ptr = mock_to_ptr(ptr)},
         {.ty = CTy(MockComponent1), .ptr = mock_to_ptr(ptr1)},
     };
-    Entity entity = CComponent.spawn(array_ref(TypedComponent, bundle));
+    Entity entity = CComponent.spawn(array_ref(bundle));
     vec_push(Entity, &entities, entity);
   }
   for (usize i = 0; i < 50; i++) {
@@ -77,7 +77,7 @@ TEST(ComponentTest, SpawnDespawn) {
         {.ty = CTy(MockComponent1), .ptr = mock_to_ptr(ptr1)},
         {.ty = CTy(MockComponent2), .ptr = mock_to_ptr(ptr2)},
     };
-    Entity entity = CComponent.spawn(array_ref(TypedComponent, bundle));
+    Entity entity = CComponent.spawn(array_ref(bundle));
     vec_push(Entity, &entities, entity);
   }
   for (usize i = 0; i < entities.len; i++) {
@@ -101,7 +101,7 @@ TEST(ComponentTest, AddRemoveChildren) {
         {.ty = CTy(MockComponent3), .ptr = mock_to_ptr(ptr3)},
         {.ty = CTy(MockComponent4), .ptr = mock_to_ptr(ptr4)},
     };
-    Entity entity = CComponent.spawn(array_ref(TypedComponent, bundle));
+    Entity entity = CComponent.spawn(array_ref(bundle));
     CComponent.add_child(parent, entity);
     if (i % 3 == 0) {
       vec_push(Entity, &entities, entity);
@@ -124,7 +124,7 @@ TEST(ComponentTest, Query) {
     MockComponent1 *ptr1 = new MockComponent1;
     TypedComponent bundle[] = Bundle(MockComponent, MockComponent1,
                                      mock_to_ptr(ptr), mock_to_ptr(ptr1));
-    Entity entity = CComponent.spawn(array_ref(TypedComponent, bundle));
+    Entity entity = CComponent.spawn(array_ref(bundle));
     vec_push(Entity, &entities, entity);
   }
 
@@ -140,21 +140,17 @@ TEST(ComponentTest, Query) {
     vec_push(Entity, &entities1, entity);
   }
 
-  ComponentType query[] = TySet(MockComponent, MockComponent1);
-  QueryIter iter = CComponent.query(array_ref(ComponentType, query),
-                                    array_empty(ComponentType));
+  QueryIter iter = Query(MockComponent, MockComponent1);
 
   ComponentType result[2];
   Entity *result_entity;
   for (usize i = 0; i < entities.len; i++) {
-    result_entity =
-        CComponent.query_next(&iter, array_ref(ComponentType, result));
+    result_entity = CComponent.query_next(&iter, array_ref(result));
     Entity *expect = vec_index(Entity, &entities, i);
     EXPECT_EQ(expect->id, result_entity->id);
   }
   for (usize i = 0; i < entities1.len; i++) {
-    result_entity =
-        CComponent.query_next(&iter, array_ref(ComponentType, result));
+    result_entity = CComponent.query_next(&iter, array_ref(result));
     Entity *expect = vec_index(Entity, &entities1, i);
     EXPECT_EQ(expect->id, result_entity->id);
   }

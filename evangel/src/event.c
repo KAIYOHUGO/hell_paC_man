@@ -6,7 +6,7 @@
 
 typedef struct InQueueEvent InQueueEvent;
 
-struct EventQueue EventQueue = {};
+static struct EventQueue EventQueue = {};
 
 void internal_event_queue_init(void) {
   struct EventQueue queue = {
@@ -58,6 +58,11 @@ brw(Vec(PEvent) *) raw_listen(EventType ty) {
   return vec_index(Vec(PEvent), &EventQueue.type_event_map, ty.id);
 }
 
+static PEvent raw_default_vtable(void *event) {
+  PEvent p = {.self = event};
+  return p;
+}
+
 const struct CEvent CEvent = {
     .add_new_type = raw_add_new_type,
 
@@ -66,6 +71,8 @@ const struct CEvent CEvent = {
     .flush = raw_flush,
 
     .listen = raw_listen,
+
+    .default_vtable = raw_default_vtable,
 };
 
 #endif // __EVENT_C

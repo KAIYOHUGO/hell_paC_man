@@ -13,6 +13,8 @@ struct CArray {
 
   Array (*ref)(brw(void *) ptr, usize size_of_T, usize len);
 
+  Array (*clone)(Array *a);
+
   Array (*empty)();
 
   void (*free)(Array *a);
@@ -26,7 +28,11 @@ extern const struct CArray CArray;
 
 #define array_init(T, len) CArray.init(sizeof(T), len)
 
-#define array_ref(T, ptr) CArray.ref(ptr, sizeof(T), sizeof(ptr) / sizeof(T))
+#define array_clone(T, v) CArray.clone(v)
+
+#define array_ref(ptr)                                                         \
+  CArray.ref(ptr, sizeof(__typeof__(ptr[0])),                                  \
+             sizeof(ptr) / sizeof(__typeof__(ptr[0])))
 
 #define array_empty(T) CArray.empty()
 

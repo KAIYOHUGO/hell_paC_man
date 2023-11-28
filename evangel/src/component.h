@@ -56,7 +56,7 @@ struct ComponentStorage {
 
 typedef struct {
   BitSetIter table_iter;
-  brw(Array(ComponentType)) components;
+  mov(Array(ComponentType)) components;
   usize table, row;
 } QueryIter;
 
@@ -83,8 +83,6 @@ struct CComponent {
 
   PComponent (*default_vtable)(void *component);
 };
-
-extern struct ComponentStorage ComponentStorage;
 
 extern const struct CComponent CComponent;
 
@@ -131,8 +129,7 @@ extern const struct CComponent CComponent;
   ({                                                                           \
     TypedComponent InternalConcatIdent(bundle, __LINE__)[] =                   \
         Bundle(__VA_ARGS__);                                                   \
-    CComponent.spawn(                                                          \
-        array_ref(TypedComponent, InternalConcatIdent(bundle, __LINE__)));     \
+    CComponent.spawn(array_ref(InternalConcatIdent(bundle, __LINE__)));        \
   })
 
 #define InternalTySet1(T1) CTy(T1)
@@ -147,6 +144,25 @@ extern const struct CComponent CComponent;
     InternalConcatIdent(InternalTySet,                                         \
                         InternalOverload(__VA_ARGS__))(__VA_ARGS__)            \
   }
+
+#define With(...) TySet(__VA_ARGS__)
+
+#define Query(...)                                                             \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
+        TySet(__VA_ARGS__);                                                    \
+    CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
+                     array_empty(ComponentType));                              \
+  })
+
+#define QueryWith(with, ...)                                                   \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
+        TySet(__VA_ARGS__);                                                    \
+    ComponentType InternalConcatIdent(with_set, __LINE__)[] = with;            \
+    CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)));      \
+  })
 
 void internal_component_storage_init();
 

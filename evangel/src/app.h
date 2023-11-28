@@ -31,7 +31,5 @@ struct CApp {
 
 void app_start();
 
-extern struct App App;
-
 extern const struct CApp CApp;
 #endif // __APP_H

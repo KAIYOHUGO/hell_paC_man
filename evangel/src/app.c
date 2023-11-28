@@ -5,6 +5,7 @@
 #include "basic.h"
 #include "component.h"
 #include "event.h"
+#include "resource.h"
 #include <time.h>
 
 struct App App = {};
@@ -24,6 +25,7 @@ static void internal_app_init() {
 static void internal_init_all() {
   internal_component_storage_init();
   internal_event_queue_init();
+  internal_resource_storage_init();
   internal_app_init();
 }
 

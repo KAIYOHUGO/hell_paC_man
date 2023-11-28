@@ -33,20 +33,24 @@ struct CEvent {
   void (*flush)();
 
   brw(Vec(PEvent) *) (*listen)(EventType ty);
-};
 
-extern struct EventQueue EventQueue;
+  PEvent (*default_vtable)(void *event);
+};
 
 extern const struct CEvent CEvent;
 
 #define ETy(T) EventType##T
+
+#define event_emit(T, p_event) CEvent.emit(ETy(T), p_event)
+
+#define event_listen(T) CEvent.listen(ETy(T))
 
 #define DeclareEventType(T)                                                    \
   EventType ETy(T);                                                            \
   void add_event_type_##T() { ETy(T) = CEvent.add_new_type(); }
 
 #define ExportEventType(T)                                                     \
-  extern EventType ETy(T);                                                            \
+  extern EventType ETy(T);                                                     \
   void add_event_type_##T();
 
 #define add_event_type(T) add_event_type_##T()

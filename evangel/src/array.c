@@ -1,3 +1,4 @@
+#include <string.h>
 #if !defined(__ARRAY_C)
 #define __ARRAY_C
 
@@ -11,6 +12,17 @@ static Array raw_init(usize size_of_T, usize len) {
       .ptr = ptr,
       .len = len,
       .size = size_of_T,
+  };
+  return array;
+}
+
+static Array raw_clone(Array *a) {
+  void *ptr = malloc(a->len * a->size);
+  memcpy(ptr, a->ptr, a->len * a->size);
+  Array array = {
+      .ptr = ptr,
+      .len = a->len,
+      .size = a->size,
   };
   return array;
 }
@@ -43,6 +55,8 @@ const struct CArray CArray = {
     .init = raw_init,
 
     .ref = raw_ref,
+
+    .clone = raw_clone,
 
     .empty = raw_empty,
 
