@@ -6,11 +6,19 @@
 #include <stdlib.h>
 
 typedef struct {
-  usize x, y;
+  isize x, y;
 } Position;
 
 ExportComponentType(Position);
 
 PComponent position_new(Position pos);
+
+typedef struct {
+  isize x, y;
+} ScreenCord;
+
+ExportComponentType(ScreenCord);
+
+PComponent screen_cord_new(ScreenCord pos);
 
 #endif // COMPONENT_H

@@ -13,4 +13,10 @@ PComponent position_new(Position pos) {
   return CComponent.default_vtable(ptr);
 }
 
+PComponent screen_cord_new(ScreenCord pos) {
+  ScreenCord *ptr = malloc(sizeof(ScreenCord));
+  *ptr = pos;
+  return CComponent.default_vtable(ptr);
+}
+
 #endif // COMPONENT_C

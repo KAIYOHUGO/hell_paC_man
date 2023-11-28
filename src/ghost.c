@@ -5,4 +5,6 @@
 
 DeclareComponentType(Ghost);
 
+void ghost_init() {}
+
 #endif // GHOST_C
