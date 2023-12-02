@@ -2,13 +2,15 @@
 #define SETTING_H
 
 #include <evangel/array.h>
+#include <evangel/component.h>
 #include <evangel/resource.h>
 
 typedef enum {
   MapItem_Empty,
   MapItem_Player,
-  MapItem_Ghost,
+  MapItem_Monster,
   MapItem_Booster,
+  MapItem_Food,
 } MapItem;
 
 typedef struct {
@@ -16,6 +18,13 @@ typedef struct {
   Array(MapItem) map;
 } GameInfo;
 
-ExportResourceType(GameInfo)
+ExportResourceType(GameInfo);
+
+typedef struct {
+} MapCursor;
+
+ExportComponentType(MapCursor);
+
+void setting_init();
 
 #endif // SETTING_H

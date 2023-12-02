@@ -8,30 +8,24 @@ void listen_keyboard();
 typedef enum {
   Key_Unknown,
 
-  Key_W,
-  Key_A,
-  Key_S,
-  Key_D,
-  Key_P,
-  Key_B,
+  // a,b,c...
+  Key_Char,
 
-  // Num
-  Key_0,
-  Key_1,
-  Key_2,
-  Key_3,
-  Key_4,
-  Key_5,
-  Key_6,
-  Key_7,
-  Key_8,
-  Key_9,
+  Key_Number,
 
   // special key
   Key_ENTER,
   Key_ESC,
 
   // Key_,
+} KeyKind;
+
+typedef struct {
+  KeyKind kind;
+  union {
+    char charater;
+    u8 number;
+  };
 } Key;
 
 ExportEventType(Key)

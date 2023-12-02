@@ -14,67 +14,28 @@ void listen_keyboard() {
   if (n <= 0)
     return;
   for (usize i = 0; i < n; i++) {
-    Key key = Key_Unknown;
-    switch (c[i]) {
-    case 'w':
-    case 'W':
-      key = Key_W;
-      break;
-    case 'a':
-    case 'A':
-      key = Key_A;
-      break;
-    case 's':
-    case 'S':
-      key = Key_S;
-      break;
-    case 'd':
-    case 'D':
-      key = Key_D;
-      break;
-
-    // Num
-    case '0':
-      key = Key_0;
-      break;
-    case '1':
-      key = Key_1;
-      break;
-    case '2':
-      key = Key_2;
-      break;
-    case '3':
-      key = Key_3;
-      break;
-    case '4':
-      key = Key_4;
-      break;
-    case '5':
-      key = Key_5;
-      break;
-    case '6':
-      key = Key_6;
-      break;
-    case '7':
-      key = Key_7;
-      break;
-    case '8':
-      key = Key_8;
-      break;
-    case '9':
-      key = Key_9;
-      break;
-
+    char keycode = c[i];
+    Key key;
+    key.kind = Key_Unknown;
+    switch (keycode) {
     // special key
     case '\n':
-      key = Key_ENTER;
+      key.kind = Key_ENTER;
       break;
     case 27:
-      key = Key_ESC;
+      key.kind = Key_ESC;
       break;
+    default:
+      if ('0' <= keycode && keycode <= '9') {
+        key.kind = Key_Number;
+        key.number = keycode - '0';
+      } else {
+        key.kind = Key_Char;
+        key.charater = keycode;
+      }
     }
 
-    if (key != Key_Unknown) {
+    if (key.kind != Key_Unknown) {
       Key *ptr = malloc(sizeof(Key));
       *ptr = key;
       event_emit(Key, CEvent.default_vtable(ptr));

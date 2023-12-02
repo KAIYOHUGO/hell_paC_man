@@ -13,67 +13,78 @@
 
 DeclareComponentType(Player);
 
-PComponent player_new() {
-  Player *ptr = malloc(sizeof(Player));
-  Player player = {};
-  *ptr = player;
-  return CComponent.default_vtable(ptr);
-}
+DeclareEventType(PlayerEvent);
 
 void player_move_system() {
   GameState state = *resource_get(GameState);
   if (state != GameState_InGame)
     return;
-  
+
   Vec(PEvent) *p_events = event_listen(Key);
   if (p_events->len == 0)
     return;
 
-  QueryIter iter = QueryWith(With(Player), Position);
+  GameInfo info = *resource_get(GameInfo);
 
+  // only exist 1 player
+  QueryIter iter = QueryWith(With(Player), Position);
   PComponent comp[1];
   CComponent.query_next(&iter, array_ref(comp));
   CComponent.query_free(&iter);
 
   Position *pos = (Position *)(comp[0].self);
 
-  bool exit = false;
+  bool exit = false, is_move = false;
   for (usize i = 0; i < p_events->len && !exit; i++) {
     exit = true;
-    PEvent *event = vec_index(PEvent, p_events, i);
-    Key key = *(Key *)event->self;
-    switch (key) {
-    case Key_W:
+    PEvent *p_event = vec_index(PEvent, p_events, i);
+    Key key = *(Key *)p_event->self;
+
+    if (key.kind != Key_Char)
+      continue;
+    switch (key.charater) {
+    case 'w':
       if (pos->y == 0)
         break;
       pos->y--;
+      is_move = true;
       break;
-    case Key_S:
-      if (pos->y + 1 == 10)
+    case 's':
+      if (pos->y + 1 == info.height)
         break;
       pos->y++;
+      is_move = true;
       break;
-    case Key_A:
+    case 'a':
       if (pos->x == 0)
         break;
       pos->x--;
+      is_move = true;
       break;
-    case Key_D:
-      if (pos->x + 1 == 10)
+    case 'd':
+      if (pos->x + 1 == info.width)
         break;
       pos->x++;
+      is_move = true;
       break;
     default:
       exit = false;
       break;
     }
   }
+  if (is_move) {
+    PlayerEvent *event = malloc(sizeof(PlayerEvent));
+    *event = PlayerEvent_Moved;
+    event_emit(PlayerEvent, CEvent.default_vtable(event));
+  }
 }
 
 void player_init() {
+  add_component_type(Player);
+
   CApp.add_update_system(player_move_system);
   Position pos = {.x = 1, .y = 1};
-  Spawn(Player, Position, player_new(), position_new(pos));
+  Spawn(Player, Position, ComponentMarker, position_new(pos));
 }
 
 #endif // PLAYER_C

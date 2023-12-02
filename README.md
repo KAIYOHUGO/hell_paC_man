@@ -24,5 +24,15 @@
 - `fake_typed_function_macro_snake_case`
 - `OverLoadingMacroCamelCase`
 
+# References
+
+- [Mojoc (C)](https://github.com/scottcgi/Mojoc)
+- [Bevy (Rust)](https://bevyengine.org/)
+- [Flecs (C)](https://github.com/SanderMertens/flecs)
+- [ECS FAQ](https://github.com/SanderMertens/ecs-faq)
+- [Let's build an Entity Component System (Zig)](https://devlog.hexops.com/2022/lets-build-ecs-part-2-databases/)
+- [Building an ECS #2: Archetypes and Vectorization (C)](https://ajmmertens.medium.com/building-an-ecs-2-archetypes-and-vectorization-fe21690805f9)
+- [Google Test (C++)](http://google.github.io/googletest/)
+
 
 [DOC](https://docs.google.com/document/d/1pbmqKgjQ75Juk1BeeBKcBVxS9AebBml3H2rgWHhogiw/edit)

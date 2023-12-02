@@ -3,6 +3,7 @@
 
 #include <evangel/basic.h>
 #include <evangel/component.h>
+#include <evangel/resource.h>
 #include <stdlib.h>
 
 typedef struct {
@@ -20,5 +21,13 @@ typedef struct {
 ExportComponentType(ScreenCord);
 
 PComponent screen_cord_new(ScreenCord pos);
+
+typedef struct {
+  ResourceType eva_img;
+} Sprite;
+
+ExportComponentType(Sprite);
+
+void component_init();
 
 #endif // COMPONENT_H
