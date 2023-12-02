@@ -11,7 +11,7 @@
 struct App App = {};
 
 static void internal_app_init() {
-  f64 standard_delta = 1000.0 / 1.0;
+  f64 standard_delta = 1000.0 / 60.0;
   struct App app = {
       .on_update = vec_init(SystemFn),
       .on_render = vec_init(SystemFn),
@@ -55,8 +55,10 @@ static void internal_app_epoch() {
   clock_gettime(CLOCK_REALTIME, &end);
   f64 ms_delta =
       (end.tv_sec - begin.tv_sec) * 1e+3 + (end.tv_nsec - begin.tv_nsec) * 1e-6;
-  if (ms_delta >= App.time_delta)
+  if (ms_delta >= App.time_delta) {
+    App.time_delta = ms_delta;
     return;
+  }
   f64 ms_sleep = App.time_delta - ms_delta;
   __time_t sec_part = ms_sleep / 1e3;
   __time_t nano_part = (ms_sleep - sec_part * 1e3) * 1e6;

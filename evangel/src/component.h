@@ -84,6 +84,8 @@ struct CComponent {
   PComponent (*default_vtable)(void *component);
 };
 
+extern const PComponent ComponentMarker;
+
 extern const struct CComponent CComponent;
 
 #define CTy(T) ComponentType##T
@@ -111,13 +113,6 @@ extern const struct CComponent CComponent;
   InternalBundle8(T1, T2, T3, T4, C1, C2, C3, C4), CTyped(T5, C5)
 #define InternalBundle12(T1, T2, T3, T4, T5, T6, C1, C2, C3, C4, C5, C6)       \
   InternalBundle10(T1, T2, T3, T4, T5, C1, C2, C3, C4, C5), CTyped(T6, C6)
-
-// https://stackoverflow.com/questions/11761703/overloading-macro-on-number-of-arguments
-#define InternalOverload_(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,   \
-                          NAME, ...)                                           \
-  NAME
-#define InternalOverload(...)                                                  \
-  InternalOverload_(__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
 
 #define Bundle(...)                                                            \
   {                                                                            \
@@ -161,6 +156,14 @@ extern const struct CComponent CComponent;
         TySet(__VA_ARGS__);                                                    \
     ComponentType InternalConcatIdent(with_set, __LINE__)[] = with;            \
     CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)));      \
+  })
+
+#define QueryEntity(...)                                                       \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(with_set, __LINE__)[] =                  \
+        TySet(__VA_ARGS__);                                                    \
+    CComponent.query(array_empty(ComponentType),                               \
                      array_ref(InternalConcatIdent(with_set, __LINE__)));      \
   })
 

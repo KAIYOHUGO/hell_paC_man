@@ -187,7 +187,12 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
   ComponentType *typed_components = array_typed(ComponentType, &components);
   ComponentType *typed_with = array_typed(ComponentType, &with);
 
-  if (components.len == 0) {
+  usize table_set_init_id;
+  if (components.len != 0) {
+    table_set_init_id = typed_components[0].id;
+  } else if (with.len != 0) {
+    table_set_init_id = typed_with[0].id;
+  } else {
     QueryIter iter = {
         .table_iter = {.offset = 0, .ptr = NULL},
         .table = BITSET_ITER_END,
@@ -198,13 +203,13 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
 
   // get table id bitset
   BitSet table_set = CBitSet.clone(map_get(
-      BitSet, &ComponentStorage.type_in_table_set_map, typed_components[0].id));
-  for (usize i = 1; i < components.len; i++) {
+      BitSet, &ComponentStorage.type_in_table_set_map, table_set_init_id));
+  for (usize i = 0; i < components.len; i++) {
     BitSet *set = map_get(BitSet, &ComponentStorage.type_in_table_set_map,
                           typed_components[i].id);
     CBitSet.intersect_with(&table_set, set);
   }
-  for (usize i = 1; i < with.len; i++) {
+  for (usize i = 0; i < with.len; i++) {
     BitSet *set = map_get(BitSet, &ComponentStorage.type_in_table_set_map,
                           typed_with[i].id);
     CBitSet.intersect_with(&table_set, set);
@@ -257,12 +262,14 @@ void raw_query_free(mov(QueryIter *) iter) {
   array_free(ComponentType, &iter->components);
 }
 
-static VComponent DefaultVComponent = {.despawn = NULL};
+const static VComponent DefaultVComponent = {.despawn = NULL};
 
 static PComponent raw_default_vtable(void *component) {
   PComponent p = {.vtable = &DefaultVComponent, .self = component};
   return p;
 }
+
+const PComponent ComponentMarker = {.vtable = &DefaultVComponent, .self = NULL};
 
 const struct CComponent CComponent = {
     .add_new_type = raw_add_new_type,

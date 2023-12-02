@@ -45,4 +45,11 @@ usize internal_rand();
 
 #define InternalConcatIdent_(A, B) A##B
 
+// https://stackoverflow.com/questions/11761703/overloading-macro-on-number-of-arguments
+#define InternalOverload_(_1, _2, _3, _4, _5, _6, _7, _8, _9, _10, _11, _12,   \
+                          NAME, ...)                                           \
+  NAME
+#define InternalOverload(...)                                                  \
+  InternalOverload_(__VA_ARGS__, 12, 11, 10, 9, 8, 7, 6, 5, 4, 3, 2, 1)
+
 #endif // __BASIC_H
