@@ -27,6 +27,9 @@ struct App {
 struct CApp {
   void (*add_update_system)(SystemFn fn);
   void (*add_render_system)(SystemFn fn);
+  usize (*get_fps)();
+  void (*set_fps)(usize fps);
+  f64 (*get_delta)();
 };
 
 void app_start();

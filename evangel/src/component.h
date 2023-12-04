@@ -74,7 +74,8 @@ struct CComponent {
   void (*remove_child)(Entity parent, Entity child);
 
   brw(QueryIter) (*query)(brw(Array(ComponentType)) components,
-                          brw(Array(ComponentType)) with);
+                          brw(Array(ComponentType)) with,
+                          brw(Array(ComponentType)) without);
 
   brw(Entity *) (*query_next)(brw(QueryIter *) iter,
                               brw(Array(PComponent)) dest);
@@ -142,12 +143,14 @@ extern const struct CComponent CComponent;
 
 #define With(...) TySet(__VA_ARGS__)
 
+#define Without(...) TySet(__VA_ARGS__)
+
 #define Query(...)                                                             \
   ({                                                                           \
     ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
         TySet(__VA_ARGS__);                                                    \
     CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
-                     array_empty(ComponentType));                              \
+                     array_empty(ComponentType), array_empty(ComponentType));  \
   })
 
 #define QueryWith(with, ...)                                                   \
@@ -156,7 +159,19 @@ extern const struct CComponent CComponent;
         TySet(__VA_ARGS__);                                                    \
     ComponentType InternalConcatIdent(with_set, __LINE__)[] = with;            \
     CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
-                     array_ref(InternalConcatIdent(with_set, __LINE__)));      \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)),       \
+                     array_empty(ComponentType));                              \
+  })
+
+#define QueryAll(with, without, ...)                                           \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
+        TySet(__VA_ARGS__);                                                    \
+    ComponentType InternalConcatIdent(with_set, __LINE__)[] = with;            \
+    ComponentType InternalConcatIdent(without_set, __LINE__)[] = without;      \
+    CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)),       \
+                     InternalConcatIdent(without_set, __LINE__));              \
   })
 
 #define QueryEntity(...)                                                       \
@@ -164,7 +179,18 @@ extern const struct CComponent CComponent;
     ComponentType InternalConcatIdent(with_set, __LINE__)[] =                  \
         TySet(__VA_ARGS__);                                                    \
     CComponent.query(array_empty(ComponentType),                               \
-                     array_ref(InternalConcatIdent(with_set, __LINE__)));      \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)),       \
+                     array_empty(ComponentType));                              \
+  })
+
+#define QueryEntityAll(without, ...)                                           \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(with_set, __LINE__)[] =                  \
+        TySet(__VA_ARGS__);                                                    \
+    ComponentType InternalConcatIdent(without_set, __LINE__)[] = without;      \
+    CComponent.query(array_empty(ComponentType),                               \
+                     array_ref(InternalConcatIdent(with_set, __LINE__)),       \
+                     InternalConcatIdent(without_set, __LINE__));              \
   })
 
 void internal_component_storage_init();

@@ -11,7 +11,7 @@
 struct App App = {};
 
 static void internal_app_init() {
-  f64 standard_delta = 1000.0 / 60.0;
+  f64 standard_delta = (f64)1000.0 / (f64)60.0;
   struct App app = {
       .on_update = vec_init(SystemFn),
       .on_render = vec_init(SystemFn),
@@ -55,11 +55,11 @@ static void internal_app_epoch() {
   clock_gettime(CLOCK_REALTIME, &end);
   f64 ms_delta =
       (end.tv_sec - begin.tv_sec) * 1e+3 + (end.tv_nsec - begin.tv_nsec) * 1e-6;
-  if (ms_delta >= App.time_delta) {
+  if (ms_delta >= App.standard_delta) {
     App.time_delta = ms_delta;
     return;
   }
-  f64 ms_sleep = App.time_delta - ms_delta;
+  f64 ms_sleep = App.standard_delta - ms_delta;
   __time_t sec_part = (__time_t)(ms_sleep / 1e3);
   __time_t nano_part = (__time_t)((ms_sleep - (f64)sec_part * 1e3) * 1e6);
   struct timespec sleep = {.tv_sec = sec_part, .tv_nsec = nano_part};
@@ -84,9 +84,18 @@ void raw_add_render_system(SystemFn fn) {
   vec_push(SystemFn, &App.on_render, fn);
 }
 
+usize raw_get_fps() { return (usize)((f64)1.0 / App.standard_delta); }
+
+void raw_set_fps(usize fps) { App.standard_delta = (f64)1000.0 / (f64)fps; }
+
+f64 raw_get_delta() { return App.time_delta; }
+
 const struct CApp CApp = {
     .add_update_system = raw_add_update_system,
     .add_render_system = raw_add_render_system,
+    .get_fps = raw_get_fps,
+    .set_fps = raw_set_fps,
+    .get_delta = raw_get_delta,
 };
 
 #endif // __APP_C

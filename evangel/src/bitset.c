@@ -90,6 +90,22 @@ static BitSet raw_intersection(brw(BitSet *) a, brw(BitSet *) b) {
   return bit_set;
 }
 
+static void raw_difference_with(brw(BitSet *) self, brw(BitSet *) other) {
+  usize len = min(self->raw.len, other->raw.len);
+  internal_resize(self, len);
+  for (usize i = 0; i < len; i++) {
+    *vec_index(BITSET_ITEM, &self->raw, i) &=
+        ~*vec_index(BITSET_ITEM, &other->raw, i);
+  }
+  internal_shrink_len(&self->raw);
+}
+
+static BitSet raw_difference(brw(BitSet *) a, brw(BitSet *) b) {
+  BitSet bit_set = raw_clone(a);
+  raw_difference_with(&bit_set, b);
+  return bit_set;
+}
+
 static brw(BitSetIter) raw_iter(brw(BitSet *) b) {
   BitSetIter iter = {.ptr = b, .offset = 0};
   return iter;
@@ -137,6 +153,10 @@ const struct CBitSet CBitSet = {
     .intersect_with = raw_intersect_with,
 
     .intersection = raw_intersection,
+
+    .difference_with = raw_difference_with,
+
+    .difference = raw_difference,
 
     .iter = raw_iter,
 

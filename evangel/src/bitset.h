@@ -37,6 +37,10 @@ struct CBitSet {
 
   BitSet (*intersection)(BitSet *a, BitSet *b);
 
+  void (*difference_with)(brw(BitSet *) self, brw(BitSet *) other);
+
+  BitSet (*difference)(brw(BitSet *) a, brw(BitSet *) b);
+
   BitSetIter (*iter)(BitSet *b);
 
   usize (*iter_next)(BitSetIter *iter);

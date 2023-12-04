@@ -183,9 +183,11 @@ static void raw_despawn(Entity entity) {
 }
 
 brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
-                         brw(Array(ComponentType)) with) {
+                         brw(Array(ComponentType)) with,
+                         brw(Array(ComponentType)) without) {
   ComponentType *typed_components = array_typed(ComponentType, &components);
   ComponentType *typed_with = array_typed(ComponentType, &with);
+  ComponentType *typed_without = array_typed(ComponentType, &without);
 
   usize table_set_init_id;
   if (components.len != 0) {
@@ -213,6 +215,11 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
     BitSet *set = map_get(BitSet, &ComponentStorage.type_in_table_set_map,
                           typed_with[i].id);
     CBitSet.intersect_with(&table_set, set);
+  }
+  for (usize i = 0; i < without.len; i++) {
+    BitSet *set = map_get(BitSet, &ComponentStorage.type_in_table_set_map,
+                          typed_without[i].id);
+    CBitSet.difference_with(&table_set, set);
   }
 
   BitSet *heap_table_set = malloc(sizeof(BitSet));
