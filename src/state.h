@@ -13,6 +13,9 @@ typedef enum {
   GameState_Setting_ReadMap,
   GameState_Exit_Setting_ReadMap,
   GameState_InGame,
+
+  GameState_Test,
+
 } GameState;
 
 ExportResourceType(GameState);

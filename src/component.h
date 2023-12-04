@@ -15,18 +15,20 @@ ExportComponentType(Position);
 PComponent position_new(Position pos);
 
 typedef struct {
-  isize x, y;
+  isize x, y, z;
 } ScreenCord;
 
 ExportComponentType(ScreenCord);
 
-PComponent screen_cord_new(ScreenCord pos);
+PComponent screen_cord_new(ScreenCord cord);
 
 typedef struct {
   ResourceType eva_img;
 } Sprite;
 
 ExportComponentType(Sprite);
+
+PComponent sprite_new(Sprite sprite);
 
 void component_init();
 

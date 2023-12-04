@@ -60,8 +60,8 @@ static void internal_app_epoch() {
     return;
   }
   f64 ms_sleep = App.time_delta - ms_delta;
-  __time_t sec_part = ms_sleep / 1e3;
-  __time_t nano_part = (ms_sleep - sec_part * 1e3) * 1e6;
+  __time_t sec_part = (__time_t)(ms_sleep / 1e3);
+  __time_t nano_part = (__time_t)((ms_sleep - (f64)sec_part * 1e3) * 1e6);
   struct timespec sleep = {.tv_sec = sec_part, .tv_nsec = nano_part};
   nanosleep(&sleep, NULL);
 }

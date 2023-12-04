@@ -1,18 +1,29 @@
-#include <stdlib.h>
 #if !defined(INPUT_C)
 #define INPUT_C
 
 #include "input.h"
 #include <evangel/event.h>
+#include <stdlib.h>
 #include <unistd.h>
 
 DeclareEventType(Key);
 
+// https://web.archive.org/web/20170407122137/http://cc.byexamples.com/2007/04/08/non-blocking-user-input-in-loop-without-ncurses/
+bool input_ready() {
+  struct timeval tv = {};
+  fd_set fds;
+  FD_ZERO(&fds);
+  FD_SET(STDIN_FILENO, &fds);
+  select(STDIN_FILENO + 1, &fds, NULL, NULL, &tv);
+  return (FD_ISSET(0, &fds));
+}
+
 void listen_keyboard() {
+  if (!input_ready())
+    return;
+
   char c[16];
   isize n = read(STDIN_FILENO, c, 10);
-  if (n <= 0)
-    return;
   for (usize i = 0; i < n; i++) {
     char keycode = c[i];
     Key key;

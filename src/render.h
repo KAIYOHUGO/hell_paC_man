@@ -30,12 +30,12 @@ typedef struct {
 } VRender;
 
 typedef struct {
-  VRender *vtable;
+  const VRender *vtable;
   void *self;
 } PRender;
 
 struct PRenderLayer {
-  usize layer;
+  isize layer;
   PRender p_render;
 };
 
@@ -52,7 +52,7 @@ Eva *parse_eva(FILE *file);
 
 Eva *open_eva(char *path);
 
-void add_render_queue(usize layer, PRender p_render);
+void add_render_queue(isize layer, PRender p_render);
 
 void render_init(usize lines, usize columns, RGB clean_color);
 

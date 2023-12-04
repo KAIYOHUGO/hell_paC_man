@@ -1,7 +1,12 @@
 #if !defined(RENDER_C)
 #define RENDER_C
 
+#define PIXEL_SIZE 41
+#define NEWLINE_SIZE 1
+#define EXTRA_BUFFER 16
+
 #include "render.h"
+#include <assert.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -12,7 +17,6 @@ typedef struct PRenderLayer PRenderLayer;
 DeclareResourceType(RenderBuffer);
 
 struct termios init_terminal() {
-  fcntl(STDIN_FILENO, F_SETFL, fcntl(STDIN_FILENO, F_GETFL) | O_NONBLOCK);
   struct termios term, new_term;
   tcgetattr(STDIN_FILENO, &term);
   new_term = term;
@@ -30,11 +34,15 @@ void reset_terminal(struct termios old_term) {
 }
 
 void render_pixel(RGB upper, RGB lower) {
-  printf("\033[38;2;%d;%d;%dm\033[48;2;%d;%d;%dm\u2580", upper.r, upper.g,
+  printf("\033[38;2;%u;%u;%um\033[48;2;%u;%u;%um\u2580", upper.r, upper.g,
          upper.b, lower.r, lower.g, lower.b);
 }
 
-void render_move_to_home() { printf("\033[H"); }
+void render_clear() {
+  // move to home & clear
+  // printf("\033[2J\033[H");
+  printf("\033[H");
+}
 
 Eva *parse_eva(FILE *file) {
   u8 height = fgetc(file);
@@ -65,7 +73,7 @@ Eva *open_eva(char *path) {
   return eva;
 }
 
-void add_render_queue(usize layer, PRender p_render) {
+void add_render_queue(isize layer, PRender p_render) {
   RenderBuffer *buffer = resource_get(RenderBuffer);
   PRenderLayer p_render_layer = {
       .layer = layer,
@@ -89,6 +97,7 @@ void render() {
   qsort(buffer->queue.ptr, buffer->queue.len, buffer->queue.size, layer_cmp);
   for (usize i = 0; i < buffer->queue.len; i++) {
     PRender ptr = vec_index(PRenderLayer, &buffer->queue, i)->p_render;
+
     ptr.vtable->render(ptr.self);
     if (ptr.vtable->free != NULL)
       ptr.vtable->free(ptr.self);
@@ -96,15 +105,17 @@ void render() {
   }
   vec_clear(PRenderLayer, &buffer->queue);
 
+  render_clear();
   RGB *typed_buffer = array_typed(RGB, &buffer->color_buffer);
   for (usize y = 0; y < buffer->height; y += 2) {
     for (usize x = 0; x < buffer->width; x++) {
       render_pixel(*(typed_buffer + y * buffer->width + x),
                    *(typed_buffer + (y + 1) * buffer->width + x));
     }
-    putchar('\n');
+    if (y != buffer->height - 2)
+      putchar('\n');
   }
-  render_move_to_home();
+  fflush(stdout);
 }
 
 void render_init(usize lines, usize columns, RGB clean_color) {
@@ -116,6 +127,9 @@ void render_init(usize lines, usize columns, RGB clean_color) {
   buffer->color_buffer = array_init(RGB, buffer->height * buffer->width);
   buffer->queue = vec_init(PRenderLayer);
   resource_insert(RenderBuffer, buffer);
+  // fix terminal tearing
+  setvbuf(stdout, NULL, _IOFBF,
+          (PIXEL_SIZE * columns + NEWLINE_SIZE) * lines + EXTRA_BUFFER);
 }
 
 #endif // RENDER_C
