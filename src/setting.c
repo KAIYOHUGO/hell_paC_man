@@ -3,8 +3,9 @@
 
 #include "setting.h"
 #include "component.h"
+#include "global.h"
 #include "input.h"
-#include "state.h"
+#include "player.h"
 #include <evangel/app.h>
 #include <evangel/event.h>
 #include <evangel/resource.h>
@@ -13,7 +14,7 @@
 DeclareResourceType(GameInfo);
 DeclareComponentType(MapCursor);
 
-void input_height() {
+void read_height() {
   GameState *game_state = resource_get(GameState);
   if (*game_state != GameState_Setting_ReadHeight)
     return;
@@ -38,7 +39,7 @@ void input_height() {
   }
 }
 
-void input_width() {
+void read_width() {
   GameState *game_state = resource_get(GameState);
   if (*game_state != GameState_Setting_ReadWidth)
     return;
@@ -63,31 +64,47 @@ void input_width() {
   }
 }
 
-void enter_input_map() {
+void enter_read_map() {
   GameState *game_state = resource_get(GameState);
   if (*game_state != GameState_Enter_Setting_ReadMap)
     return;
   GameInfo *info = resource_get(GameInfo);
+  info->offset_x = 20;
+  info->offset_y = 20;
 
-  Array(MapItem) map = array_init(MapItem, info->height * info->width);
-  for (usize i = 1; i < map.len; i++) {
-    *array_index(MapItem, &map, i) = MapItem_Empty;
+  // spawn background
+  Sprite block_sprite = {.eva_img = RTy(BlockEva), .active = true};
+  ScreenCord block_cord = {
+      .z = 0,
+  };
+  for (usize y = 0; y < info->height; y++) {
+    for (usize x = 0; x < info->width; x++) {
+      Position pos = {
+          .x = x,
+          .y = y,
+      };
+      Spawn(Sprite, Position, ScreenCord, sprite_new(block_sprite),
+            position_new(pos), screen_cord_new(block_cord));
+    }
   }
-  *array_index(MapItem, &map, 0) = MapItem_Player;
-  info->map = map;
 
   Position pos = {
       .x = 0,
       .y = 0,
   };
-  PComponent p_pos = position_new(pos);
+  Sprite sprite = {.eva_img = RTy(CursorEva), .active = true};
+  ScreenCord cord = {
+      .z = 2,
+  };
 
-  Spawn(MapCursor, Position, ComponentMarker, p_pos);
+  Spawn(MapCursor, Position, Sprite, ScreenCord, ComponentMarker,
+        position_new(pos), sprite_new(sprite), screen_cord_new(cord));
+  player_spawn(pos);
 
   *game_state = GameState_Setting_ReadMap;
 }
 
-void input_map() {
+void read_map() {
   GameState *game_state = resource_get(GameState);
   if (*game_state != GameState_Setting_ReadMap)
     return;
@@ -95,7 +112,6 @@ void input_map() {
   if (p_events->len == 0)
     return;
   GameInfo *info = resource_get(GameInfo);
-  MapItem *map = array_typed(MapItem, &info->map);
 
   // only exist 1 cursor
   QueryIter iter = QueryWith(With(MapCursor), Position);
@@ -108,7 +124,6 @@ void input_map() {
   for (usize i = 0; i < p_events->len; i++) {
     PEvent *p_event = vec_index(PEvent, p_events, i);
     Key key = *(Key *)p_event->self;
-    MapItem *point_at = map + pos->y * info->width + pos->x;
 
     if (key.kind == Key_ENTER) {
       *game_state = GameState_Exit_Setting_ReadMap;
@@ -139,37 +154,15 @@ void input_map() {
       pos->x++;
       break;
     case 'p':
-      if (*point_at != MapItem_Empty)
-        break;
-
-      // find old player
-      for (usize i = 0; i < info->map.len; i++) {
-        if (map[i] != MapItem_Player)
-          continue;
-        map[i] = MapItem_Empty;
-        break;
-      }
-      *point_at = MapItem_Player;
+      player_move(*pos);
       break;
     case 'b':
-      if (*point_at != MapItem_Empty)
-        break;
-      *point_at = MapItem_Booster;
       break;
     case 'm':
-      if (*point_at != MapItem_Empty)
-        break;
-      *point_at = MapItem_Monster;
       break;
     case 'f':
-      if (*point_at != MapItem_Empty)
-        break;
-      *point_at = MapItem_Food;
       break;
     case ' ':
-      if (*point_at == MapItem_Empty || *point_at == MapItem_Player)
-        break;
-      *point_at = MapItem_Empty;
       break;
     }
   }
@@ -195,10 +188,9 @@ void setting_init() {
   GameInfo *info = malloc(sizeof(GameInfo));
   info->height = 0;
   info->width = 0;
-  info->map = array_empty(MapItem);
   resource_insert(GameInfo, info);
-  AddUpdateSystem(exit_input_map, input_map, enter_input_map, input_width,
-                  input_height);
+  AddUpdateSystem(exit_input_map, read_map, enter_read_map, read_width,
+                  read_height);
 }
 
 #endif // SETTING_C

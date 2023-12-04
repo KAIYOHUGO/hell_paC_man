@@ -3,6 +3,7 @@
 
 #include "component.h"
 #include "render.h"
+#include "setting.h"
 #include <evangel/app.h>
 
 DeclareComponentType(Position);
@@ -23,6 +24,18 @@ PComponent screen_cord_new(ScreenCord cord) {
   return CComponent.default_vtable(ptr);
 }
 
+void position_to_screen_cord_system() {
+  QueryIter iter = Query(Position, ScreenCord);
+  PComponent comp[2];
+  while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
+    Position *pos = (Position *)comp[0].self;
+    ScreenCord *cord = (ScreenCord *)comp[1].self;
+    cord->x = pos->x * 9;
+    cord->y = pos->y * 9;
+  }
+  CComponent.query_free(&iter);
+}
+
 PComponent sprite_new(Sprite sprite) {
   Sprite *ptr = malloc(sizeof(Sprite));
   *ptr = sprite;
@@ -38,9 +51,7 @@ void v_render_sprite(void *s) {
   SpritePRender *self = (SpritePRender *)s;
   Eva *img = (Eva *)CResource.get(self->sprite.eva_img);
   RenderBuffer *buffer = resource_get(RenderBuffer);
-  // 1 < img->height;
-  // for (isize y = 0; y < 9; y++) {
-  // }
+
   for (isize y = max(-self->y, 0);
        y < min(img->height, (isize)buffer->height - self->y); y++) {
     for (isize x = max(-self->x, 0);
@@ -68,16 +79,19 @@ static const VRender SpriteVRender = {
 };
 
 void sprite_system() {
+  GameInfo *info = resource_get(GameInfo);
   QueryIter iter = Query(ScreenCord, Sprite);
   PComponent comp[2];
-  Entity *id;
-  while ((id = CComponent.query_next(&iter, array_ref(comp))) != NULL) {
-    ScreenCord cord = *(ScreenCord *)(comp[0].self);
-    Sprite sprite = *(Sprite *)(comp[1].self);
+  while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
+    ScreenCord cord = *(ScreenCord *)comp[0].self;
+    Sprite sprite = *(Sprite *)comp[1].self;
+    if (!sprite.active)
+      continue;
+
     SpritePRender *s = malloc(sizeof(SpritePRender));
     s->sprite = sprite;
-    s->x = cord.x;
-    s->y = cord.y;
+    s->x = cord.x + info->offset_x;
+    s->y = cord.y + info->offset_y;
     PRender p_render = {
         .vtable = &SpriteVRender,
         .self = s,
@@ -93,7 +107,7 @@ void component_init() {
   add_component_type(ScreenCord);
   add_component_type(Sprite);
 
-  AddRenderSystem(sprite_system);
+  AddRenderSystem(position_to_screen_cord_system, sprite_system);
 }
 
 #endif // COMPONENT_C

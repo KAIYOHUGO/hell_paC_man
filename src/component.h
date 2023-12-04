@@ -24,6 +24,7 @@ PComponent screen_cord_new(ScreenCord cord);
 
 typedef struct {
   ResourceType eva_img;
+  bool active;
 } Sprite;
 
 ExportComponentType(Sprite);

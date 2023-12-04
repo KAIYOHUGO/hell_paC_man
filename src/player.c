@@ -2,9 +2,8 @@
 #define PLAYER_C
 
 #include "player.h"
-#include "component.h"
+#include "global.h"
 #include "input.h"
-#include "state.h"
 #include <evangel/app.h>
 #include <evangel/component.h>
 #include <evangel/event.h>
@@ -79,12 +78,24 @@ void player_move_system() {
   }
 }
 
-void player_init() {
-  add_component_type(Player);
-
-  CApp.add_update_system(player_move_system);
-  Position pos = {.x = 1, .y = 1};
-  Spawn(Player, Position, ComponentMarker, position_new(pos));
+void player_spawn(Position pos) {
+  Sprite sprite = {
+      .eva_img = RTy(PacManEva),
+      .active = true,
+  };
+  ScreenCord cord = {};
+  Spawn(Player, Position, Sprite, ScreenCord, ComponentMarker,
+        position_new(pos), sprite_new(sprite), screen_cord_new(cord));
 }
+
+void player_move(Position pos) {
+  QueryIter iter = QueryWith(With(Player), Position);
+  PComponent comp[1];
+  CComponent.query_next(&iter, array_ref(comp));
+  *(Position *)comp[0].self = pos;
+  CComponent.query_free(&iter);
+}
+
+void player_init() { add_component_type(Player); }
 
 #endif // PLAYER_C

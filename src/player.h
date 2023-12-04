@@ -1,6 +1,7 @@
 #if !defined(PLAYER_H)
 #define PLAYER_H
 
+#include "component.h"
 #include <evangel/component.h>
 #include <evangel/event.h>
 
@@ -14,6 +15,10 @@ typedef enum {
 } PlayerEvent;
 
 ExportEventType(PlayerEvent);
+
+void player_spawn(Position pos);
+
+void player_move(Position pos);
 
 void player_init();
 

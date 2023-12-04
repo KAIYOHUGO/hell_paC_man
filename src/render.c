@@ -39,8 +39,7 @@ void render_pixel(RGB upper, RGB lower) {
 }
 
 void render_clear() {
-  // move to home & clear
-  // printf("\033[2J\033[H");
+  // clear
   printf("\033[H");
 }
 

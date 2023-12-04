@@ -1,5 +1,5 @@
-#if !defined(STATE_H)
-#define STATE_H
+#if !defined(GLOBAL_H)
+#define GLOBAL_H
 
 #include "setting.h"
 #include <evangel/resource.h>
@@ -20,6 +20,11 @@ typedef enum {
 
 ExportResourceType(GameState);
 
-void state_init();
+// assets
+ExportResourceType(CursorEva);
+ExportResourceType(PacManEva);
+ExportResourceType(BlockEva);
 
-#endif // STATE_H
+void global_init();
+
+#endif // GLOBAL_H

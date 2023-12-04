@@ -5,7 +5,7 @@
 #include "component.h"
 #include "input.h"
 #include "player.h"
-#include "state.h"
+#include "global.h"
 #include <evangel/component.h>
 #include <evangel/event.h>
 #include <evangel/resource.h>
@@ -28,20 +28,6 @@ void sprite_debug() {
 void state_debug() {
   GameState state = *resource_get(GameState);
   printf("state: %u\n", state);
-}
-
-void setting_debug() {
-  GameInfo *info = resource_get(GameInfo);
-  printf("Map Size (%u x %u)\n", info->height, info->width);
-  if (info->map.ptr == NULL)
-    return;
-  for (usize i = 0; i < info->height; i++) {
-    for (usize j = 0; j < info->width; j++) {
-      MapItem item = *array_index(MapItem, &info->map, i * info->width + j);
-      printf("%u ", item);
-    }
-    printf("\n");
-  }
 }
 
 #endif // DEBUG_H

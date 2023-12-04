@@ -15,7 +15,7 @@ typedef enum {
 
 typedef struct {
   usize height, width;
-  Array(MapItem) map;
+  isize offset_x, offset_y;
 } GameInfo;
 
 ExportResourceType(GameInfo);
