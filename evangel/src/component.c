@@ -254,7 +254,7 @@ static brw(Entity *)
 
   ComponentType *typed_components =
       array_typed(ComponentType, &iter->components);
-  for (usize i = 0; i < iter->components.len; i++) {
+  for (usize i = 0; i < min(iter->components.len, dest.len); i++) {
     usize col =
         *map_get(usize, &table_ptr->type_col_id_map, typed_components[i].id);
     *array_index(PComponent, &dest, i) =

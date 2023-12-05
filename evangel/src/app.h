@@ -30,6 +30,7 @@ struct CApp {
   usize (*get_fps)();
   void (*set_fps)(usize fps);
   f64 (*get_delta)();
+  void (*exit)();
 };
 
 void app_start();

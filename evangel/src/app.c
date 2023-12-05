@@ -90,12 +90,15 @@ void raw_set_fps(usize fps) { App.standard_delta = (f64)1000.0 / (f64)fps; }
 
 f64 raw_get_delta() { return App.time_delta; }
 
+void raw_exit() { App.is_exit = true; };
+
 const struct CApp CApp = {
     .add_update_system = raw_add_update_system,
     .add_render_system = raw_add_render_system,
     .get_fps = raw_get_fps,
     .set_fps = raw_set_fps,
     .get_delta = raw_get_delta,
+    .exit = raw_exit,
 };
 
 #endif // __APP_C
