@@ -1,6 +1,3 @@
-#if !defined(__VEC_C)
-#define __VEC_C
-
 #include "vec.h"
 #include "basic.h"
 #include "string.h"
@@ -152,5 +149,3 @@ const struct CVec CVec = {
     .swap_remove = raw_swap_remove,
 
 };
-
-#endif // __VEC_C

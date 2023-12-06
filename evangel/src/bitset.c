@@ -1,6 +1,3 @@
-#if !defined(__BITSET_C)
-#define __BITSET_C
-
 #include "bitset.h"
 #include <stdlib.h>
 
@@ -162,5 +159,3 @@ const struct CBitSet CBitSet = {
 
     .iter_next = raw_iter_next,
 };
-
-#endif // __BITSET_C

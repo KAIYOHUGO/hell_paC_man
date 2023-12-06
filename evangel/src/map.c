@@ -1,6 +1,3 @@
-#if !defined(__MAP_C)
-#define __MAP_C
-
 #include "map.h"
 #include <stdlib.h>
 #include <string.h>
@@ -122,5 +119,3 @@ const struct CMap CMap = {
     .remove = raw_remove,
     .clear = raw_clear,
 };
-
-#endif // __MAP_C

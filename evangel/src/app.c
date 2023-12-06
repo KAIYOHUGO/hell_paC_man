@@ -1,6 +1,3 @@
-#if !defined(__APP_C)
-#define __APP_C
-
 #include "app.h"
 #include "basic.h"
 #include "component.h"
@@ -100,5 +97,3 @@ const struct CApp CApp = {
     .get_delta = raw_get_delta,
     .exit = raw_exit,
 };
-
-#endif // __APP_C

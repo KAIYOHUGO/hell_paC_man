@@ -1,6 +1,3 @@
-#if !defined(__EVENT_C)
-#define __EVENT_C
-
 #include "event.h"
 #include <stdlib.h>
 
@@ -74,5 +71,3 @@ const struct CEvent CEvent = {
 
     .default_vtable = raw_default_vtable,
 };
-
-#endif // __EVENT_C

@@ -1,9 +1,6 @@
-#include <string.h>
-#if !defined(__ARRAY_C)
-#define __ARRAY_C
-
 #include "array.h"
 #include <stdlib.h>
+#include <string.h>
 
 static Array raw_init(usize size_of_T, usize len) {
   void *ptr = malloc(len * size_of_T);
@@ -64,5 +61,3 @@ const struct CArray CArray = {
 
     .index = raw_index,
 };
-
-#endif // __ARRAY_C

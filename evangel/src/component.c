@@ -1,6 +1,3 @@
-#if !defined(__COMPONENT_C)
-#define __COMPONENT_C
-
 #include "component.h"
 #include "array.h"
 #include "bitset.h"
@@ -297,5 +294,3 @@ const struct CComponent CComponent = {
 
     .default_vtable = raw_default_vtable,
 };
-
-#endif // __COMPONENT_C

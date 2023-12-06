@@ -1,6 +1,3 @@
-#if !defined(__RESOURCE_C)
-#define __RESOURCE_C
-
 #include "resource.h"
 #include <stdlib.h>
 
@@ -32,5 +29,3 @@ struct CResource CResource = {
     .insert = raw_insert,
     .get = raw_get,
 };
-
-#endif // __RESOURCE_C
