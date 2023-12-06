@@ -42,7 +42,10 @@ static Array raw_empty() {
   return array;
 }
 
-static void raw_free(Array *a) { free(a->ptr); }
+static void raw_free(Array *a) {
+  free(a->ptr);
+  a->ptr = NULL;
+}
 
 static void *raw_index(Array *a, usize index) {
   return index < a->len ? a->ptr + index * a->size : NULL;

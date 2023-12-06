@@ -14,7 +14,10 @@ static Vec raw_init(usize sizeof_T) {
   return v;
 }
 
-static void raw_free(Vec *v) { free(v->ptr); }
+static void raw_free(Vec *v) {
+  free(v->ptr);
+  v->ptr = NULL;
+}
 
 static Vec raw_clone(Vec *v) {
   if (v->len == 0) {

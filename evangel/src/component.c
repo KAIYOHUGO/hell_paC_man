@@ -232,13 +232,19 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
   return iter;
 }
 
+void raw_query_free(mov(QueryIter *) iter) {
+  CBitSet.iter_free(&iter->table_iter);
+  array_free(ComponentType, &iter->components);
+}
+
 // NULL mean the end of query
 static brw(Entity *)
     raw_query_next(brw(QueryIter *) iter, brw(Array(PComponent)) dest) {
-  assert(dest.len == iter->components.len);
-
-  if (iter->table == BITSET_ITER_END)
+  if (iter->table == BITSET_ITER_END) {
+    // auto free
+    raw_query_free(iter);
     return NULL;
+  }
 
   ArchetypeTable *table_ptr =
       vec_index(ArchetypeTable, &ComponentStorage.database, iter->table);
@@ -259,11 +265,6 @@ static brw(Entity *)
   }
   iter->row++;
   return &row->entity;
-}
-
-void raw_query_free(mov(QueryIter *) iter) {
-  free(iter->table_iter.ptr);
-  array_free(ComponentType, &iter->components);
 }
 
 const static VComponent DefaultVComponent = {.despawn = NULL};

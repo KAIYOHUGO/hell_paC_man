@@ -44,6 +44,8 @@ struct CBitSet {
   BitSetIter (*iter)(BitSet *b);
 
   usize (*iter_next)(BitSetIter *iter);
+
+  void (*iter_free)(mov(BitSetIter *) iter);
 };
 
 extern const struct CBitSet CBitSet;

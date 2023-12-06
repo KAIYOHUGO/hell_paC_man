@@ -134,6 +134,14 @@ static usize raw_iter_next(brw(BitSetIter *) iter) {
   return BITSET_ITER_END;
 }
 
+static void raw_iter_free(mov(BitSetIter *) iter) {
+  if (iter->ptr == NULL)
+    return;
+  raw_free(iter->ptr);
+  free(iter->ptr);
+  iter->ptr = NULL;
+}
+
 const struct CBitSet CBitSet = {
     .init = raw_init,
 
@@ -158,4 +166,6 @@ const struct CBitSet CBitSet = {
     .iter = raw_iter,
 
     .iter_next = raw_iter_next,
+
+    .iter_free = raw_iter_free,
 };

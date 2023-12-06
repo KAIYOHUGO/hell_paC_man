@@ -55,6 +55,6 @@ extern const struct CEvent CEvent;
 
 #define add_event_type(T) add_event_type_##T()
 
-void internal_event_queue_init(void);
+void internal_event_queue_init();
 
 #endif // __EVENT_H

@@ -5,7 +5,7 @@ typedef struct InQueueEvent InQueueEvent;
 
 static struct EventQueue EventQueue = {};
 
-void internal_event_queue_init(void) {
+void internal_event_queue_init() {
   struct EventQueue queue = {
       .type_event_map = vec_init(Vec(TypedEvent)),
       .queue = vec_init(InQueueEvent),
@@ -13,14 +13,14 @@ void internal_event_queue_init(void) {
   EventQueue = queue;
 }
 
-EventType raw_add_new_type() {
+static EventType raw_add_new_type() {
   usize id = EventQueue.type_event_map.len;
   vec_push(Vec(PEvent), &EventQueue.type_event_map, vec_init(PEvent));
   EventType typeid = {.id = id};
   return typeid;
 }
 
-void raw_emit(EventType ty, PEvent event) {
+static void raw_emit(EventType ty, PEvent event) {
   InQueueEvent element = {
       .ty = ty,
       .event = event,
@@ -28,7 +28,7 @@ void raw_emit(EventType ty, PEvent event) {
   vec_push(InQueueEvent, &EventQueue.queue, element);
 }
 
-void raw_flush() {
+static void raw_flush() {
   usize map_len = EventQueue.type_event_map.len;
   for (usize i = 0; i < map_len; i++) {
     Vec(PEvent) *p_events =
@@ -51,7 +51,7 @@ void raw_flush() {
   vec_clear(InQueueEvent, &EventQueue.queue);
 }
 
-brw(Vec(PEvent) *) raw_listen(EventType ty) {
+static brw(Vec(PEvent) *) raw_listen(EventType ty) {
   return vec_index(Vec(PEvent), &EventQueue.type_event_map, ty.id);
 }
 
