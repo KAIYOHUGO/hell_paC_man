@@ -6,6 +6,10 @@
 #include <stdio.h>
 #include <termios.h>
 
+#define PIXEL_SIZE 41
+#define NEWLINE_SIZE 1
+#define EXTRA_BUFFER 16
+
 struct termios init_terminal();
 
 void reset_terminal(struct termios old_term);

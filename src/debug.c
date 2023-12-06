@@ -1,6 +1,3 @@
-#if !defined(DEBUG_H)
-#define DEBUG_H
-
 #include "debug.h"
 #include "component.h"
 #include "input.h"
@@ -29,5 +26,3 @@ void state_debug() {
   GameState state = *resource_get(GameState);
   printf("state: %u\n", state);
 }
-
-#endif // DEBUG_H

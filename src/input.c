@@ -1,6 +1,3 @@
-#if !defined(INPUT_C)
-#define INPUT_C
-
 #include "input.h"
 #include <evangel/event.h>
 #include <stdlib.h>
@@ -53,5 +50,3 @@ void listen_keyboard() {
     }
   }
 }
-
-#endif // INPUT_C

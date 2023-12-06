@@ -1,10 +1,3 @@
-#if !defined(RENDER_C)
-#define RENDER_C
-
-#define PIXEL_SIZE 41
-#define NEWLINE_SIZE 1
-#define EXTRA_BUFFER 16
-
 #include "render.h"
 #include <assert.h>
 #include <fcntl.h>
@@ -130,5 +123,3 @@ void render_init(usize lines, usize columns, RGB clean_color) {
   setvbuf(stdout, NULL, _IOFBF,
           (PIXEL_SIZE * columns + NEWLINE_SIZE) * lines + EXTRA_BUFFER);
 }
-
-#endif // RENDER_C

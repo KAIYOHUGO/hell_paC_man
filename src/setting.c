@@ -1,8 +1,6 @@
-#if !defined(SETTING_C)
-#define SETTING_C
-
 #include "setting.h"
 #include "component.h"
+#include "ghost.h"
 #include "global.h"
 #include "input.h"
 #include "player.h"
@@ -13,6 +11,33 @@
 
 DeclareResourceType(GameInfo);
 DeclareComponentType(MapCursor);
+DeclareComponentType(HeightNum);
+DeclareComponentType(WidthNum);
+
+void enter_read_height() {
+  GameState *game_state = resource_get(GameState);
+  if (*game_state != GameState_Enter_Setting_ReadHeight)
+    return;
+  isize center = SCREEN_WIDTH / 2;
+
+  Number height = {
+      .n = 0,
+      .len = 2,
+  };
+  ScreenCord height_cord = {.x = center - NUMBER_SIZE * 3, .y = 4};
+  Spawn(HeightNum, Number, ScreenCord, ComponentMarker, number_new(height),
+        screen_cord_new(height_cord));
+
+  Number width = {
+      .n = 0,
+      .len = 2,
+  };
+  ScreenCord width_cord = {.x = center + NUMBER_SIZE, .y = 4};
+  Spawn(WidthNum, Number, ScreenCord, ComponentMarker, number_new(width),
+        screen_cord_new(width_cord));
+
+  *game_state = GameState_Setting_ReadHeight;
+}
 
 void read_height() {
   GameState *game_state = resource_get(GameState);
@@ -32,7 +57,7 @@ void read_height() {
       return;
     }
 
-    if (key.kind != Key_Number)
+    if (key.kind != Key_Number || info->height > 9)
       continue;
     info->height *= 10;
     info->height += key.number;
@@ -57,7 +82,7 @@ void read_width() {
       return;
     }
 
-    if (key.kind != Key_Number)
+    if (key.kind != Key_Number || info->width > 9)
       continue;
     info->width *= 10;
     info->width += key.number;
@@ -69,8 +94,8 @@ void enter_read_map() {
   if (*game_state != GameState_Enter_Setting_ReadMap)
     return;
   GameInfo *info = resource_get(GameInfo);
-  info->offset_x = 20;
-  info->offset_y = 20;
+  info->offset_x = (SCREEN_WIDTH - PLAYER_SIZE * (isize)info->width) / 2;
+  info->offset_y = (SCREEN_HIGHT - PLAYER_SIZE * (isize)info->height) / 2;
 
   // spawn background
   Sprite block_sprite = {.eva_img = RTy(BlockEva), .active = true};
@@ -159,6 +184,7 @@ void read_map() {
     case 'b':
       break;
     case 'm':
+      ghost_spawn(*pos);
       break;
     case 'f':
       break;
@@ -173,24 +199,56 @@ void exit_input_map() {
   if (*game_state != GameState_Exit_Setting_ReadMap)
     return;
 
-  // only exist 1 cursor
-  QueryIter iter = QueryEntity(MapCursor);
-  Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
+  {
+    // only exist 1 cursor
+    QueryIter iter = QueryEntity(MapCursor);
+    Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
+    CComponent.query_free(&iter);
+    CComponent.despawn(id);
+    *game_state = GameState_InGame;
+  }
+  // despawn number display
+  QueryIter iter = QueryEntity(Number);
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
+    CComponent.despawn(*id);
+  }
   CComponent.query_free(&iter);
-  CComponent.despawn(id);
-  *game_state = GameState_InGame;
+}
+
+void update_height_system() {
+  GameState game_state = *resource_get(GameState);
+  if (game_state != GameState_Setting_ReadHeight &&
+      game_state != GameState_Setting_ReadWidth)
+    return;
+
+  GameInfo *info = resource_get(GameInfo);
+
+  {
+    QueryIter iter = QueryWith(With(HeightNum), Number);
+    PComponent comp[1];
+    CComponent.query_next(&iter, array_ref(comp));
+    ((Number *)comp[0].self)->n = info->height;
+    CComponent.query_free(&iter);
+  }
+  QueryIter iter = QueryWith(With(WidthNum), Number);
+  PComponent comp[1];
+  CComponent.query_next(&iter, array_ref(comp));
+  ((Number *)comp[0].self)->n = info->width;
+  CComponent.query_free(&iter);
 }
 
 void setting_init() {
   add_resource_type(GameInfo);
   add_component_type(MapCursor);
+  add_component_type(HeightNum);
+  add_component_type(WidthNum);
 
   GameInfo *info = malloc(sizeof(GameInfo));
   info->height = 0;
   info->width = 0;
   resource_insert(GameInfo, info);
-  AddUpdateSystem(exit_input_map, read_map, enter_read_map, read_width,
-                  read_height);
+  AddUpdateSystem(exit_input_map, read_map, enter_read_map);
+  AddUpdateSystem(update_height_system, read_width, read_height,
+                  enter_read_height);
 }
-
-#endif // SETTING_C

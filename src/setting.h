@@ -25,6 +25,16 @@ typedef struct {
 
 ExportComponentType(MapCursor);
 
+typedef struct {
+} HeightNum;
+
+ExportComponentType(HeightNum);
+
+typedef struct {
+} WidthNum;
+
+ExportComponentType(WidthNum);
+
 void setting_init();
 
 #endif // SETTING_H

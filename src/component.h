@@ -31,6 +31,14 @@ ExportComponentType(Sprite);
 
 PComponent sprite_new(Sprite sprite);
 
+typedef struct {
+  usize n, len;
+} Number;
+
+ExportComponentType(Number);
+
+PComponent number_new(Number num);
+
 void component_init();
 
 #endif // COMPONENT_H

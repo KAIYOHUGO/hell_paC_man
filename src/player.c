@@ -1,6 +1,3 @@
-#if !defined(PLAYER_C)
-#define PLAYER_C
-
 #include "player.h"
 #include "global.h"
 #include "input.h"
@@ -96,6 +93,8 @@ void player_move(Position pos) {
   CComponent.query_free(&iter);
 }
 
-void player_init() { add_component_type(Player); }
-
-#endif // PLAYER_C
+void player_init() {
+  add_component_type(Player);
+  add_event_type(PlayerEvent);
+  AddUpdateSystem(player_move_system);
+}
