@@ -132,6 +132,7 @@ void number_system() {
       n /= 10;
     }
   }
+  CComponent.query_free(&iter);
 }
 
 void component_init() {

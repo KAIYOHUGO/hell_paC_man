@@ -4,7 +4,9 @@
 #include <evangel/app.h>
 #include <stdlib.h>
 
-DeclareResourceType(GameState);
+DeclareStateType(GameState);
+
+DeclareResourceType(GameInfo);
 
 // Assets
 DeclareResourceType(CursorEva);
@@ -26,21 +28,31 @@ DeclareResourceType(Num8);
 DeclareResourceType(Num9);
 
 void exit_system() {
-  GameState *game_state = resource_get(GameState);
+  if (!state_is_in(GameState, GameState_Menu))
+    return;
+
   Vec(PEvent) *keys = event_listen(Key);
   for (usize i = 0; i < keys->len; i++) {
     Key *key = (Key *)vec_index(PEvent, keys, i)->self;
     if (key->kind != Key_ESC)
       continue;
-
-    if (*game_state == GameState_Menu) {
-      CApp.exit();
-    }
+    CApp.exit();
+    break;
   }
 }
 
 void global_init() {
-  add_resource_type(GameState);
+  add_state_type(GameState);
+
+  add_resource_type(GameInfo);
+  GameInfo *info = malloc(sizeof(GameInfo));
+  info->height = 0;
+  info->width = 0;
+  info->mod = GameMode_Default;
+  // info->mod = GameMode_Custom;
+  resource_insert(GameInfo, info);
+  state_set(GameState, GameState_Setting_ReadHeight);
+  AddUpdateSystem(exit_system);
 
   // assets
   add_resource_type(CursorEva);
@@ -74,12 +86,4 @@ void global_init() {
   resource_insert(Num7, open_eva("assets/number/num7.eva"));
   resource_insert(Num8, open_eva("assets/number/num8.eva"));
   resource_insert(Num9, open_eva("assets/number/num9.eva"));
-
-  GameState *state = malloc(sizeof(GameState));
-  // state->kind = GameState_InGame;
-  // *state = GameState_Menu;
-  *state = GameState_Enter_Setting_ReadHeight;
-  // *state = GameState_Test;
-  resource_insert(GameState, state);
-  AddUpdateSystem(exit_system);
 }

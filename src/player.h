@@ -12,6 +12,9 @@ ExportComponentType(Player);
 
 typedef enum {
   PlayerEvent_Moved,
+  PlayerEvent_Eat,
+  PlayerEvent_Boost,
+  PlayerEvent_Dead,
 } PlayerEvent;
 
 ExportEventType(PlayerEvent);

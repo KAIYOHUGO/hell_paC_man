@@ -6,3 +6,9 @@ memtest file:
 
 test-all:
     bazel test ...
+
+debug:
+    bazel build //:main  --compilation_mode=dbg -s
+
+gen-compile-commands:
+    bazel run @hedron_compile_commands//:refresh_all

@@ -2,6 +2,7 @@
 #include "debug.h"
 #include "ghost.h"
 #include "global.h"
+#include "in_game.h"
 #include "input.h"
 #include "player.h"
 #include "render.h"
@@ -29,6 +30,7 @@ void hook_app_init() {
   player_init();
   ghost_init();
   setting_init();
+  in_game_init();
 };
 
 void hook_app_before_update() { listen_keyboard(); };

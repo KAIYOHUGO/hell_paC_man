@@ -1,4 +1,5 @@
 #include "player.h"
+#include "ghost.h"
 #include "global.h"
 #include "input.h"
 #include <evangel/app.h>
@@ -12,8 +13,7 @@ DeclareComponentType(Player);
 DeclareEventType(PlayerEvent);
 
 void player_move_system() {
-  GameState state = *resource_get(GameState);
-  if (state != GameState_InGame)
+  if (!state_is_in(GameState, GameState_InGame))
     return;
 
   Vec(PEvent) *p_events = event_listen(Key);

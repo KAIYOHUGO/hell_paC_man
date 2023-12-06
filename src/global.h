@@ -3,6 +3,7 @@
 
 #include "setting.h"
 #include <evangel/resource.h>
+#include <evangel/state.h>
 
 #define SCREEN_LINE 67
 #define SCREEN_HIGHT (SCREEN_LINE * 2)
@@ -12,20 +13,32 @@
 
 typedef enum {
   GameState_Menu,
-  GameState_Enter_Setting_ReadHeight,
+  // Setting
   GameState_Setting_ReadHeight,
   GameState_Setting_ReadWidth,
-  GameState_Exit_ReadWidth,
-  GameState_Enter_Setting_ReadMap,
   GameState_Setting_ReadMap,
-  GameState_Exit_Setting_ReadMap,
+
+  // Game
   GameState_InGame,
 
   GameState_Test,
 
 } GameState;
 
-ExportResourceType(GameState);
+ExportStateType(GameState)
+
+    typedef enum {
+      GameMode_Default,
+      GameMode_Custom,
+    } GameMode;
+
+typedef struct {
+  usize height, width;
+  isize offset_x, offset_y;
+  GameMode mod;
+} GameInfo;
+
+ExportResourceType(GameInfo);
 
 // assets
 ExportResourceType(CursorEva);

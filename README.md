@@ -34,5 +34,8 @@
 - [Building an ECS #2: Archetypes and Vectorization (C)](https://ajmmertens.medium.com/building-an-ecs-2-archetypes-and-vectorization-fe21690805f9)
 - [Google Test (C++)](http://google.github.io/googletest/)
 
+# Resource
+
+- [Pac Man Sound](https://www.classicgaming.cc/classics/pac-man/sounds)
 
 [DOC](https://docs.google.com/document/d/1pbmqKgjQ75Juk1BeeBKcBVxS9AebBml3H2rgWHhogiw/edit)

@@ -9,15 +9,14 @@
 #include <evangel/resource.h>
 #include <stdlib.h>
 
-DeclareResourceType(GameInfo);
 DeclareComponentType(MapCursor);
 DeclareComponentType(HeightNum);
 DeclareComponentType(WidthNum);
 
 void enter_read_height() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Enter_Setting_ReadHeight)
+  if (!state_is_enter(GameState, GameState_Setting_ReadHeight))
     return;
+
   isize center = SCREEN_WIDTH / 2;
 
   Number height = {
@@ -35,14 +34,12 @@ void enter_read_height() {
   ScreenCord width_cord = {.x = center + NUMBER_SIZE, .y = 4};
   Spawn(WidthNum, Number, ScreenCord, ComponentMarker, number_new(width),
         screen_cord_new(width_cord));
-
-  *game_state = GameState_Setting_ReadHeight;
 }
 
 void read_height() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Setting_ReadHeight)
+  if (!state_is_in(GameState, GameState_Setting_ReadHeight))
     return;
+
   Vec(PEvent) *p_events = event_listen(Key);
   if (p_events->len == 0)
     return;
@@ -53,7 +50,7 @@ void read_height() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER) {
-      *game_state = GameState_Setting_ReadWidth;
+      state_set(GameState, GameState_Setting_ReadWidth);
       return;
     }
 
@@ -65,9 +62,9 @@ void read_height() {
 }
 
 void read_width() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Setting_ReadWidth)
+  if (!state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
+
   Vec(PEvent) *p_events = event_listen(Key);
   if (p_events->len == 0)
     return;
@@ -78,7 +75,14 @@ void read_width() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER) {
-      *game_state = GameState_Enter_Setting_ReadMap;
+      switch (info->mod) {
+      case GameMode_Custom:
+        state_set(GameState, GameState_Setting_ReadMap);
+        break;
+      case GameMode_Default:
+        state_set(GameState, GameState_InGame);
+        break;
+      }
       return;
     }
 
@@ -89,11 +93,12 @@ void read_width() {
   }
 }
 
-void enter_read_map() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Enter_Setting_ReadMap)
+void exit_read_width() {
+  if (!state_is_exit(GameState, GameState_Setting_ReadWidth))
     return;
+
   GameInfo *info = resource_get(GameInfo);
+
   info->offset_x = (SCREEN_WIDTH - PLAYER_SIZE * (isize)info->width) / 2;
   info->offset_y = (SCREEN_HIGHT - PLAYER_SIZE * (isize)info->height) / 2;
 
@@ -113,6 +118,19 @@ void enter_read_map() {
     }
   }
 
+  // despawn number display
+  QueryIter iter = QueryEntity(Number);
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
+    CComponent.despawn(*id);
+  }
+  CComponent.query_free(&iter);
+}
+
+void enter_read_map() {
+  if (!state_is_enter(GameState, GameState_Setting_ReadMap))
+    return;
+
   Position pos = {
       .x = 0,
       .y = 0,
@@ -126,13 +144,13 @@ void enter_read_map() {
         position_new(pos), sprite_new(sprite), screen_cord_new(cord));
   player_spawn(pos);
 
-  *game_state = GameState_Setting_ReadMap;
+  state_set(GameState, GameState_Setting_ReadMap);
 }
 
 void read_map() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Setting_ReadMap)
+  if (!state_is_in(GameState, GameState_Setting_ReadMap))
     return;
+
   Vec(PEvent) *p_events = event_listen(Key);
   if (p_events->len == 0)
     return;
@@ -151,7 +169,7 @@ void read_map() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER) {
-      *game_state = GameState_Exit_Setting_ReadMap;
+      state_set(GameState, GameState_InGame);
       return;
     }
 
@@ -183,7 +201,7 @@ void read_map() {
       break;
     case 'b':
       break;
-    case 'm':
+    case 'g':
       ghost_spawn(*pos);
       break;
     case 'f':
@@ -194,32 +212,21 @@ void read_map() {
   }
 }
 
-void exit_input_map() {
-  GameState *game_state = resource_get(GameState);
-  if (*game_state != GameState_Exit_Setting_ReadMap)
+void exit_read_map() {
+  if (!state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
 
-  {
-    // only exist 1 cursor
-    QueryIter iter = QueryEntity(MapCursor);
-    Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
-    CComponent.query_free(&iter);
-    CComponent.despawn(id);
-    *game_state = GameState_InGame;
-  }
-  // despawn number display
-  QueryIter iter = QueryEntity(Number);
-  Entity *id;
-  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
-    CComponent.despawn(*id);
-  }
+  // only exist 1 cursor
+  QueryIter iter = QueryEntity(MapCursor);
+  Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
   CComponent.query_free(&iter);
+  CComponent.despawn(id);
+  state_set(GameState, GameState_InGame);
 }
 
-void update_height_system() {
-  GameState game_state = *resource_get(GameState);
-  if (game_state != GameState_Setting_ReadHeight &&
-      game_state != GameState_Setting_ReadWidth)
+void update_number_display() {
+  if (!state_is_in(GameState, GameState_Setting_ReadHeight) &&
+      !state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
 
   GameInfo *info = resource_get(GameInfo);
@@ -239,16 +246,11 @@ void update_height_system() {
 }
 
 void setting_init() {
-  add_resource_type(GameInfo);
   add_component_type(MapCursor);
   add_component_type(HeightNum);
   add_component_type(WidthNum);
 
-  GameInfo *info = malloc(sizeof(GameInfo));
-  info->height = 0;
-  info->width = 0;
-  resource_insert(GameInfo, info);
-  AddUpdateSystem(exit_input_map, read_map, enter_read_map);
-  AddUpdateSystem(update_height_system, read_width, read_height,
-                  enter_read_height);
+  AddUpdateSystem(update_number_display);
+  AddUpdateSystem(exit_read_map, read_map, enter_read_map);
+  AddUpdateSystem(exit_read_width, read_width, read_height, enter_read_height);
 }

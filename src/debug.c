@@ -23,6 +23,6 @@ void sprite_debug() {
 }
 
 void state_debug() {
-  GameState state = *resource_get(GameState);
-  printf("state: %u\n", state);
+  // GameState state = *resource_get(GameState);
+  // printf("state: %u\n", state);
 }
