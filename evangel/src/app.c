@@ -3,6 +3,7 @@
 #include "component.h"
 #include "event.h"
 #include "resource.h"
+#include "state.h"
 #include <time.h>
 
 struct App App = {};
@@ -23,6 +24,7 @@ static void internal_init_all() {
   internal_component_storage_init();
   internal_event_queue_init();
   internal_resource_storage_init();
+  internal_state_storage_init();
   internal_app_init();
 }
 
@@ -31,8 +33,9 @@ static void internal_app_epoch() {
   clock_gettime(CLOCK_REALTIME, &begin);
 
   // update
-  hook_app_before_update();
   CEvent.flush();
+  CState.flush();
+  hook_app_before_update();
   for (usize i = 0; i < App.on_update.len; i++) {
     SystemFn fn = *vec_index(SystemFn, &App.on_update, i);
     fn();

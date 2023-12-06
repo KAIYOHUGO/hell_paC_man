@@ -5,7 +5,7 @@ cc_library(
     include_prefix = "evangel",
     strip_include_prefix = "/evangel/src",
     visibility = ["//visibility:public"],
-    deps = ["@wgpu"],
+    # deps = ["@wgpu"],
 )
 
 # cc_library(
