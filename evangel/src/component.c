@@ -49,6 +49,11 @@ static Entity raw_spawn(brw(Array(move_ptr(TypedComponent))) bundle) {
       // valgrind think this leak memory
       // in fact it's not
       // all pointer storage in `ComponentStorage.type_in_table_set_map`
+      // 7/12/22
+      // double check
+      // valgrind say leak 160 byte in bitset internal resize
+      // it has 5 bitset in map, each has cap=4, size=8
+      // so 5*4*8=160
       CBitSet.insert(set, table_id);
     }
 
