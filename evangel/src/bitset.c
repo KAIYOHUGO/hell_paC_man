@@ -89,7 +89,6 @@ static BitSet raw_intersection(brw(BitSet *) a, brw(BitSet *) b) {
 
 static void raw_difference_with(brw(BitSet *) self, brw(BitSet *) other) {
   usize len = min(self->raw.len, other->raw.len);
-  internal_resize(self, len);
   for (usize i = 0; i < len; i++) {
     *vec_index(BITSET_ITEM, &self->raw, i) &=
         ~*vec_index(BITSET_ITEM, &other->raw, i);

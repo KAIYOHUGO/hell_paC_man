@@ -165,6 +165,25 @@ TEST(BitSetTest, Intersection) {
   CBitSet.free(&c);
 }
 
+TEST(BitSetTest, Difference) {
+  BitSet a = CBitSet.init();
+  BitSet b = CBitSet.init();
+  for (size_t i = 0; i < 100; i += 2) {
+    CBitSet.insert(&a, i);
+  }
+  for (size_t i = 0; i < 100; i += 3) {
+    CBitSet.insert(&b, i);
+  }
+  BitSet c = CBitSet.difference(&a, &b);
+  for (size_t i = 0; i < 100; i += 2) {
+    EXPECT_EQ(i % 6 != 0, CBitSet.contain(&c, i));
+  }
+
+  CBitSet.free(&a);
+  CBitSet.free(&b);
+  CBitSet.free(&c);
+}
+
 TEST(BitSetTest, Iter) {
   BitSet a = CBitSet.init();
   for (size_t i = 0; i < 100; i += 1) {
