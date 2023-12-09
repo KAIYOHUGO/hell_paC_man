@@ -163,6 +163,16 @@ extern const struct CComponent CComponent;
                      array_empty(ComponentType));                              \
   })
 
+#define QueryWithout(without, ...)                                             \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
+        TySet(__VA_ARGS__);                                                    \
+    ComponentType InternalConcatIdent(without_set, __LINE__)[] = without;      \
+    CComponent.query(array_ref(InternalConcatIdent(query_set, __LINE__)),      \
+                     array_empty(ComponentType),                               \
+                     array_ref(InternalConcatIdent(without_set, __LINE__)));   \
+  })
+
 #define QueryAll(with, without, ...)                                           \
   ({                                                                           \
     ComponentType InternalConcatIdent(query_set, __LINE__)[] =                 \
