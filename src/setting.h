@@ -5,19 +5,19 @@
 #include <evangel/component.h>
 
 typedef struct {
-} MapCursor;
+} MapCursorDisplay;
 
-ExportComponentType(MapCursor);
-
-typedef struct {
-} HeightNum;
-
-ExportComponentType(HeightNum);
+ExportComponentType(MapCursorDisplay);
 
 typedef struct {
-} WidthNum;
+} HeightDisplay;
 
-ExportComponentType(WidthNum);
+ExportComponentType(HeightDisplay);
+
+typedef struct {
+} WidthDisplay;
+
+ExportComponentType(WidthDisplay);
 
 void setting_init();
 

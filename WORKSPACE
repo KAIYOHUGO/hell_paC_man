@@ -1,4 +1,4 @@
-load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive")
+load("@bazel_tools//tools/build_defs/repo:http.bzl", "http_archive", "http_file")
 
 http_archive(
     name = "gtest",
@@ -10,6 +10,13 @@ http_archive(
     name = "wgpu",
     build_file = "@//:wgpu.BUILD",
     urls = ["https://github.com/gfx-rs/wgpu-native/releases/download/v0.18.0.2/wgpu-linux-x86_64-release.zip"],
+)
+
+http_file(
+    name = "miniaudio",
+    downloaded_file_path = "miniaudio.h",
+    sha256 = "6b2029714f8634c4d7c70cc042f45074e0565766113fc064f20cd27c986be9c9",
+    url = "https://raw.githubusercontent.com/mackron/miniaudio/master/miniaudio.h",
 )
 
 # Hedron's Compile Commands Extractor for Bazel

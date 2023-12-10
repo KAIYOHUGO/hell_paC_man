@@ -9,9 +9,9 @@
 #include <evangel/resource.h>
 #include <stdlib.h>
 
-DeclareComponentType(MapCursor);
-DeclareComponentType(HeightNum);
-DeclareComponentType(WidthNum);
+DeclareComponentType(MapCursorDisplay);
+DeclareComponentType(HeightDisplay);
+DeclareComponentType(WidthDisplay);
 
 void enter_read_height() {
   if (!state_is_enter(GameState, GameState_Setting_ReadHeight))
@@ -24,7 +24,7 @@ void enter_read_height() {
       .len = 2,
   };
   ScreenCord height_cord = {.x = center - NUMBER_SIZE * 3, .y = 4};
-  Spawn(HeightNum, Number, ScreenCord, ComponentMarker, number_new(height),
+  Spawn(HeightDisplay, Number, ScreenCord, ComponentMarker, number_new(height),
         screen_cord_new(height_cord));
 
   Number width = {
@@ -32,7 +32,7 @@ void enter_read_height() {
       .len = 2,
   };
   ScreenCord width_cord = {.x = center + NUMBER_SIZE, .y = 4};
-  Spawn(WidthNum, Number, ScreenCord, ComponentMarker, number_new(width),
+  Spawn(WidthDisplay, Number, ScreenCord, ComponentMarker, number_new(width),
         screen_cord_new(width_cord));
 }
 
@@ -49,7 +49,7 @@ void read_height() {
     PEvent *p_event = vec_index(PEvent, p_events, i);
     Key key = *(Key *)p_event->self;
 
-    if (key.kind == Key_ENTER) {
+    if (key.kind == Key_ENTER && info->height > 1) {
       state_set(GameState, GameState_Setting_ReadWidth);
       return;
     }
@@ -74,13 +74,13 @@ void read_width() {
     PEvent *p_event = vec_index(PEvent, p_events, i);
     Key key = *(Key *)p_event->self;
 
-    if (key.kind == Key_ENTER) {
+    if (key.kind == Key_ENTER && info->width > 1) {
       switch (info->mod) {
       case GameMode_Custom:
         state_set(GameState, GameState_Setting_ReadMap);
         break;
       case GameMode_Default:
-        state_set(GameState, GameState_InGame);
+        state_set(GameState, GameState_GenerateMap);
         break;
       }
       return;
@@ -140,7 +140,7 @@ void enter_read_map() {
       .z = 2,
   };
 
-  Spawn(MapCursor, Position, Sprite, ScreenCord, ComponentMarker,
+  Spawn(MapCursorDisplay, Position, Sprite, ScreenCord, ComponentMarker,
         position_new(pos), sprite_new(sprite), screen_cord_new(cord));
   player_spawn(pos);
 
@@ -157,7 +157,7 @@ void read_map() {
   GameInfo *info = resource_get(GameInfo);
 
   // only exist 1 cursor
-  QueryIter iter = QueryWith(With(MapCursor), Position);
+  QueryIter iter = QueryWith(With(MapCursorDisplay), Position);
   PComponent comp[1];
   CComponent.query_next(&iter, array_ref(comp));
   CComponent.query_free(&iter);
@@ -217,7 +217,7 @@ void exit_read_map() {
     return;
 
   // only exist 1 cursor
-  QueryIter iter = QueryEntity(MapCursor);
+  QueryIter iter = QueryEntity(MapCursorDisplay);
   Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
   CComponent.query_free(&iter);
   CComponent.despawn(id);
@@ -232,13 +232,13 @@ void update_number_display() {
   GameInfo *info = resource_get(GameInfo);
 
   {
-    QueryIter iter = QueryWith(With(HeightNum), Number);
+    QueryIter iter = QueryWith(With(HeightDisplay), Number);
     PComponent comp[1];
     CComponent.query_next(&iter, array_ref(comp));
     ((Number *)comp[0].self)->n = info->height;
     CComponent.query_free(&iter);
   }
-  QueryIter iter = QueryWith(With(WidthNum), Number);
+  QueryIter iter = QueryWith(With(WidthDisplay), Number);
   PComponent comp[1];
   CComponent.query_next(&iter, array_ref(comp));
   ((Number *)comp[0].self)->n = info->width;
@@ -246,9 +246,9 @@ void update_number_display() {
 }
 
 void setting_init() {
-  add_component_type(MapCursor);
-  add_component_type(HeightNum);
-  add_component_type(WidthNum);
+  add_component_type(MapCursorDisplay);
+  add_component_type(HeightDisplay);
+  add_component_type(WidthDisplay);
 
   AddUpdateSystem(update_number_display);
   AddUpdateSystem(exit_read_map, read_map, enter_read_map);

@@ -6,6 +6,52 @@
 > 
 > C & Cmake is not bad but you know other language exist.
 
+
+
+
+# Roadmap
+
+- [ ] Basic Parts (40%) 
+    - [x] The map system (15%) 
+    - [x] The booster system (10%)
+    - [x] Pointers (5%) 
+        - You can not use external/global variables
+    - [x] Pointers and Array (5%) 
+        - Use malloc for the map
+    - [x] Functions (5%) 
+        - [x] A clean main function (you need to distribute most of the statements to different functions and only keep the function calls in the main function)
+        - [x] Don’t place the main function in strange places
+- [ ] Extra Parts (40%) 
+    - [ ] Others (20%)
+    - [x] Clean code architecture (5%) 
+    - [ ] Detailed comments (5%) 
+    - [ ] Clearly explain your codes during the demonstration (5%)
+    - [ ] Working with GenAI Tools in a creative way and providing descriptions of the collaboration process in the code comments (5%)
+
+
+## Basic Part
+
+- [x] Player can enter the number of width and length of the map
+- [x] Generate Map by using `rand()`
+- [x] Press w, a, s, d to move `P` around with 1 step
+- [x] player can move `P` to get `S` and `B`
+- [x] Player need get all `S` to win the game 
+- [ ] Display win message in win stage
+- [ ] Win menu prompt player to start a new game or terminate the program.
+- [x] Design your formula to calculate the appropriate number of `S`, `B`, and `M` base on size of map
+- [x] When `P` encounter `M` reduce `life` by 1
+- [x] If `life == 0`, player lose
+- [x] After `P` move, `M` will move 1 step by using `rand()`
+- [x] Determine booster type by `rand()`
+- [x] Freeze booster : pause `M` movement for 3 turn
+- [x] Less monster booster : despawn 1 `M`
+- [x] Extra live booster : increase `life` by 1
+- [ ] 
+- [ ] 
+
+Extra Part
+There are many ways to enhance the overall gaming experience of Pac-Man. One way is to incorporate additional features that can make the game more challenging and exciting. For instance, you can create a level system that increases the game's difficulty as the player progresses and achieves higher scores. You can also incorporate background music and graphics to enhance the game's visual and auditory appeal. Furthermore, adding special sound effects for specific events can add a new dimension to the game's overall experience. The main objective is to create an enjoyable game that not only entertains the players but also encourages them to explore and learn new C-based libraries to implement advanced functions. Please refer to the grading guidelines provided in the grading section for more information.
+
 # Code Design
 
 - `V{Structure Name}` is a Trait (VTable)

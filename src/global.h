@@ -1,7 +1,6 @@
 #if !defined(GLOBAL_H)
 #define GLOBAL_H
 
-#include "setting.h"
 #include <evangel/resource.h>
 #include <evangel/state.h>
 
@@ -10,6 +9,7 @@
 #define SCREEN_WIDTH 240
 #define PLAYER_SIZE 9
 #define NUMBER_SIZE 9
+#define PLAYER_ANIMATION_SPEED 85.0
 
 typedef enum {
   GameState_Menu,
@@ -19,31 +19,78 @@ typedef enum {
   GameState_Setting_ReadMap,
 
   // Game
+  GameState_GenerateMap,
+  GameState_RespawnPlayer,
   GameState_InGame,
+
+  // End
+  GameState_Win,
+  GameState_Lose,
 
   GameState_Test,
 
 } GameState;
 
-ExportStateType(GameState)
+ExportStateType(GameState);
 
-    typedef enum {
-      GameMode_Default,
-      GameMode_Custom,
-    } GameMode;
+typedef enum {
+  GameMode_Default,
+  GameMode_Custom,
+} GameMode;
 
 typedef struct {
-  usize height, width;
+  usize height, width, food_amount, life;
   isize offset_x, offset_y;
   GameMode mod;
 } GameInfo;
 
 ExportResourceType(GameInfo);
 
+// audio
+ExportResourceType(BeginningWav);
+ExportResourceType(DeathWav);
+ExportResourceType(EatWav);
+ExportResourceType(WalkWav);
+ExportResourceType(SirenWav);
+ExportResourceType(BoosterWav);
+
 // assets
 ExportResourceType(CursorEva);
-ExportResourceType(PacManEva);
 ExportResourceType(BlockEva);
+ExportResourceType(CherryEva);
+ExportResourceType(BoosterEva);
+// pac man
+ExportResourceType(PacMan1Eva);
+ExportResourceType(PacMan2Eva);
+ExportResourceType(PacMan3Eva);
+ExportResourceType(PacMan4Eva);
+ExportResourceType(PacMan5Eva);
+ExportResourceType(PacMan6Eva);
+ExportResourceType(PacMan7Eva);
+ExportResourceType(PacMan8Eva);
+// win menu
+ExportResourceType(WinMenu01Eva);
+ExportResourceType(WinMenu02Eva);
+ExportResourceType(WinMenu03Eva);
+ExportResourceType(WinMenu04Eva);
+ExportResourceType(WinMenu05Eva);
+ExportResourceType(WinMenu06Eva);
+ExportResourceType(WinMenu07Eva);
+ExportResourceType(WinMenu08Eva);
+ExportResourceType(WinMenu09Eva);
+ExportResourceType(WinMenu10Eva);
+ExportResourceType(WinMenu11Eva);
+ExportResourceType(WinMenu12Eva);
+ExportResourceType(WinMenu13Eva);
+ExportResourceType(WinMenu14Eva);
+ExportResourceType(WinMenu15Eva);
+ExportResourceType(WinMenu16Eva);
+ExportResourceType(WinMenu17Eva);
+ExportResourceType(WinMenu18Eva);
+ExportResourceType(WinMenu19Eva);
+ExportResourceType(WinMenu20Eva);
+ExportResourceType(WinMenu21Eva);
+
 // ghost
 ExportResourceType(PinkGhostEva);
 

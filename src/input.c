@@ -19,8 +19,8 @@ void listen_keyboard() {
   if (!input_ready())
     return;
 
-  char c[16];
-  isize n = read(STDIN_FILENO, c, 10);
+  char c[64];
+  isize n = read(STDIN_FILENO, c, 64);
   for (usize i = 0; i < n; i++) {
     char keycode = c[i];
     Key key;

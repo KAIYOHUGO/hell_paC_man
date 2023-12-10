@@ -5,6 +5,7 @@
 #include <evangel/component.h>
 
 typedef struct {
+  usize cd;
 } Ghost;
 
 ExportComponentType(Ghost);

@@ -1,19 +1,20 @@
+#include "audio.h"
+#include "booster.h"
 #include "component.h"
-#include "debug.h"
+#include "food.h"
 #include "ghost.h"
 #include "global.h"
 #include "in_game.h"
 #include "input.h"
+#include "lose.h"
 #include "player.h"
 #include "render.h"
 #include "setting.h"
 #include <evangel/app.h>
 #include <evangel/component.h>
 #include <evangel/resource.h>
-#include <stdio.h>
 
 void hook_app_init() {
-  // printf("Init!\n");
   CApp.set_fps(60);
 
   add_event_type(Key);
@@ -24,13 +25,18 @@ void hook_app_init() {
       .b = 0xde,
   };
   render_init(SCREEN_LINE, SCREEN_WIDTH, clean_color);
+  audio_init();
 
   global_init();
   component_init();
   player_init();
   ghost_init();
+  food_init();
+  booster_init();
+
   setting_init();
   in_game_init();
+  lose_init();
 };
 
 void hook_app_before_update() { listen_keyboard(); };
@@ -58,6 +64,7 @@ void hook_app_render() {
 void hook_app_free(){};
 
 isize main() {
+
   struct termios old_term = init_terminal();
   app_start();
   reset_terminal(old_term);
