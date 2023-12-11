@@ -1,5 +1,4 @@
 #include "bitset.h"
-#include <stdlib.h>
 
 static BitSet raw_init() {
   BitSet bit_set = {
@@ -108,7 +107,7 @@ static brw(BitSetIter) raw_iter(brw(BitSet *) b) {
 }
 
 static usize raw_iter_next(brw(BitSetIter *) iter) {
-  if (iter->ptr == NULL)
+  if (iter->offset == BITSET_ITER_END)
     return BITSET_ITER_END;
 
   usize offset_index = iter->offset >> BITSET_ITEM_FAST_DIV;
@@ -129,16 +128,8 @@ static usize raw_iter_next(brw(BitSetIter *) iter) {
     }
     offset_bit_n = 0;
   }
-  iter->ptr = NULL;
+  iter->offset = BITSET_ITER_END;
   return BITSET_ITER_END;
-}
-
-static void raw_iter_free(mov(BitSetIter *) iter) {
-  if (iter->ptr == NULL)
-    return;
-  raw_free(iter->ptr);
-  free(iter->ptr);
-  iter->ptr = NULL;
 }
 
 const struct CBitSet CBitSet = {
@@ -165,6 +156,4 @@ const struct CBitSet CBitSet = {
     .iter = raw_iter,
 
     .iter_next = raw_iter_next,
-
-    .iter_free = raw_iter_free,
 };

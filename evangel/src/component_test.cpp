@@ -142,7 +142,7 @@ TEST(ComponentTest, Query) {
 
   QueryIter iter = Query(MockComponent, MockComponent1);
 
-  ComponentType result[2];
+  PComponent result[2];
   Entity *result_entity;
   for (usize i = 0; i < entities.len; i++) {
     result_entity = CComponent.query_next(&iter, array_ref(result));

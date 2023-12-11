@@ -1,3 +1,4 @@
+#include "array.h"
 #include "bitset.h"
 #include "map.h"
 #include "vec.h"
@@ -199,4 +200,11 @@ TEST(BitSetTest, Iter) {
   }
 
   CBitSet.free(&a);
+}
+
+TEST(ArrayTest, Clone) {
+  u64 list[10] = {1, 2, 3, 4, 5, 6, 7, 8, 9, 10};
+  Array(u64) arr_list = array_ref(list);
+  Array(u64) arr_heap = array_clone(u64, &arr_list);
+  array_free(u64, &arr_heap);
 }

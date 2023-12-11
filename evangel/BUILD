@@ -19,6 +19,8 @@ cc_library(
 cc_test(
     name = "data_structure_test",
     srcs = [
+        "src/array.c",
+        "src/array.h",
         "src/basic.c",
         "src/basic.h",
         "src/bitset.c",

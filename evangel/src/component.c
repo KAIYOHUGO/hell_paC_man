@@ -228,9 +228,10 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
   *heap_table_set = table_set;
   BitSetIter table_iter = CBitSet.iter(heap_table_set);
   usize table = CBitSet.iter_next(&table_iter);
+  Array(ComponentType) heap_component = array_clone(ComponentType, &components);
   QueryIter iter = {
       .table_iter = table_iter,
-      .components = array_clone(ComponentType, &components),
+      .components = heap_component,
       .table = table,
       .row = 0,
   };
@@ -238,7 +239,11 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
 }
 
 void raw_query_free(mov(QueryIter *) iter) {
-  CBitSet.iter_free(&iter->table_iter);
+  if (iter->table_iter.ptr != NULL)
+    CBitSet.free(iter->table_iter.ptr);
+
+  free(iter->table_iter.ptr);
+  iter->table_iter.ptr = NULL;
   array_free(ComponentType, &iter->components);
 }
 
@@ -247,7 +252,7 @@ static brw(Entity *)
     raw_query_next(brw(QueryIter *) iter, brw(Array(PComponent)) dest) {
   if (iter->table == BITSET_ITER_END) {
     // auto free
-    raw_query_free(iter);
+    // raw_query_free(iter);
     return NULL;
   }
 
