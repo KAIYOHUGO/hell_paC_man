@@ -11,8 +11,6 @@ typedef struct {
 
 ExportComponentType(Booster);
 
-void booster_spawn(Position pos);
-
 typedef enum {
   BoosterKind_Freeze,
   BoosterKind_LessGhost,
@@ -22,6 +20,10 @@ typedef enum {
 } BoosterEvent;
 
 ExportEventType(BoosterEvent);
+
+void booster_spawn(Position pos);
+
+void booster_despawn();
 
 void booster_init();
 

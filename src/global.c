@@ -1,6 +1,5 @@
 #include "global.h"
 #include "audio.h"
-#include "input.h"
 #include "render.h"
 #include <evangel/app.h>
 #include <stdlib.h>
@@ -16,6 +15,20 @@ DeclareResourceType(EatWav);
 DeclareResourceType(WalkWav);
 DeclareResourceType(SirenWav);
 DeclareResourceType(BoosterWav);
+static void add_audio() {
+  add_resource_type(BeginningWav);
+  add_resource_type(DeathWav);
+  add_resource_type(EatWav);
+  add_resource_type(WalkWav);
+  add_resource_type(SirenWav);
+  add_resource_type(BoosterWav);
+  resource_insert(BeginningWav, open_sound("assets/audio/beginning.wav"));
+  resource_insert(DeathWav, open_sound("assets/audio/death.wav"));
+  resource_insert(EatWav, open_sound("assets/audio/eat.wav"));
+  resource_insert(WalkWav, open_sound("assets/audio/walk.wav"));
+  resource_insert(SirenWav, open_sound("assets/audio/siren.wav"));
+  resource_insert(BoosterWav, open_sound("assets/audio/booster.wav"));
+}
 
 // Assets
 DeclareResourceType(CursorEva);
@@ -32,6 +45,31 @@ DeclareResourceType(PacMan5Eva);
 DeclareResourceType(PacMan6Eva);
 DeclareResourceType(PacMan7Eva);
 DeclareResourceType(PacMan8Eva);
+static void add_pac_man() {
+  add_resource_type(PacMan1Eva);
+  add_resource_type(PacMan2Eva);
+  add_resource_type(PacMan3Eva);
+  add_resource_type(PacMan4Eva);
+  add_resource_type(PacMan5Eva);
+  add_resource_type(PacMan6Eva);
+  add_resource_type(PacMan7Eva);
+  add_resource_type(PacMan8Eva);
+  resource_insert(PacMan1Eva, open_eva("assets/pac_man/pac_man_1.eva"));
+  resource_insert(PacMan2Eva, open_eva("assets/pac_man/pac_man_2.eva"));
+  resource_insert(PacMan3Eva, open_eva("assets/pac_man/pac_man_3.eva"));
+  resource_insert(PacMan4Eva, open_eva("assets/pac_man/pac_man_4.eva"));
+  resource_insert(PacMan5Eva, open_eva("assets/pac_man/pac_man_5.eva"));
+  resource_insert(PacMan6Eva, open_eva("assets/pac_man/pac_man_6.eva"));
+  resource_insert(PacMan7Eva, open_eva("assets/pac_man/pac_man_7.eva"));
+  resource_insert(PacMan8Eva, open_eva("assets/pac_man/pac_man_8.eva"));
+}
+
+// Ghost
+DeclareResourceType(PinkGhostEva);
+DeclareResourceType(RedGhostEva);
+DeclareResourceType(BlueGhostEva);
+DeclareResourceType(YellowGhostEva);
+
 // win menu
 DeclareResourceType(WinMenu01Eva);
 DeclareResourceType(WinMenu02Eva);
@@ -54,81 +92,7 @@ DeclareResourceType(WinMenu18Eva);
 DeclareResourceType(WinMenu19Eva);
 DeclareResourceType(WinMenu20Eva);
 DeclareResourceType(WinMenu21Eva);
-
-DeclareResourceType(PinkGhostEva);
-
-// Num
-DeclareResourceType(Num0);
-DeclareResourceType(Num1);
-DeclareResourceType(Num2);
-DeclareResourceType(Num3);
-DeclareResourceType(Num4);
-DeclareResourceType(Num5);
-DeclareResourceType(Num6);
-DeclareResourceType(Num7);
-DeclareResourceType(Num8);
-DeclareResourceType(Num9);
-
-void exit_system() {
-  if (!state_is_in(GameState, GameState_Lose))
-    return;
-
-  Vec(PEvent) *keys = event_listen(Key);
-  for (usize i = 0; i < keys->len; i++) {
-    Key *key = (Key *)vec_index(PEvent, keys, i)->self;
-    if (key->kind != Key_ESC)
-      continue;
-    CApp.exit();
-    break;
-  }
-}
-
-void global_init() {
-  add_state_type(GameState);
-  state_set(GameState, GameState_Setting_ReadHeight);
-
-  add_resource_type(GameInfo);
-  GameInfo *info = malloc(sizeof(GameInfo));
-  info->height = 0;
-  info->width = 0;
-  info->food_amount = 0;
-  info->mod = GameMode_Default;
-  resource_insert(GameInfo, info);
-  AddUpdateSystem(exit_system);
-
-  // audio
-  add_resource_type(BeginningWav);
-  add_resource_type(DeathWav);
-  add_resource_type(EatWav);
-  add_resource_type(WalkWav);
-  add_resource_type(SirenWav);
-  add_resource_type(BoosterWav);
-  resource_insert(BeginningWav, open_sound("assets/audio/beginning.wav"));
-  resource_insert(DeathWav, open_sound("assets/audio/death.wav"));
-  resource_insert(EatWav, open_sound("assets/audio/eat.wav"));
-  resource_insert(WalkWav, open_sound("assets/audio/walk.wav"));
-  resource_insert(SirenWav, open_sound("assets/audio/siren.wav"));
-  resource_insert(BoosterWav, open_sound("assets/audio/booster.wav"));
-
-  // pac man
-  add_resource_type(PacMan1Eva);
-  add_resource_type(PacMan2Eva);
-  add_resource_type(PacMan3Eva);
-  add_resource_type(PacMan4Eva);
-  add_resource_type(PacMan5Eva);
-  add_resource_type(PacMan6Eva);
-  add_resource_type(PacMan7Eva);
-  add_resource_type(PacMan8Eva);
-  resource_insert(PacMan1Eva, open_eva("assets/pac_man/pac_man_1.eva"));
-  resource_insert(PacMan2Eva, open_eva("assets/pac_man/pac_man_2.eva"));
-  resource_insert(PacMan3Eva, open_eva("assets/pac_man/pac_man_3.eva"));
-  resource_insert(PacMan4Eva, open_eva("assets/pac_man/pac_man_4.eva"));
-  resource_insert(PacMan5Eva, open_eva("assets/pac_man/pac_man_5.eva"));
-  resource_insert(PacMan6Eva, open_eva("assets/pac_man/pac_man_6.eva"));
-  resource_insert(PacMan7Eva, open_eva("assets/pac_man/pac_man_7.eva"));
-  resource_insert(PacMan8Eva, open_eva("assets/pac_man/pac_man_8.eva"));
-
-  // win menu
+static void add_win_menu() {
   add_resource_type(WinMenu01Eva);
   add_resource_type(WinMenu02Eva);
   add_resource_type(WinMenu03Eva);
@@ -171,22 +135,75 @@ void global_init() {
   resource_insert(WinMenu19Eva, open_eva("assets/win_menu/win_menu_19.eva"));
   resource_insert(WinMenu20Eva, open_eva("assets/win_menu/win_menu_20.eva"));
   resource_insert(WinMenu21Eva, open_eva("assets/win_menu/win_menu_21.eva"));
-  
-  // assets
-  add_resource_type(CursorEva);
-  add_resource_type(PacManEva);
-  add_resource_type(BlockEva);
-  add_resource_type(CherryEva);
-  add_resource_type(BoosterEva);
-  resource_insert(CursorEva, open_eva("assets/cursor.eva"));
-  resource_insert(BlockEva, open_eva("assets/block.eva"));
-  resource_insert(CherryEva, open_eva("assets/cherry.eva"));
-  resource_insert(BoosterEva, open_eva("assets/booster.eva"));
+}
 
-  add_resource_type(PinkGhostEva);
-  resource_insert(PinkGhostEva, open_eva("assets/pink_ghost.eva"));
+// lose menu
+DeclareResourceType(LoseMenu01Eva);
+DeclareResourceType(LoseMenu02Eva);
+DeclareResourceType(LoseMenu03Eva);
+DeclareResourceType(LoseMenu04Eva);
+DeclareResourceType(LoseMenu05Eva);
+DeclareResourceType(LoseMenu06Eva);
+DeclareResourceType(LoseMenu07Eva);
+DeclareResourceType(LoseMenu08Eva);
+DeclareResourceType(LoseMenu09Eva);
+DeclareResourceType(LoseMenu10Eva);
+DeclareResourceType(LoseMenu11Eva);
+DeclareResourceType(LoseMenu12Eva);
+DeclareResourceType(LoseMenu13Eva);
+DeclareResourceType(LoseMenu14Eva);
+DeclareResourceType(LoseMenu15Eva);
+DeclareResourceType(LoseMenu16Eva);
+DeclareResourceType(LoseMenu17Eva);
+static void add_lose_menu() {
+  add_resource_type(LoseMenu01Eva);
+  add_resource_type(LoseMenu02Eva);
+  add_resource_type(LoseMenu03Eva);
+  add_resource_type(LoseMenu04Eva);
+  add_resource_type(LoseMenu05Eva);
+  add_resource_type(LoseMenu06Eva);
+  add_resource_type(LoseMenu07Eva);
+  add_resource_type(LoseMenu08Eva);
+  add_resource_type(LoseMenu09Eva);
+  add_resource_type(LoseMenu10Eva);
+  add_resource_type(LoseMenu11Eva);
+  add_resource_type(LoseMenu12Eva);
+  add_resource_type(LoseMenu13Eva);
+  add_resource_type(LoseMenu14Eva);
+  add_resource_type(LoseMenu15Eva);
+  add_resource_type(LoseMenu16Eva);
+  add_resource_type(LoseMenu17Eva);
+  resource_insert(LoseMenu01Eva, open_eva("assets/lose_menu/lose_menu_01.eva"));
+  resource_insert(LoseMenu02Eva, open_eva("assets/lose_menu/lose_menu_02.eva"));
+  resource_insert(LoseMenu03Eva, open_eva("assets/lose_menu/lose_menu_03.eva"));
+  resource_insert(LoseMenu04Eva, open_eva("assets/lose_menu/lose_menu_04.eva"));
+  resource_insert(LoseMenu05Eva, open_eva("assets/lose_menu/lose_menu_05.eva"));
+  resource_insert(LoseMenu06Eva, open_eva("assets/lose_menu/lose_menu_06.eva"));
+  resource_insert(LoseMenu07Eva, open_eva("assets/lose_menu/lose_menu_07.eva"));
+  resource_insert(LoseMenu08Eva, open_eva("assets/lose_menu/lose_menu_08.eva"));
+  resource_insert(LoseMenu09Eva, open_eva("assets/lose_menu/lose_menu_09.eva"));
+  resource_insert(LoseMenu10Eva, open_eva("assets/lose_menu/lose_menu_10.eva"));
+  resource_insert(LoseMenu11Eva, open_eva("assets/lose_menu/lose_menu_11.eva"));
+  resource_insert(LoseMenu12Eva, open_eva("assets/lose_menu/lose_menu_12.eva"));
+  resource_insert(LoseMenu13Eva, open_eva("assets/lose_menu/lose_menu_13.eva"));
+  resource_insert(LoseMenu14Eva, open_eva("assets/lose_menu/lose_menu_14.eva"));
+  resource_insert(LoseMenu15Eva, open_eva("assets/lose_menu/lose_menu_15.eva"));
+  resource_insert(LoseMenu16Eva, open_eva("assets/lose_menu/lose_menu_16.eva"));
+  resource_insert(LoseMenu17Eva, open_eva("assets/lose_menu/lose_menu_17.eva"));
+}
 
-  // num
+// Num
+DeclareResourceType(Num0);
+DeclareResourceType(Num1);
+DeclareResourceType(Num2);
+DeclareResourceType(Num3);
+DeclareResourceType(Num4);
+DeclareResourceType(Num5);
+DeclareResourceType(Num6);
+DeclareResourceType(Num7);
+DeclareResourceType(Num8);
+DeclareResourceType(Num9);
+void add_num() {
   add_resource_type(Num0);
   add_resource_type(Num1);
   add_resource_type(Num2);
@@ -207,4 +224,48 @@ void global_init() {
   resource_insert(Num7, open_eva("assets/number/num7.eva"));
   resource_insert(Num8, open_eva("assets/number/num8.eva"));
   resource_insert(Num9, open_eva("assets/number/num9.eva"));
+}
+
+void global_init() {
+  add_state_type(GameState);
+  state_set(GameState, GameState_Setting_ReadHeight);
+
+  add_resource_type(GameInfo);
+  GameInfo *info = malloc(sizeof(GameInfo));
+  info->height = 0;
+  info->width = 0;
+  info->food_amount = 0;
+  info->mod = GameMode_Default;
+  resource_insert(GameInfo, info);
+
+  add_audio();
+
+  add_pac_man();
+
+  add_win_menu();
+
+  add_lose_menu();
+
+  // assets
+  add_resource_type(CursorEva);
+  add_resource_type(PacManEva);
+  add_resource_type(BlockEva);
+  add_resource_type(CherryEva);
+  add_resource_type(BoosterEva);
+  resource_insert(CursorEva, open_eva("assets/cursor.eva"));
+  resource_insert(BlockEva, open_eva("assets/block.eva"));
+  resource_insert(CherryEva, open_eva("assets/cherry.eva"));
+  resource_insert(BoosterEva, open_eva("assets/booster.eva"));
+
+  // ghost
+  add_resource_type(PinkGhostEva);
+  add_resource_type(RedGhostEva);
+  add_resource_type(BlueGhostEva);
+  add_resource_type(YellowGhostEva);
+  resource_insert(PinkGhostEva, open_eva("assets/ghost/pink_ghost.eva"));
+  resource_insert(RedGhostEva, open_eva("assets/ghost/red_ghost.eva"));
+  resource_insert(BlueGhostEva, open_eva("assets/ghost/blue_ghost.eva"));
+  resource_insert(YellowGhostEva, open_eva("assets/ghost/yellow_ghost.eva"));
+
+  add_num();
 }

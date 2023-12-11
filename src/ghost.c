@@ -7,8 +7,7 @@
 #include <stdlib.h>
 
 DeclareComponentType(Ghost);
-
-void ghost_move_system() {
+static void ghost_move_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -50,7 +49,7 @@ void ghost_move_system() {
   }
 }
 
-void ghost_attack_system() {
+static void ghost_attack_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -79,7 +78,7 @@ void ghost_attack_system() {
   CComponent.query_free(&iter);
 }
 
-void freeze_booster() {
+static void freeze_booster() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -101,7 +100,7 @@ void freeze_booster() {
   }
 }
 
-void less_ghost_booster() {
+static void less_ghost_booster() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -122,6 +121,9 @@ void less_ghost_booster() {
       vec_push(Entity, &ids, *id);
     }
     CComponent.query_free(&iter);
+    if (ids.len == 0)
+      return;
+
     Entity random_id = *vec_index(Entity, &ids, rand() % ids.len);
     vec_free(Entity, &ids);
 
@@ -136,8 +138,10 @@ PComponent ghost_new(Ghost ghost) {
 }
 
 void ghost_spawn(Position pos) {
+  ResourceType variant[4] = {RTy(PinkGhostEva), RTy(RedGhostEva),
+                             RTy(BlueGhostEva), RTy(YellowGhostEva)};
   Sprite sprite = {
-      .eva_img = RTy(PinkGhostEva),
+      .eva_img = variant[rand() % 4],
       .active = true,
   };
   AnimationCord animation_cord = {
@@ -153,6 +157,15 @@ void ghost_spawn(Position pos) {
   Spawn(Ghost, Position, Sprite, AnimationCord, ScreenCord, ghost_new(ghost),
         position_new(pos), sprite_new(sprite),
         animation_cord_new(animation_cord), screen_cord_new(cord));
+}
+
+void ghost_despawn() {
+  QueryIter iter = QueryEntity(Ghost);
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
+    CComponent.despawn(*id);
+  }
+  CComponent.query_free(&iter);
 }
 
 void ghost_init() {

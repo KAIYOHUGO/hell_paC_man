@@ -10,6 +10,7 @@
 #include "player.h"
 #include "render.h"
 #include "setting.h"
+#include "win.h"
 #include <evangel/app.h>
 #include <evangel/component.h>
 #include <evangel/resource.h>
@@ -28,6 +29,7 @@ void hook_app_init() {
   audio_init();
 
   global_init();
+
   component_init();
   player_init();
   ghost_init();
@@ -37,6 +39,7 @@ void hook_app_init() {
   setting_init();
   in_game_init();
   lose_init();
+  win_init();
 };
 
 void hook_app_before_update() { listen_keyboard(); };

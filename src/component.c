@@ -392,6 +392,7 @@ void animation_sprite_system() {
     sprite->eva_img =
         *array_index(ResourceType, &animation_sprite->eva_imgs, frame_index);
   }
+  CComponent.query_free(&iter);
 }
 
 void component_init() {

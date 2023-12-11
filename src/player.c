@@ -13,7 +13,7 @@ DeclareComponentType(Player);
 
 DeclareEventType(PlayerEvent);
 
-void player_move_system() {
+static void player_move_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -79,7 +79,7 @@ void player_move_system() {
   event_emit(PlayerEvent, CEvent.default_vtable(event));
 }
 
-void player_extra_life() {
+static void player_extra_life() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 

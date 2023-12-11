@@ -1,7 +1,7 @@
 #if !defined(FOOD_H)
 #define FOOD_H
-#include <evangel/component.h>
 #include "component.h"
+#include <evangel/component.h>
 
 typedef struct {
 } Food;
@@ -9,6 +9,8 @@ typedef struct {
 ExportComponentType(Food);
 
 void food_spawn(Position pos);
+
+void food_despawn();
 
 void food_init();
 

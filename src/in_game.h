@@ -17,6 +17,8 @@ typedef struct {
 
 ExportComponentType(LifeDisplay);
 
+void in_game_display_despawn();
+
 void in_game_init();
 
 #endif // IN_GAME_H

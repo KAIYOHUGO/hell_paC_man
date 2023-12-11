@@ -39,7 +39,7 @@ typedef enum {
 } GameMode;
 
 typedef struct {
-  usize height, width, food_amount, life;
+  usize height, width, food_amount, life, level;
   isize offset_x, offset_y;
   GameMode mod;
 } GameInfo;
@@ -90,9 +90,30 @@ ExportResourceType(WinMenu18Eva);
 ExportResourceType(WinMenu19Eva);
 ExportResourceType(WinMenu20Eva);
 ExportResourceType(WinMenu21Eva);
+// lose menu
+ExportResourceType(LoseMenu01Eva);
+ExportResourceType(LoseMenu02Eva);
+ExportResourceType(LoseMenu03Eva);
+ExportResourceType(LoseMenu04Eva);
+ExportResourceType(LoseMenu05Eva);
+ExportResourceType(LoseMenu06Eva);
+ExportResourceType(LoseMenu07Eva);
+ExportResourceType(LoseMenu08Eva);
+ExportResourceType(LoseMenu09Eva);
+ExportResourceType(LoseMenu10Eva);
+ExportResourceType(LoseMenu11Eva);
+ExportResourceType(LoseMenu12Eva);
+ExportResourceType(LoseMenu13Eva);
+ExportResourceType(LoseMenu14Eva);
+ExportResourceType(LoseMenu15Eva);
+ExportResourceType(LoseMenu16Eva);
+ExportResourceType(LoseMenu17Eva);
 
 // ghost
 ExportResourceType(PinkGhostEva);
+ExportResourceType(RedGhostEva);
+ExportResourceType(BlueGhostEva);
+ExportResourceType(YellowGhostEva);
 
 // Num
 ExportResourceType(Num0);

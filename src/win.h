@@ -1,5 +1,8 @@
-#if !defined(LOSE_H)
-#define LOSE_H
+#if !defined(WIN_H)
+#define WIN_H
+
+#define WIN_HEIGHT 35 
+#define WIN_WIDTH 82 
 
 #include <evangel/component.h>
 
@@ -10,4 +13,4 @@ ExportComponentType(WinDisplay);
 
 void win_init();
 
-#endif // LOSE_H
+#endif // WIN_H

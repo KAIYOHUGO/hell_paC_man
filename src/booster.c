@@ -50,6 +50,15 @@ void booster_spawn(Position pos) {
         position_new(pos), sprite_new(sprite), screen_cord_new(cord));
 }
 
+void booster_despawn() {
+  QueryIter iter = QueryEntity(Booster);
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
+    CComponent.despawn(*id);
+  }
+  CComponent.query_free(&iter);
+}
+
 void booster_init() {
   add_component_type(Booster);
   add_event_type(BoosterEvent);

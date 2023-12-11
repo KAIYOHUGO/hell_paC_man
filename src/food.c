@@ -9,7 +9,7 @@
 
 DeclareComponentType(Food);
 
-void player_eat_food_system() {
+static void player_eat_food_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -53,6 +53,15 @@ void food_spawn(Position pos) {
   };
   Spawn(Food, Position, Sprite, ScreenCord, ComponentMarker, position_new(pos),
         sprite_new(sprite), screen_cord_new(cord));
+}
+
+void food_despawn() {
+  QueryIter iter = QueryEntity(Food);
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_empty(PComponent))) != NULL) {
+    CComponent.despawn(*id);
+  }
+  CComponent.query_free(&iter);
 }
 
 void food_init() {

@@ -28,35 +28,36 @@ void generate_map() {
   player_spawn(player_pos);
 
   usize area = info->height * info->width;
-  usize max_ghost = (area * GHost_Percentage + 99) / 100,
-        max_food = (area * Food_Percentage + 99) / 100,
-        max_booster = (area * Booster_Percentage + 99) / 100;
-  usize tmp = max_food;
+  usize remain_ghost = (area * GHost_Percentage + 99) / 100,
+        remain_food = (area * Food_Percentage + 99) / 100,
+        remain_booster = (area * Booster_Percentage + 99) / 100;
+  info->food_amount = remain_food;
 
-  for (usize x = 0; x < info->width; x++) {
-    for (usize y = 0; y < info->height; y++) {
-      if (player_pos.x == x && player_pos.y == y)
-        continue;
+  while (remain_ghost > 0 || remain_food > 0 || remain_booster > 0) {
+    for (usize x = 0; x < info->width; x++) {
+      for (usize y = 0; y < info->height; y++) {
+        if (player_pos.x == x && player_pos.y == y)
+          continue;
 
-      Position pos = {.x = x, .y = y};
-      if (max_food > 0 && rand() % 100 < Food_Percentage) {
-        max_food--;
-        food_spawn(pos);
-        continue;
-      }
-      if (max_ghost > 0 && rand() % 100 < GHost_Percentage) {
-        max_ghost--;
-        ghost_spawn(pos);
-        continue;
-      }
-      if (max_booster > 0 && rand() % 100 < Booster_Percentage) {
-        max_booster--;
-        booster_spawn(pos);
-        continue;
+        Position pos = {.x = x, .y = y};
+        if (remain_food > 0 && rand() % 100 < Food_Percentage) {
+          remain_food--;
+          food_spawn(pos);
+          continue;
+        }
+        if (remain_ghost > 0 && rand() % 100 < GHost_Percentage) {
+          remain_ghost--;
+          ghost_spawn(pos);
+          continue;
+        }
+        if (remain_booster > 0 && rand() % 100 < Booster_Percentage) {
+          remain_booster--;
+          booster_spawn(pos);
+          continue;
+        }
       }
     }
   }
-  info->food_amount = tmp - max_food;
   state_set(GameState, GameState_InGame);
 }
 
@@ -101,12 +102,10 @@ void player_respawn() {
 }
 
 void spawn_display() {
-  if (!state_is_exit(GameState, GameState_GenerateMap))
+  if (!state_is_exit(GameState, GameState_GenerateMap) &&
+      !state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
-
   GameInfo *info = resource_get(GameInfo);
-  info->life = 2;
-
   {
     Number num = {
         .len = 4,
@@ -136,6 +135,9 @@ void spawn_display() {
 void enter_in_game() {
   if (!state_is_enter(GameState, GameState_InGame))
     return;
+
+  GameInfo *info = resource_get(GameInfo);
+  info->life = 1;
 
   // Fix cord
   QueryIter iter = Query(AnimationCord, ScreenCord);
@@ -215,6 +217,19 @@ void display_update() {
     CComponent.query_free(&iter);
     ((Number *)comp[0].self)->n = info->life;
   }
+}
+
+void in_game_display_despawn() {
+  {
+    QueryIter iter = QueryEntity(RemainDisplay);
+    Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
+    CComponent.despawn(id);
+    CComponent.query_free(&iter);
+  }
+  QueryIter iter = QueryEntity(LifeDisplay);
+  Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
+  CComponent.despawn(id);
+  CComponent.query_free(&iter);
 }
 
 void in_game_init() {

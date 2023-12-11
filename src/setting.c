@@ -13,7 +13,7 @@ DeclareComponentType(MapCursorDisplay);
 DeclareComponentType(HeightDisplay);
 DeclareComponentType(WidthDisplay);
 
-void enter_read_height() {
+static void enter_read_height() {
   if (!state_is_enter(GameState, GameState_Setting_ReadHeight))
     return;
 
@@ -36,7 +36,7 @@ void enter_read_height() {
         screen_cord_new(width_cord));
 }
 
-void read_height() {
+static void read_height() {
   if (!state_is_in(GameState, GameState_Setting_ReadHeight))
     return;
 
@@ -49,7 +49,7 @@ void read_height() {
     PEvent *p_event = vec_index(PEvent, p_events, i);
     Key key = *(Key *)p_event->self;
 
-    if (key.kind == Key_ENTER && info->height > 1) {
+    if (key.kind == Key_ENTER && info->height >= 3) {
       state_set(GameState, GameState_Setting_ReadWidth);
       return;
     }
@@ -61,7 +61,7 @@ void read_height() {
   }
 }
 
-void read_width() {
+static void read_width() {
   if (!state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
 
@@ -74,7 +74,7 @@ void read_width() {
     PEvent *p_event = vec_index(PEvent, p_events, i);
     Key key = *(Key *)p_event->self;
 
-    if (key.kind == Key_ENTER && info->width > 1) {
+    if (key.kind == Key_ENTER && info->width >= 3) {
       switch (info->mod) {
       case GameMode_Custom:
         state_set(GameState, GameState_Setting_ReadMap);
@@ -93,7 +93,7 @@ void read_width() {
   }
 }
 
-void exit_read_width() {
+static void exit_read_width() {
   if (!state_is_exit(GameState, GameState_Setting_ReadWidth))
     return;
 
@@ -127,7 +127,7 @@ void exit_read_width() {
   CComponent.query_free(&iter);
 }
 
-void enter_read_map() {
+static void enter_read_map() {
   if (!state_is_enter(GameState, GameState_Setting_ReadMap))
     return;
 
@@ -147,7 +147,7 @@ void enter_read_map() {
   state_set(GameState, GameState_Setting_ReadMap);
 }
 
-void read_map() {
+static void read_map() {
   if (!state_is_in(GameState, GameState_Setting_ReadMap))
     return;
 
@@ -212,7 +212,7 @@ void read_map() {
   }
 }
 
-void exit_read_map() {
+static void exit_read_map() {
   if (!state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
 
@@ -224,7 +224,7 @@ void exit_read_map() {
   state_set(GameState, GameState_InGame);
 }
 
-void update_number_display() {
+static void update_number_display() {
   if (!state_is_in(GameState, GameState_Setting_ReadHeight) &&
       !state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
