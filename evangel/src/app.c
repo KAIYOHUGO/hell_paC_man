@@ -35,6 +35,7 @@ static void internal_app_epoch() {
   // update
   CEvent.flush();
   CState.flush();
+  CComponent.flush();
   hook_app_before_update();
   for (usize i = 0; i < App.on_update.len; i++) {
     SystemFn fn = *vec_index(SystemFn, &App.on_update, i);

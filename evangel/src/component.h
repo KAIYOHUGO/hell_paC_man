@@ -52,6 +52,7 @@ struct ComponentStorage {
   Map(Entity, EntityInfo) entity_info_map;
   Map(usize, usize) bundle_table_map;
   Map(ComponentType, BitSet) type_in_table_set_map;
+  Vec(Entity) despawn_queue;
 };
 
 typedef struct {
@@ -83,6 +84,8 @@ struct CComponent {
   void (*query_free)(mov(QueryIter *) iter);
 
   PComponent (*default_vtable)(void *component);
+
+  void (*flush)();
 };
 
 extern const PComponent ComponentMarker;

@@ -16,6 +16,7 @@ void internal_component_storage_init() {
       .entity_info_map = map_init(EntityInfo),
       .bundle_table_map = map_init(usize),
       .type_in_table_set_map = map_init(BitSet),
+      .despawn_queue = vec_init(Entity),
   };
   ComponentStorage = storage;
 }
@@ -141,7 +142,7 @@ static void raw_add_child(Entity parent, Entity child) {
   vec_push(Entity, &parent_info->children, child);
 }
 
-static void raw_despawn(Entity entity) {
+static void internal_despawn(Entity entity) {
   EntityInfo *info =
       map_get(EntityInfo, &ComponentStorage.entity_info_map, entity.id);
   if (info == NULL)
@@ -156,7 +157,7 @@ static void raw_despawn(Entity entity) {
   for (usize i = 0; i < info->children.len; i++) {
     // should not be null
     Entity child = *vec_index(Entity, &info->children, i);
-    raw_despawn(child);
+    internal_despawn(child);
   }
   vec_free(Entity, &info->children);
 
@@ -182,6 +183,18 @@ static void raw_despawn(Entity entity) {
       ->index = info->index;
   vec_swap_remove(ArchetypeRow, &table_ptr->table, info->index);
   map_remove(EntityInfo, &ComponentStorage.entity_info_map, entity.id);
+}
+
+static void raw_despawn(Entity entity) {
+  vec_push(Entity, &ComponentStorage.despawn_queue, entity);
+}
+
+static void raw_flush() {
+  for (usize i = 0; i < ComponentStorage.despawn_queue.len; i++) {
+    Entity entity = *vec_index(Entity, &ComponentStorage.despawn_queue, i);
+    internal_despawn(entity);
+  }
+  vec_clear(Entity, &ComponentStorage.despawn_queue);
 }
 
 brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
@@ -238,7 +251,7 @@ brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
   return iter;
 }
 
-void raw_query_free(mov(QueryIter *) iter) {
+static void raw_query_free(mov(QueryIter *) iter) {
   if (iter->table_iter.ptr != NULL)
     CBitSet.free(iter->table_iter.ptr);
 
@@ -304,4 +317,6 @@ const struct CComponent CComponent = {
     .query_free = raw_query_free,
 
     .default_vtable = raw_default_vtable,
+
+    .flush = raw_flush,
 };
