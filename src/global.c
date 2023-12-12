@@ -64,6 +64,54 @@ static void add_pac_man() {
   resource_insert(PacMan8Eva, open_eva("assets/pac_man/pac_man_8.eva"));
 }
 
+// Pac man die
+DeclareResourceType(PacManDie01Eva);
+DeclareResourceType(PacManDie02Eva);
+DeclareResourceType(PacManDie03Eva);
+DeclareResourceType(PacManDie04Eva);
+DeclareResourceType(PacManDie05Eva);
+DeclareResourceType(PacManDie06Eva);
+DeclareResourceType(PacManDie07Eva);
+DeclareResourceType(PacManDie08Eva);
+DeclareResourceType(PacManDie09Eva);
+DeclareResourceType(PacManDie10Eva);
+DeclareResourceType(PacManDie11Eva);
+static void add_pac_man_die() {
+  add_resource_type(PacManDie01Eva);
+  add_resource_type(PacManDie02Eva);
+  add_resource_type(PacManDie03Eva);
+  add_resource_type(PacManDie04Eva);
+  add_resource_type(PacManDie05Eva);
+  add_resource_type(PacManDie06Eva);
+  add_resource_type(PacManDie07Eva);
+  add_resource_type(PacManDie08Eva);
+  add_resource_type(PacManDie09Eva);
+  add_resource_type(PacManDie10Eva);
+  add_resource_type(PacManDie11Eva);
+  resource_insert(PacManDie01Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_01.eva"));
+  resource_insert(PacManDie02Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_02.eva"));
+  resource_insert(PacManDie03Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_03.eva"));
+  resource_insert(PacManDie04Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_04.eva"));
+  resource_insert(PacManDie05Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_05.eva"));
+  resource_insert(PacManDie06Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_06.eva"));
+  resource_insert(PacManDie07Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_07.eva"));
+  resource_insert(PacManDie08Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_08.eva"));
+  resource_insert(PacManDie09Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_09.eva"));
+  resource_insert(PacManDie10Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_10.eva"));
+  resource_insert(PacManDie11Eva,
+                  open_eva("assets/pac_man_die/pac_man_die_11.eva"));
+}
+
 // Ghost
 DeclareResourceType(PinkGhostEva);
 DeclareResourceType(RedGhostEva);
@@ -241,6 +289,8 @@ void global_init() {
   add_audio();
 
   add_pac_man();
+
+  add_pac_man_die();
 
   add_win_menu();
 

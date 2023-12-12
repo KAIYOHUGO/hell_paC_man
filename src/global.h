@@ -23,7 +23,9 @@ typedef enum {
   GameState_RespawnPlayer,
   GameState_InGame,
 
-  // End
+  GameState_PlayerDie,
+
+  // State Menu
   GameState_Win,
   GameState_Lose,
 
@@ -68,6 +70,19 @@ ExportResourceType(PacMan5Eva);
 ExportResourceType(PacMan6Eva);
 ExportResourceType(PacMan7Eva);
 ExportResourceType(PacMan8Eva);
+// pac man die
+ExportResourceType(PacManDie01Eva);
+ExportResourceType(PacManDie02Eva);
+ExportResourceType(PacManDie03Eva);
+ExportResourceType(PacManDie04Eva);
+ExportResourceType(PacManDie05Eva);
+ExportResourceType(PacManDie06Eva);
+ExportResourceType(PacManDie07Eva);
+ExportResourceType(PacManDie08Eva);
+ExportResourceType(PacManDie09Eva);
+ExportResourceType(PacManDie10Eva);
+ExportResourceType(PacManDie11Eva);
+
 // win menu
 ExportResourceType(WinMenu01Eva);
 ExportResourceType(WinMenu02Eva);

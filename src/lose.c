@@ -17,17 +17,6 @@ static void enter_lose() {
   if (!state_is_enter(GameState, GameState_Lose))
     return;
 
-  // stop animation
-  {
-    QueryIter iter = Query(AnimationCord);
-    PComponent comp[1];
-    while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
-      AnimationCord *animation_cord = (AnimationCord *)comp[0].self;
-      animation_cord->active = false;
-    }
-    CComponent.query_free(&iter);
-  }
-
   ResourceType imgs[17] = {
       RTy(LoseMenu01Eva), RTy(LoseMenu02Eva), RTy(LoseMenu03Eva),
       RTy(LoseMenu04Eva), RTy(LoseMenu05Eva), RTy(LoseMenu06Eva),
@@ -57,8 +46,6 @@ static void enter_lose() {
   Spawn(LoseDisplay, AnimationSprite, ScreenCord, Sprite, ComponentMarker,
         animation_sprite_new(animation_sprite), screen_cord_new(cord),
         sprite_new(sprite));
-
-  play_sound(RTy(DeathWav));
 }
 
 static void read_input() {
@@ -88,7 +75,6 @@ static void exit_lose() {
   food_despawn();
   ghost_despawn();
   booster_despawn();
-  player_despawn();
   in_game_display_despawn();
 
   QueryIter iter = QueryEntity(LoseDisplay);

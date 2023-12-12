@@ -354,14 +354,10 @@ void animation_sprite_system() {
     case LoopMode_Disable:
       if (loop_index == 0)
         break;
-      animation_sprite->_index = 0;
-      animation_sprite->_elapse = 0.0;
       animation_sprite->active = false;
     case LoopMode_LoopN:
       if (loop_index <= animation_sprite->loop)
         break;
-      animation_sprite->_index = 0;
-      animation_sprite->_elapse = 0.0;
       animation_sprite->active = false;
     case LoopMode_LoopInf:
       break;
@@ -379,6 +375,12 @@ void animation_sprite_system() {
       if ((loop_index & 1) != 0)
         frame_index = animation_sprite->eva_imgs.len - frame_index - 1;
       break;
+    }
+
+    if (!animation_sprite->active) {
+      animation_sprite->_index = 0;
+      animation_sprite->_elapse = 0.0;
+      continue;
     }
 
     switch (animation_sprite->direction) {

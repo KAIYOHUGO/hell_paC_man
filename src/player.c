@@ -94,6 +94,56 @@ static void player_extra_life() {
   }
 }
 
+static void enter_player_die_system() {
+  if (!state_is_enter(GameState, GameState_PlayerDie))
+    return;
+
+  ResourceType imgs[11] = {
+      RTy(PacManDie01Eva), RTy(PacManDie02Eva), RTy(PacManDie03Eva),
+      RTy(PacManDie04Eva), RTy(PacManDie05Eva), RTy(PacManDie06Eva),
+      RTy(PacManDie07Eva), RTy(PacManDie08Eva), RTy(PacManDie09Eva),
+      RTy(PacManDie10Eva), RTy(PacManDie11Eva),
+  };
+  Array(ResourceType) arr_imgs = array_ref(imgs);
+
+  QueryIter iter = QueryWith(With(Player), AnimationSprite, Sprite);
+  PComponent comp[2];
+  CComponent.query_next(&iter, array_ref(comp));
+  CComponent.query_free(&iter);
+  AnimationSprite *animation_sprite = (AnimationSprite *)comp[0].self;
+  Sprite *sprite = (Sprite *)comp[1].self;
+  animation_sprite->_elapse = 0.0;
+  animation_sprite->_index = 0;
+  animation_sprite->loop_mode = LoopMode_Disable;
+  animation_sprite->ms_per_frame = 170;
+  animation_sprite->active = true;
+  sprite->rotation = Rotation_0;
+  array_free(ResourceType, &animation_sprite->eva_imgs);
+  animation_sprite->eva_imgs = array_clone(ResourceType, &arr_imgs);
+  play_sound(RTy(DeathWav));
+}
+
+static void player_die_system() {
+  if (!state_is_in(GameState, GameState_PlayerDie))
+    return;
+
+  QueryIter iter = QueryWith(With(Player), AnimationSprite);
+  PComponent comp[1];
+  Entity *id = CComponent.query_next(&iter, array_ref(comp));
+  CComponent.query_free(&iter);
+  AnimationSprite *sprite = (AnimationSprite *)comp[0].self;
+  if (sprite->active)
+    return;
+
+  CComponent.despawn(*id);
+  GameInfo *info = resource_get(GameInfo);
+  if (info->life > 0) {
+    state_set(GameState, GameState_RespawnPlayer);
+  } else {
+    state_set(GameState, GameState_Lose);
+  }
+}
+
 void player_spawn(Position pos) {
   Sprite sprite = {
       .eva_img = RTy(PacMan1Eva),
@@ -141,5 +191,6 @@ void player_despawn() {
 void player_init() {
   add_component_type(Player);
   add_event_type(PlayerEvent);
-  AddUpdateSystem(player_move_system, player_extra_life);
+  AddUpdateSystem(player_move_system, player_extra_life,
+                  enter_player_die_system, player_die_system);
 }

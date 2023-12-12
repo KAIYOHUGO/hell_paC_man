@@ -66,7 +66,6 @@ void player_respawn() {
     return;
   GameInfo *info = resource_get(GameInfo);
 
-  player_despawn();
   Position player_pos = {
       .x = rand() % info->width,
       .y = rand() % info->height,
@@ -130,6 +129,7 @@ void spawn_display() {
     Spawn(LifeDisplay, Number, ScreenCord, ComponentMarker, number_new(num),
           screen_cord_new(cord));
   }
+  play_sound(RTy(BeginningWav));
 }
 
 void enter_in_game() {
@@ -150,8 +150,6 @@ void enter_in_game() {
     cord->y = animation_cord->y;
   }
   CComponent.query_free(&iter);
-
-  play_sound(RTy(BeginningWav));
 }
 
 void eat_system() {
@@ -187,11 +185,26 @@ void attacked_system() {
       continue;
 
     info->life--;
-    if (info->life > 0) {
-      state_set(GameState, GameState_RespawnPlayer);
-    } else {
-      state_set(GameState, GameState_Lose);
+
+    // stop animation
+    {
+      QueryIter iter = Query(AnimationCord);
+      PComponent comp[1];
+      while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
+        AnimationCord *animation_cord = (AnimationCord *)comp[0].self;
+        animation_cord->active = false;
+      }
+      CComponent.query_free(&iter);
     }
+    QueryIter iter = QueryWith(With(Ghost), Sprite);
+    PComponent comp[1];
+    while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
+      Sprite *sprite = (Sprite *)comp[0].self;
+      sprite->active = false;
+    }
+    CComponent.query_free(&iter);
+
+    state_set(GameState, GameState_PlayerDie);
     break;
   }
 }

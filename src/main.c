@@ -14,6 +14,7 @@
 #include <evangel/app.h>
 #include <evangel/component.h>
 #include <evangel/resource.h>
+#include <stdlib.h>
 
 void hook_app_init() {
   CApp.set_fps(60);
@@ -44,18 +45,7 @@ void hook_app_init() {
 
 void hook_app_before_update() { listen_keyboard(); };
 
-void hook_app_after_update(){
-    // QueryIter iter = Query(ScreenCord);
-    // PComponent comp[1];
-    // CComponent.query_next(&iter, array_ref(comp));
-    // ScreenCord *cord = (ScreenCord *)(comp[0].self);
-    // cord->x = (cord->x + 9 + 1) % 249 - 9;
-
-    // CComponent.query_free(&iter);
-    // sprite_debug();
-    // setting_debug();
-    // state_debug();
-};
+void hook_app_after_update(){};
 void hook_app_before_render(){};
 void hook_app_after_render(){};
 
@@ -67,7 +57,7 @@ void hook_app_render() {
 void hook_app_free(){};
 
 isize main() {
-
+  srand(time(NULL));
   struct termios old_term = init_terminal();
   app_start();
   reset_terminal(old_term);

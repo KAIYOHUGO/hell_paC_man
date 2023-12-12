@@ -19,6 +19,11 @@ typedef struct {
 
 ExportComponentType(WidthDisplay);
 
+typedef struct {
+} BackgroundBlock;
+
+ExportComponentType(BackgroundBlock);
+
 void setting_init();
 
 #endif // SETTING_H
