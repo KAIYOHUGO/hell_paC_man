@@ -12,6 +12,7 @@
 #define PLAYER_ANIMATION_SPEED 85.0
 
 typedef enum {
+  GameState_Loading,
   GameState_Menu,
   // Setting
   GameState_Setting_ReadHeight,
@@ -82,6 +83,32 @@ ExportResourceType(PacManDie08Eva);
 ExportResourceType(PacManDie09Eva);
 ExportResourceType(PacManDie10Eva);
 ExportResourceType(PacManDie11Eva);
+
+// menu
+ExportResourceType(Menu01Eva);
+ExportResourceType(Menu02Eva);
+ExportResourceType(Menu03Eva);
+ExportResourceType(Menu04Eva);
+ExportResourceType(Menu05Eva);
+ExportResourceType(Menu06Eva);
+ExportResourceType(Menu07Eva);
+ExportResourceType(Menu08Eva);
+ExportResourceType(Menu09Eva);
+ExportResourceType(Menu10Eva);
+ExportResourceType(Menu11Eva);
+ExportResourceType(Menu12Eva);
+ExportResourceType(Menu13Eva);
+ExportResourceType(Menu14Eva);
+ExportResourceType(Menu15Eva);
+ExportResourceType(Menu16Eva);
+ExportResourceType(Menu17Eva);
+ExportResourceType(Menu18Eva);
+ExportResourceType(Menu19Eva);
+ExportResourceType(Menu20Eva);
+ExportResourceType(Menu21Eva);
+ExportResourceType(Menu22Eva);
+ExportResourceType(Menu23Eva);
+ExportResourceType(Menu24Eva);
 
 // win menu
 ExportResourceType(WinMenu01Eva);

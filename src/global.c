@@ -118,6 +118,81 @@ DeclareResourceType(RedGhostEva);
 DeclareResourceType(BlueGhostEva);
 DeclareResourceType(YellowGhostEva);
 
+DeclareResourceType(Menu01Eva);
+DeclareResourceType(Menu02Eva);
+DeclareResourceType(Menu03Eva);
+DeclareResourceType(Menu04Eva);
+DeclareResourceType(Menu05Eva);
+DeclareResourceType(Menu06Eva);
+DeclareResourceType(Menu07Eva);
+DeclareResourceType(Menu08Eva);
+DeclareResourceType(Menu09Eva);
+DeclareResourceType(Menu10Eva);
+DeclareResourceType(Menu11Eva);
+DeclareResourceType(Menu12Eva);
+DeclareResourceType(Menu13Eva);
+DeclareResourceType(Menu14Eva);
+DeclareResourceType(Menu15Eva);
+DeclareResourceType(Menu16Eva);
+DeclareResourceType(Menu17Eva);
+DeclareResourceType(Menu18Eva);
+DeclareResourceType(Menu19Eva);
+DeclareResourceType(Menu20Eva);
+DeclareResourceType(Menu21Eva);
+DeclareResourceType(Menu22Eva);
+DeclareResourceType(Menu23Eva);
+DeclareResourceType(Menu24Eva);
+static void add_menu() {
+  add_resource_type(Menu01Eva);
+  add_resource_type(Menu02Eva);
+  add_resource_type(Menu03Eva);
+  add_resource_type(Menu04Eva);
+  add_resource_type(Menu05Eva);
+  add_resource_type(Menu06Eva);
+  add_resource_type(Menu07Eva);
+  add_resource_type(Menu08Eva);
+  add_resource_type(Menu09Eva);
+  add_resource_type(Menu10Eva);
+  add_resource_type(Menu11Eva);
+  add_resource_type(Menu12Eva);
+  add_resource_type(Menu13Eva);
+  add_resource_type(Menu14Eva);
+  add_resource_type(Menu15Eva);
+  add_resource_type(Menu16Eva);
+  add_resource_type(Menu17Eva);
+  add_resource_type(Menu18Eva);
+  add_resource_type(Menu19Eva);
+  add_resource_type(Menu20Eva);
+  add_resource_type(Menu21Eva);
+  add_resource_type(Menu22Eva);
+  add_resource_type(Menu23Eva);
+  add_resource_type(Menu24Eva);
+  resource_insert(Menu01Eva, open_eva("assets/menu/menu_01.eva"));
+  resource_insert(Menu02Eva, open_eva("assets/menu/menu_02.eva"));
+  resource_insert(Menu03Eva, open_eva("assets/menu/menu_03.eva"));
+  resource_insert(Menu04Eva, open_eva("assets/menu/menu_04.eva"));
+  resource_insert(Menu05Eva, open_eva("assets/menu/menu_05.eva"));
+  resource_insert(Menu06Eva, open_eva("assets/menu/menu_06.eva"));
+  resource_insert(Menu07Eva, open_eva("assets/menu/menu_07.eva"));
+  resource_insert(Menu08Eva, open_eva("assets/menu/menu_08.eva"));
+  resource_insert(Menu09Eva, open_eva("assets/menu/menu_09.eva"));
+  resource_insert(Menu10Eva, open_eva("assets/menu/menu_10.eva"));
+  resource_insert(Menu11Eva, open_eva("assets/menu/menu_11.eva"));
+  resource_insert(Menu12Eva, open_eva("assets/menu/menu_12.eva"));
+  resource_insert(Menu13Eva, open_eva("assets/menu/menu_13.eva"));
+  resource_insert(Menu14Eva, open_eva("assets/menu/menu_14.eva"));
+  resource_insert(Menu15Eva, open_eva("assets/menu/menu_15.eva"));
+  resource_insert(Menu16Eva, open_eva("assets/menu/menu_16.eva"));
+  resource_insert(Menu17Eva, open_eva("assets/menu/menu_17.eva"));
+  resource_insert(Menu18Eva, open_eva("assets/menu/menu_18.eva"));
+  resource_insert(Menu19Eva, open_eva("assets/menu/menu_19.eva"));
+  resource_insert(Menu20Eva, open_eva("assets/menu/menu_20.eva"));
+  resource_insert(Menu21Eva, open_eva("assets/menu/menu_21.eva"));
+  resource_insert(Menu22Eva, open_eva("assets/menu/menu_22.eva"));
+  resource_insert(Menu23Eva, open_eva("assets/menu/menu_23.eva"));
+  resource_insert(Menu24Eva, open_eva("assets/menu/menu_24.eva"));
+}
+
 // win menu
 DeclareResourceType(WinMenu01Eva);
 DeclareResourceType(WinMenu02Eva);
@@ -276,14 +351,10 @@ void add_num() {
 
 void global_init() {
   add_state_type(GameState);
-  state_set(GameState, GameState_Setting_ReadHeight);
+  state_set(GameState, GameState_Menu);
 
   add_resource_type(GameInfo);
   GameInfo *info = malloc(sizeof(GameInfo));
-  info->height = 0;
-  info->width = 0;
-  info->food_amount = 0;
-  info->mod = GameMode_Default;
   resource_insert(GameInfo, info);
 
   add_audio();
@@ -291,6 +362,8 @@ void global_init() {
   add_pac_man();
 
   add_pac_man_die();
+
+  add_menu();
 
   add_win_menu();
 

@@ -7,6 +7,7 @@
 #include "in_game.h"
 #include "input.h"
 #include "lose.h"
+#include "menu.h"
 #include "player.h"
 #include "render.h"
 #include "setting.h"
@@ -39,6 +40,7 @@ void hook_app_init() {
 
   setting_init();
   in_game_init();
+  menu_init();
   lose_init();
   win_init();
 };

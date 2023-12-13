@@ -1,5 +1,4 @@
 #include "lose.h"
-#include "audio.h"
 #include "booster.h"
 #include "component.h"
 #include "food.h"
@@ -7,7 +6,6 @@
 #include "global.h"
 #include "in_game.h"
 #include "input.h"
-#include "player.h"
 #include <evangel/app.h>
 #include <evangel/event.h>
 

@@ -17,6 +17,12 @@ static void enter_read_height() {
   if (!state_is_enter(GameState, GameState_Setting_ReadHeight))
     return;
 
+  GameInfo *info = resource_get(GameInfo);
+  info->height = 0;
+  info->width = 0;
+  info->food_amount = 0;
+  info->mod = GameMode_Default;
+
   isize center = SCREEN_WIDTH / 2;
 
   Number height = {

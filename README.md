@@ -11,7 +11,7 @@
 
 # Roadmap
 
-- [ ] Basic Parts (40%) 
+- [x] Basic Parts (40%) 
     - [x] The map system (15%) 
     - [x] The booster system (10%)
     - [x] Pointers (5%) 
@@ -25,7 +25,7 @@
     - [ ] Others (20%)
     - [x] Clean code architecture (5%) 
     - [ ] Detailed comments (5%) 
-    - [ ] Clearly explain your codes during the demonstration (5%)
+    - [x] Clearly explain your codes during the demonstration (5%)
     - [ ] Working with GenAI Tools in a creative way and providing descriptions of the collaboration process in the code comments (5%)
 
 
@@ -36,8 +36,8 @@
 - [x] Press w, a, s, d to move `P` around with 1 step
 - [x] player can move `P` to get `S` and `B`
 - [x] Player need get all `S` to win the game 
-- [ ] Display win message in win stage
-- [ ] Win menu prompt player to start a new game or terminate the program.
+- [x] Display win message in win stage
+- [x] Win menu prompt player to start a new game or terminate the program.
 - [x] Design your formula to calculate the appropriate number of `S`, `B`, and `M` base on size of map
 - [x] When `P` encounter `M` reduce `life` by 1
 - [x] If `life == 0`, player lose
