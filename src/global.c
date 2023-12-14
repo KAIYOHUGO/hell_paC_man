@@ -15,6 +15,7 @@ DeclareResourceType(EatWav);
 DeclareResourceType(WalkWav);
 DeclareResourceType(SirenWav);
 DeclareResourceType(BoosterWav);
+DeclareResourceType(GhostDeadWav);
 static void add_audio() {
   add_resource_type(BeginningWav);
   add_resource_type(DeathWav);
@@ -22,12 +23,14 @@ static void add_audio() {
   add_resource_type(WalkWav);
   add_resource_type(SirenWav);
   add_resource_type(BoosterWav);
+  add_resource_type(GhostDeadWav);
   resource_insert(BeginningWav, open_sound("assets/audio/beginning.wav"));
   resource_insert(DeathWav, open_sound("assets/audio/death.wav"));
   resource_insert(EatWav, open_sound("assets/audio/eat.wav"));
   resource_insert(WalkWav, open_sound("assets/audio/walk.wav"));
   resource_insert(SirenWav, open_sound("assets/audio/siren.wav"));
   resource_insert(BoosterWav, open_sound("assets/audio/booster.wav"));
+  resource_insert(GhostDeadWav, open_sound("assets/audio/ghost_dead.wav"));
 }
 
 // Assets
@@ -36,6 +39,10 @@ DeclareResourceType(PacManEva);
 DeclareResourceType(BlockEva);
 DeclareResourceType(CherryEva);
 DeclareResourceType(BoosterEva);
+DeclareResourceType(SettingEva);
+DeclareResourceType(GameModeDefaultEva);
+DeclareResourceType(GameModeCustomEva);
+
 // Pac man
 DeclareResourceType(PacMan1Eva);
 DeclareResourceType(PacMan2Eva);
@@ -117,6 +124,58 @@ DeclareResourceType(PinkGhostEva);
 DeclareResourceType(RedGhostEva);
 DeclareResourceType(BlueGhostEva);
 DeclareResourceType(YellowGhostEva);
+static void add_ghost() {
+  add_resource_type(PinkGhostEva);
+  add_resource_type(RedGhostEva);
+  add_resource_type(BlueGhostEva);
+  add_resource_type(YellowGhostEva);
+  resource_insert(PinkGhostEva, open_eva("assets/ghost/pink_ghost.eva"));
+  resource_insert(RedGhostEva, open_eva("assets/ghost/red_ghost.eva"));
+  resource_insert(BlueGhostEva, open_eva("assets/ghost/blue_ghost.eva"));
+  resource_insert(YellowGhostEva, open_eva("assets/ghost/yellow_ghost.eva"));
+}
+
+// ghost freeze
+DeclareResourceType(PinkGhostFreezeEva);
+DeclareResourceType(RedGhostFreezeEva);
+DeclareResourceType(BlueGhostFreezeEva);
+DeclareResourceType(YellowGhostFreezeEva);
+static void add_ghost_freeze() {
+  add_resource_type(PinkGhostFreezeEva);
+  add_resource_type(RedGhostFreezeEva);
+  add_resource_type(BlueGhostFreezeEva);
+  add_resource_type(YellowGhostFreezeEva);
+  resource_insert(PinkGhostFreezeEva,
+                  open_eva("assets/ghost/pink_ghost_freeze.eva"));
+  resource_insert(RedGhostFreezeEva,
+                  open_eva("assets/ghost/red_ghost_freeze.eva"));
+  resource_insert(BlueGhostFreezeEva,
+                  open_eva("assets/ghost/blue_ghost_freeze.eva"));
+  resource_insert(YellowGhostFreezeEva,
+                  open_eva("assets/ghost/yellow_ghost_freeze.eva"));
+}
+
+// ghost die
+DeclareResourceType(GhostDie1Eva);
+DeclareResourceType(GhostDie2Eva);
+DeclareResourceType(GhostDie3Eva);
+DeclareResourceType(GhostDie4Eva);
+DeclareResourceType(GhostDie5Eva);
+DeclareResourceType(GhostDie6Eva);
+static void add_ghost_die() {
+  add_resource_type(GhostDie1Eva);
+  add_resource_type(GhostDie2Eva);
+  add_resource_type(GhostDie3Eva);
+  add_resource_type(GhostDie4Eva);
+  add_resource_type(GhostDie5Eva);
+  add_resource_type(GhostDie6Eva);
+  resource_insert(GhostDie1Eva, open_eva("assets/ghost_die/ghost_die_1.eva"));
+  resource_insert(GhostDie2Eva, open_eva("assets/ghost_die/ghost_die_2.eva"));
+  resource_insert(GhostDie3Eva, open_eva("assets/ghost_die/ghost_die_3.eva"));
+  resource_insert(GhostDie4Eva, open_eva("assets/ghost_die/ghost_die_4.eva"));
+  resource_insert(GhostDie5Eva, open_eva("assets/ghost_die/ghost_die_5.eva"));
+  resource_insert(GhostDie6Eva, open_eva("assets/ghost_die/ghost_die_6.eva"));
+}
 
 DeclareResourceType(Menu01Eva);
 DeclareResourceType(Menu02Eva);
@@ -315,6 +374,25 @@ static void add_lose_menu() {
   resource_insert(LoseMenu17Eva, open_eva("assets/lose_menu/lose_menu_17.eva"));
 }
 
+// Arrow
+DeclareResourceType(Arrow1Eva);
+DeclareResourceType(Arrow2Eva);
+DeclareResourceType(Arrow3Eva);
+DeclareResourceType(Arrow4Eva);
+DeclareResourceType(Arrow5Eva);
+static void add_arrow() {
+  add_resource_type(Arrow1Eva);
+  add_resource_type(Arrow2Eva);
+  add_resource_type(Arrow3Eva);
+  add_resource_type(Arrow4Eva);
+  add_resource_type(Arrow5Eva);
+  resource_insert(Arrow1Eva, open_eva("assets/arrow_1.eva"));
+  resource_insert(Arrow2Eva, open_eva("assets/arrow_2.eva"));
+  resource_insert(Arrow3Eva, open_eva("assets/arrow_3.eva"));
+  resource_insert(Arrow4Eva, open_eva("assets/arrow_4.eva"));
+  resource_insert(Arrow5Eva, open_eva("assets/arrow_5.eva"));
+}
+
 // Num
 DeclareResourceType(Num0);
 DeclareResourceType(Num1);
@@ -326,7 +404,7 @@ DeclareResourceType(Num6);
 DeclareResourceType(Num7);
 DeclareResourceType(Num8);
 DeclareResourceType(Num9);
-void add_num() {
+static void add_num() {
   add_resource_type(Num0);
   add_resource_type(Num1);
   add_resource_type(Num2);
@@ -369,26 +447,30 @@ void global_init() {
 
   add_lose_menu();
 
+  add_ghost();
+
+  add_ghost_freeze();
+
+  add_ghost_die();
+
+  add_arrow();
+
+  add_num();
+
   // assets
   add_resource_type(CursorEva);
   add_resource_type(PacManEva);
   add_resource_type(BlockEva);
   add_resource_type(CherryEva);
   add_resource_type(BoosterEva);
+  add_resource_type(SettingEva);
+  add_resource_type(GameModeDefaultEva);
+  add_resource_type(GameModeCustomEva);
   resource_insert(CursorEva, open_eva("assets/cursor.eva"));
   resource_insert(BlockEva, open_eva("assets/block.eva"));
   resource_insert(CherryEva, open_eva("assets/cherry.eva"));
   resource_insert(BoosterEva, open_eva("assets/booster.eva"));
-
-  // ghost
-  add_resource_type(PinkGhostEva);
-  add_resource_type(RedGhostEva);
-  add_resource_type(BlueGhostEva);
-  add_resource_type(YellowGhostEva);
-  resource_insert(PinkGhostEva, open_eva("assets/ghost/pink_ghost.eva"));
-  resource_insert(RedGhostEva, open_eva("assets/ghost/red_ghost.eva"));
-  resource_insert(BlueGhostEva, open_eva("assets/ghost/blue_ghost.eva"));
-  resource_insert(YellowGhostEva, open_eva("assets/ghost/yellow_ghost.eva"));
-
-  add_num();
+  resource_insert(SettingEva, open_eva("assets/setting.eva"));
+  resource_insert(GameModeDefaultEva, open_eva("assets/game_mode_default.eva"));
+  resource_insert(GameModeCustomEva, open_eva("assets/game_mode_custom.eva"));
 }

@@ -1,5 +1,4 @@
 #include "render.h"
-#include <assert.h>
 #include <fcntl.h>
 #include <stdlib.h>
 #include <termios.h>
@@ -26,12 +25,12 @@ void reset_terminal(struct termios old_term) {
   printf("\033c\033[?25h");
 }
 
-void render_pixel(RGB upper, RGB lower) {
+static void render_pixel(RGB upper, RGB lower) {
   printf("\033[38;2;%u;%u;%um\033[48;2;%u;%u;%um\u2580", upper.r, upper.g,
          upper.b, lower.r, lower.g, lower.b);
 }
 
-void render_clear() {
+static void render_clear() {
   // clear
   printf("\033[H");
 }

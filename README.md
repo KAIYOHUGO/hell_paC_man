@@ -1,13 +1,10 @@
-# Hell Pac Men
+# Hell paC men
 
 [![wakatime](https://wakatime.com/badge/user/018b677c-491b-487f-843a-068f3eb4badc/project/018bb6a2-2c88-476b-9a8c-5d3a3cfd7f48.svg)](https://wakatime.com/badge/user/018b677c-491b-487f-843a-068f3eb4badc/project/018bb6a2-2c88-476b-9a8c-5d3a3cfd7f48)
 
 > Hell is not bad but you know heaven exist.
 > 
 > C & Cmake is not bad but you know other language exist.
-
-
-
 
 # Roadmap
 
@@ -22,11 +19,11 @@
         - [x] A clean main function (you need to distribute most of the statements to different functions and only keep the function calls in the main function)
         - [x] Don’t place the main function in strange places
 - [ ] Extra Parts (40%) 
-    - [ ] Others (20%)
+    - [x] Others (20%)
     - [x] Clean code architecture (5%) 
     - [ ] Detailed comments (5%) 
     - [x] Clearly explain your codes during the demonstration (5%)
-    - [ ] Working with GenAI Tools in a creative way and providing descriptions of the collaboration process in the code comments (5%)
+    - [x] Working with GenAI Tools in a creative way and providing descriptions of the collaboration process in the code comments (5%)
 
 
 ## Basic Part
@@ -46,8 +43,6 @@
 - [x] Freeze booster : pause `M` movement for 3 turn
 - [x] Less monster booster : despawn 1 `M`
 - [x] Extra live booster : increase `life` by 1
-- [ ] 
-- [ ] 
 
 Extra Part
 There are many ways to enhance the overall gaming experience of Pac-Man. One way is to incorporate additional features that can make the game more challenging and exciting. For instance, you can create a level system that increases the game's difficulty as the player progresses and achieves higher scores. You can also incorporate background music and graphics to enhance the game's visual and auditory appeal. Furthermore, adding special sound effects for specific events can add a new dimension to the game's overall experience. The main objective is to create an enjoyable game that not only entertains the players but also encourages them to explore and learn new C-based libraries to implement advanced functions. Please refer to the grading guidelines provided in the grading section for more information.

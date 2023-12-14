@@ -16,6 +16,7 @@ typedef enum {
   // special key
   Key_ENTER,
   Key_ESC,
+  Key_Backspace,
 
   // Key_,
 } KeyKind;

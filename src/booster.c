@@ -31,7 +31,7 @@ void player_get_booster_system() {
       continue;
 
     BoosterEvent *event = malloc(sizeof(BoosterEvent));
-    *event = (BoosterEvent)(rand() % _BoosterKind_End);
+    *event = (BoosterEvent)(rand() % _BoosterKind_Size);
     // *event = BoosterKind_LessGhost;
     event_emit(BoosterEvent, CEvent.default_vtable(event));
     CComponent.despawn(*id);

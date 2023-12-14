@@ -60,7 +60,7 @@ static void read_input() {
     Key key = *(Key *)vec_index(PEvent, events, i)->self;
     switch (key.kind) {
     case Key_ENTER:
-      state_set(GameState, GameState_Setting_ReadHeight);
+      state_set(GameState, GameState_Setting_ReadMode);
       return;
     case Key_ESC:
       CApp.exit();

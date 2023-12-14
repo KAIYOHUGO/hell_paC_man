@@ -1,4 +1,5 @@
 #include "ghost.h"
+#include "audio.h"
 #include "booster.h"
 #include "global.h"
 #include "player.h"
@@ -7,6 +8,19 @@
 #include <stdlib.h>
 
 DeclareComponentType(Ghost);
+
+static ResourceType get_ghost_img(GhostKind kind) {
+  ResourceType variant[4] = {RTy(BlueGhostEva), RTy(PinkGhostEva),
+                             RTy(RedGhostEva), RTy(YellowGhostEva)};
+  return variant[(usize)kind];
+}
+
+static ResourceType get_ghost_freeze_img(GhostKind kind) {
+  ResourceType variant[4] = {RTy(BlueGhostFreezeEva), RTy(PinkGhostFreezeEva),
+                             RTy(RedGhostFreezeEva), RTy(YellowGhostFreezeEva)};
+  return variant[(usize)kind];
+}
+
 static void ghost_move_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
@@ -24,16 +38,23 @@ static void ghost_move_system() {
     if (player_event != PlayerEvent_Moved)
       continue;
 
-    QueryIter iter = Query(Ghost, Position);
-    PComponent comp[2];
+    QueryIter iter = Query(Ghost, Position, Sprite);
+    PComponent comp[3];
     while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
       Ghost *ghost = (Ghost *)comp[0].self;
       Position *pos = (Position *)comp[1].self;
+      Sprite *sprite = (Sprite *)comp[2].self;
+
+      if (ghost->dead)
+        continue;
 
       if (ghost->cd != 0) {
         ghost->cd--;
+        sprite->eva_img = get_ghost_freeze_img(ghost->kind);
         continue;
       }
+
+      sprite->eva_img = get_ghost_img(ghost->kind);
 
       isize *direction = directions[rand() % 5];
       if (0 <= pos->x + direction[0] && pos->x + direction[0] < info->width) {
@@ -63,10 +84,14 @@ static void ghost_attack_system() {
     CComponent.query_free(&iter);
   }
 
-  QueryIter iter = QueryWith(With(Ghost), ScreenCord);
-  PComponent comp[1];
+  QueryIter iter = Query(Ghost, ScreenCord);
+  PComponent comp[2];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
-    ScreenCord cord = *(ScreenCord *)comp[0].self;
+    Ghost *ghost = (Ghost *)comp[0].self;
+    ScreenCord cord = *(ScreenCord *)comp[1].self;
+    if (ghost->dead)
+      continue;
+
     isize d_x = player_cord.x - cord.x, d_y = player_cord.y - cord.y;
     if (d_x * d_x + d_y * d_y > 3)
       continue;
@@ -94,10 +119,33 @@ static void freeze_booster() {
     QueryIter iter = Query(Ghost);
     PComponent comp[1];
     while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
-      ((Ghost *)comp[0].self)->cd = 3;
+      Ghost *ghost = (Ghost *)comp[0].self;
+      ghost->cd = 3;
     }
     CComponent.query_free(&iter);
   }
+}
+
+static void kill_ghost(Entity entity) {
+  PComponent comp[2];
+  bool ok = GetComponent(entity, array_ref(comp), Ghost, AnimationSprite);
+  if (!ok)
+    return;
+
+  ResourceType imgs[8] = {
+      RTy(GhostDie1Eva), RTy(GhostDie2Eva), RTy(GhostDie3Eva),
+      RTy(GhostDie4Eva), RTy(GhostDie5Eva), RTy(GhostDie6Eva),
+  };
+  Array(ResourceType) array_imgs = array_ref(imgs);
+  Ghost *ghost = (Ghost *)comp[0].self;
+  AnimationSprite *sprite = (AnimationSprite *)comp[1].self;
+
+  ghost->dead = true;
+  sprite->eva_imgs = array_clone(ResourceType, &array_imgs);
+  sprite->loop_mode = LoopMode_Disable;
+  sprite->ms_per_frame = 150;
+  sprite->active = true;
+  play_sound(RTy(GhostDeadWav));
 }
 
 static void less_ghost_booster() {
@@ -113,21 +161,36 @@ static void less_ghost_booster() {
     if (event != BoosterKind_LessGhost)
       continue;
 
+    Vec(Entity) entities = vec_init(Entity);
     QueryIter iter = QueryEntity(Ghost);
     Entity *id;
-    Vec(Entity) ids = vec_init(Entity);
     while ((id = CComponent.query_next(&iter, array_empty(PComponent))) !=
            NULL) {
-      vec_push(Entity, &ids, *id);
+      vec_push(Entity, &entities, *id);
     }
     CComponent.query_free(&iter);
-    if (ids.len == 0)
+    if (entities.len == 0)
       return;
 
-    Entity random_id = *vec_index(Entity, &ids, rand() % ids.len);
-    vec_free(Entity, &ids);
+    Entity random_entity = *vec_index(Entity, &entities, rand() % entities.len);
+    kill_ghost(random_entity);
+  }
+}
 
-    CComponent.despawn(random_id);
+static void ghost_dead_animation() {
+  if (!state_is_in(GameState, GameState_InGame))
+    return;
+
+  QueryIter iter = Query(Ghost, AnimationSprite);
+  PComponent comp[2];
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_ref(comp))) != NULL) {
+    Ghost *ghost = (Ghost *)comp[0].self;
+    AnimationSprite *sprite = (AnimationSprite *)comp[1].self;
+    if (!ghost->dead || sprite->active)
+      continue;
+
+    CComponent.despawn(*id);
   }
 }
 
@@ -138,10 +201,9 @@ PComponent ghost_new(Ghost ghost) {
 }
 
 void ghost_spawn(Position pos) {
-  ResourceType variant[4] = {RTy(PinkGhostEva), RTy(RedGhostEva),
-                             RTy(BlueGhostEva), RTy(YellowGhostEva)};
+  GhostKind kind = rand() % _GhostKind_Size;
   Sprite sprite = {
-      .eva_img = variant[rand() % 4],
+      .eva_img = get_ghost_img(kind),
       .active = true,
   };
   AnimationCord animation_cord = {
@@ -151,11 +213,11 @@ void ghost_spawn(Position pos) {
   ScreenCord cord = {
       .z = 2,
   };
-  Ghost ghost = {
-      .cd = 0,
-  };
-  Spawn(Ghost, Position, Sprite, AnimationCord, ScreenCord, ghost_new(ghost),
-        position_new(pos), sprite_new(sprite),
+  Ghost ghost = {.cd = 0, .kind = kind};
+  AnimationSprite animation_sprite = {.active = false};
+  Spawn(Ghost, Position, AnimationSprite, Sprite, AnimationCord, ScreenCord,
+        ghost_new(ghost), position_new(pos),
+        animation_sprite_new(animation_sprite), sprite_new(sprite),
         animation_cord_new(animation_cord), screen_cord_new(cord));
 }
 
@@ -170,6 +232,6 @@ void ghost_despawn() {
 
 void ghost_init() {
   add_component_type(Ghost);
+  AddUpdateSystem(freeze_booster, less_ghost_booster, ghost_dead_animation);
   AddUpdateSystem(ghost_move_system, ghost_attack_system);
-  AddUpdateSystem(freeze_booster, less_ghost_booster);
 }

@@ -15,6 +15,7 @@ typedef enum {
   GameState_Loading,
   GameState_Menu,
   // Setting
+  GameState_Setting_ReadMode,
   GameState_Setting_ReadHeight,
   GameState_Setting_ReadWidth,
   GameState_Setting_ReadMap,
@@ -39,12 +40,13 @@ ExportStateType(GameState);
 typedef enum {
   GameMode_Default,
   GameMode_Custom,
+  _GameMode_Size,
 } GameMode;
 
 typedef struct {
   usize height, width, food_amount, life, level;
   isize offset_x, offset_y;
-  GameMode mod;
+  GameMode mode;
 } GameInfo;
 
 ExportResourceType(GameInfo);
@@ -56,12 +58,17 @@ ExportResourceType(EatWav);
 ExportResourceType(WalkWav);
 ExportResourceType(SirenWav);
 ExportResourceType(BoosterWav);
+ExportResourceType(GhostDeadWav);
 
 // assets
 ExportResourceType(CursorEva);
 ExportResourceType(BlockEva);
 ExportResourceType(CherryEva);
 ExportResourceType(BoosterEva);
+ExportResourceType(SettingEva);
+ExportResourceType(GameModeDefaultEva);
+ExportResourceType(GameModeCustomEva);
+
 // pac man
 ExportResourceType(PacMan1Eva);
 ExportResourceType(PacMan2Eva);
@@ -156,6 +163,25 @@ ExportResourceType(PinkGhostEva);
 ExportResourceType(RedGhostEva);
 ExportResourceType(BlueGhostEva);
 ExportResourceType(YellowGhostEva);
+// ghost freeze
+ExportResourceType(PinkGhostFreezeEva);
+ExportResourceType(RedGhostFreezeEva);
+ExportResourceType(BlueGhostFreezeEva);
+ExportResourceType(YellowGhostFreezeEva);
+// ghost die
+ExportResourceType(GhostDie1Eva);
+ExportResourceType(GhostDie2Eva);
+ExportResourceType(GhostDie3Eva);
+ExportResourceType(GhostDie4Eva);
+ExportResourceType(GhostDie5Eva);
+ExportResourceType(GhostDie6Eva);
+
+// arrow
+ExportResourceType(Arrow1Eva);
+ExportResourceType(Arrow2Eva);
+ExportResourceType(Arrow3Eva);
+ExportResourceType(Arrow4Eva);
+ExportResourceType(Arrow5Eva);
 
 // Num
 ExportResourceType(Num0);

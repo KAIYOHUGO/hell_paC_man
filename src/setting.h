@@ -1,6 +1,9 @@
 #if !defined(SETTING_H)
 #define SETTING_H
 
+#define SETTING_HEIGHT 45 
+#define SETTING_WIDTH 50 
+
 #include <evangel/array.h>
 #include <evangel/component.h>
 
@@ -8,6 +11,11 @@ typedef struct {
 } MapCursorDisplay;
 
 ExportComponentType(MapCursorDisplay);
+
+typedef struct {
+} ModeDisplay;
+
+ExportComponentType(ModeDisplay);
 
 typedef struct {
 } HeightDisplay;
@@ -18,6 +26,11 @@ typedef struct {
 } WidthDisplay;
 
 ExportComponentType(WidthDisplay);
+
+typedef struct {
+} BackgroundText;
+
+ExportComponentType(BackgroundText);
 
 typedef struct {
 } BackgroundBlock;

@@ -33,6 +33,9 @@ void listen_keyboard() {
     case 27:
       key.kind = Key_ESC;
       break;
+    case 127:
+      key.kind = Key_Backspace;
+      break;
     default:
       if ('0' <= keycode && keycode <= '9') {
         key.kind = Key_Number;

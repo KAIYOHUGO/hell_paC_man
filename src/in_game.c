@@ -5,8 +5,10 @@
 #include "food.h"
 #include "ghost.h"
 #include "global.h"
+#include "input.h"
 #include "player.h"
 #include <evangel/app.h>
+#include <evangel/event.h>
 #include <evangel/resource.h>
 #include <miniaudio.h>
 #include <stdlib.h>
@@ -15,7 +17,7 @@ DeclareComponentType(RemainDisplay);
 
 DeclareComponentType(LifeDisplay);
 
-void generate_map() {
+static void generate_map() {
   if (!state_is_in(GameState, GameState_GenerateMap))
     return;
 
@@ -61,7 +63,7 @@ void generate_map() {
   state_set(GameState, GameState_InGame);
 }
 
-void player_respawn() {
+static void player_respawn() {
   if (!state_is_in(GameState, GameState_RespawnPlayer))
     return;
   GameInfo *info = resource_get(GameInfo);
@@ -100,7 +102,7 @@ void player_respawn() {
   state_set(GameState, GameState_InGame);
 }
 
-void spawn_display() {
+static void spawn_display() {
   if (!state_is_exit(GameState, GameState_GenerateMap) &&
       !state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
@@ -132,7 +134,7 @@ void spawn_display() {
   play_sound(RTy(BeginningWav));
 }
 
-void enter_in_game() {
+static void enter_in_game() {
   if (!state_is_enter(GameState, GameState_InGame))
     return;
 
@@ -152,7 +154,7 @@ void enter_in_game() {
   CComponent.query_free(&iter);
 }
 
-void eat_system() {
+static void eat_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
   Vec(PEvent) *p_events = event_listen(PlayerEvent);
@@ -171,7 +173,7 @@ void eat_system() {
     state_set(GameState, GameState_Win);
 }
 
-void attacked_system() {
+static void attacked_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
   Vec(PEvent) *p_events = event_listen(PlayerEvent);
@@ -209,7 +211,7 @@ void attacked_system() {
   }
 }
 
-void display_update() {
+static void display_update() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -232,6 +234,20 @@ void display_update() {
   }
 }
 
+static void back_to_menu() {
+  if (!state_is_in(GameState, GameState_InGame))
+    return;
+
+  Vec(PEvent) *events = event_listen(Key);
+  for (usize i = 0; i < events->len; i++) {
+    Key key = *(Key *)vec_index(PEvent, events, i)->self;
+    if (key.kind != Key_ESC)
+      continue;
+
+    state_set(GameState, GameState_Menu);
+  }
+}
+
 void in_game_display_despawn() {
   {
     QueryIter iter = QueryEntity(RemainDisplay);
@@ -250,4 +266,5 @@ void in_game_init() {
   add_component_type(LifeDisplay);
   AddUpdateSystem(generate_map, player_respawn, spawn_display, enter_in_game);
   AddUpdateSystem(eat_system, attacked_system, display_update);
+  AddUpdateSystem(back_to_menu);
 }

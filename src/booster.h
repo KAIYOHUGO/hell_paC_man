@@ -16,7 +16,7 @@ typedef enum {
   BoosterKind_LessGhost,
   BoosterKind_ExtraLife,
   // BoosterKind_Power,
-  _BoosterKind_End
+  _BoosterKind_Size
 } BoosterEvent;
 
 ExportEventType(BoosterEvent);
