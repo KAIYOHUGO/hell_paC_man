@@ -197,7 +197,30 @@ static void raw_flush() {
   vec_clear(Entity, &ComponentStorage.despawn_queue);
 }
 
-brw(QueryIter) raw_query(brw(Array(ComponentType)) components,
+static bool raw_get_component(Entity entity,
+                              const brw(Array(ComponentType)) components,
+                              brw(Array(PComponent)) dest) {
+  EntityInfo *info =
+      map_get(EntityInfo, &ComponentStorage.entity_info_map, entity.id);
+  if (info == NULL)
+    return false;
+
+  ArchetypeTable *table_ptr =
+      vec_index(ArchetypeTable, &ComponentStorage.database, info->table);
+  ArchetypeRow *row = vec_index(ArchetypeRow, &table_ptr->table, info->index);
+
+  ComponentType *typed_components = array_typed(ComponentType, &components);
+  for (usize i = 0; i < min(components.len, dest.len); i++) {
+    usize col =
+        *map_get(usize, &table_ptr->type_col_id_map, typed_components[i].id);
+    *array_index(PComponent, &dest, i) =
+        *array_index(PComponent, &row->components, col);
+  }
+
+  return true;
+}
+
+brw(QueryIter) raw_query(const brw(Array(ComponentType)) components,
                          brw(Array(ComponentType)) with,
                          brw(Array(ComponentType)) without) {
   ComponentType *typed_components = array_typed(ComponentType, &components);
@@ -309,6 +332,8 @@ const struct CComponent CComponent = {
     .add_child = raw_add_child,
 
     .remove_child = raw_remove_child,
+
+    .get_component = raw_get_component,
 
     .query = raw_query,
 

@@ -74,7 +74,11 @@ struct CComponent {
 
   void (*remove_child)(Entity parent, Entity child);
 
-  brw(QueryIter) (*query)(brw(Array(ComponentType)) components,
+  bool (*get_component)(Entity entity,
+                        const brw(Array(ComponentType)) components,
+                        brw(Array(PComponent)) dest);
+
+  brw(QueryIter) (*query)(const brw(Array(ComponentType)) components,
                           brw(Array(ComponentType)) with,
                           brw(Array(ComponentType)) without);
 
@@ -204,6 +208,15 @@ extern const struct CComponent CComponent;
     CComponent.query(array_empty(ComponentType),                               \
                      array_ref(InternalConcatIdent(with_set, __LINE__)),       \
                      InternalConcatIdent(without_set, __LINE__));              \
+  })
+
+#define GetComponent(entity, dest, ...)                                        \
+  ({                                                                           \
+    ComponentType InternalConcatIdent(component_set, __LINE__)[] =             \
+        TySet(__VA_ARGS__);                                                    \
+    CComponent.get_component(                                                  \
+        entity, array_ref(InternalConcatIdent(component_set, __LINE__)),       \
+        dest);                                                                 \
   })
 
 void internal_component_storage_init();
