@@ -2,7 +2,6 @@
 #define __EVENT_H
 
 #include "basic.h"
-#include "map.h"
 #include "vec.h"
 
 typedef struct {
@@ -28,7 +27,7 @@ struct EventQueue {
 struct CEvent {
   EventType (*add_new_type)();
 
-  void (*emit)(EventType ty, PEvent event);
+  void (*emit)(EventType ty, mov(PEvent) event);
 
   void (*flush)();
 

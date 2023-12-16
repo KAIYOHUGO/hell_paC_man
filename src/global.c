@@ -16,6 +16,7 @@ DeclareResourceType(WalkWav);
 DeclareResourceType(SirenWav);
 DeclareResourceType(BoosterWav);
 DeclareResourceType(GhostDeadWav);
+DeclareResourceType(SelectWav);
 static void add_audio() {
   add_resource_type(BeginningWav);
   add_resource_type(DeathWav);
@@ -24,6 +25,7 @@ static void add_audio() {
   add_resource_type(SirenWav);
   add_resource_type(BoosterWav);
   add_resource_type(GhostDeadWav);
+  add_resource_type(SelectWav);
   resource_insert(BeginningWav, open_sound("assets/audio/beginning.wav"));
   resource_insert(DeathWav, open_sound("assets/audio/death.wav"));
   resource_insert(EatWav, open_sound("assets/audio/eat.wav"));
@@ -31,6 +33,7 @@ static void add_audio() {
   resource_insert(SirenWav, open_sound("assets/audio/siren.wav"));
   resource_insert(BoosterWav, open_sound("assets/audio/booster.wav"));
   resource_insert(GhostDeadWav, open_sound("assets/audio/ghost_dead.wav"));
+  resource_insert(SelectWav, open_sound("assets/audio/select.wav"));
 }
 
 // Assets
@@ -386,11 +389,11 @@ static void add_arrow() {
   add_resource_type(Arrow3Eva);
   add_resource_type(Arrow4Eva);
   add_resource_type(Arrow5Eva);
-  resource_insert(Arrow1Eva, open_eva("assets/arrow_1.eva"));
-  resource_insert(Arrow2Eva, open_eva("assets/arrow_2.eva"));
-  resource_insert(Arrow3Eva, open_eva("assets/arrow_3.eva"));
-  resource_insert(Arrow4Eva, open_eva("assets/arrow_4.eva"));
-  resource_insert(Arrow5Eva, open_eva("assets/arrow_5.eva"));
+  resource_insert(Arrow1Eva, open_eva("assets/arrow/arrow_1.eva"));
+  resource_insert(Arrow2Eva, open_eva("assets/arrow/arrow_2.eva"));
+  resource_insert(Arrow3Eva, open_eva("assets/arrow/arrow_3.eva"));
+  resource_insert(Arrow4Eva, open_eva("assets/arrow/arrow_4.eva"));
+  resource_insert(Arrow5Eva, open_eva("assets/arrow/arrow_5.eva"));
 }
 
 // Num

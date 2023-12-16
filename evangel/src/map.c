@@ -11,7 +11,7 @@ Map raw_init(usize sizeof_T) {
   return map;
 }
 
-static void raw_free(Map *m) {
+static void raw_free(mov(Map *) m) {
   usize buckets_i = m->buckets.len;
   while (buckets_i--) {
     Vec(T) *entry = vec_index(Vec(MapEntry), &m->buckets, buckets_i);
@@ -20,7 +20,7 @@ static void raw_free(Map *m) {
   vec_free(Vec(Vec(MapEntry)), &m->buckets);
 }
 
-static void *raw_get(Map *m, usize key) {
+static brw(void *) raw_get(brw(Map *) m, usize key) {
   if (m->buckets.len == 0)
     return NULL;
   usize bucket_index = key % m->buckets.len;
@@ -34,7 +34,7 @@ static void *raw_get(Map *m, usize key) {
   return NULL;
 }
 
-static void raw_reserve(Map *m, usize additional) {
+static void raw_reserve(brw(Map *) m, usize additional) {
   usize new_size = m->buckets.len + additional;
   usize dirty_range = m->buckets.len;
   vec_resize(T, &m->buckets, new_size);
@@ -69,7 +69,7 @@ static void raw_reserve(Map *m, usize additional) {
   }
 }
 
-static void *raw_insert(Map *m, usize key) {
+static brw(void *) raw_insert(brw(Map *) m, usize key) {
   usize max_entry = (m->buckets.len * 3 + 3) / 4;
   if (m->len >= max_entry) {
     raw_reserve(m, max(m->buckets.len, 4));
@@ -89,7 +89,7 @@ static void *raw_insert(Map *m, usize key) {
   return &ptr->value;
 }
 
-static void raw_remove(Map *m, usize key) {
+static void raw_remove(brw(Map *) m, usize key) {
   usize bucket_index = key % m->buckets.len;
   Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, bucket_index);
   for (usize i = 0; i < bucket->len; i++) {
@@ -102,7 +102,7 @@ static void raw_remove(Map *m, usize key) {
   m->len--;
 }
 
-static void raw_clear(Map *m) {
+static void raw_clear(brw(Map *) m) {
   for (usize i = 0; i < m->buckets.len; i++) {
     Vec(MapEntry) *bucket = vec_index(Vec(MapEntry), &m->buckets, i);
     vec_clear(Vec(MapEntry), bucket);

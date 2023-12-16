@@ -17,7 +17,7 @@ DeclareComponentType(RemainDisplay);
 
 DeclareComponentType(LifeDisplay);
 
-static void generate_map() {
+static void generate_map_system() {
   if (!state_is_in(GameState, GameState_GenerateMap))
     return;
 
@@ -63,7 +63,7 @@ static void generate_map() {
   state_set(GameState, GameState_InGame);
 }
 
-static void player_respawn() {
+static void player_respawn_system() {
   if (!state_is_in(GameState, GameState_RespawnPlayer))
     return;
   GameInfo *info = resource_get(GameInfo);
@@ -102,7 +102,7 @@ static void player_respawn() {
   state_set(GameState, GameState_InGame);
 }
 
-static void spawn_display() {
+static void spawn_display_system() {
   if (!state_is_exit(GameState, GameState_GenerateMap) &&
       !state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
@@ -115,6 +115,7 @@ static void spawn_display() {
     ScreenCord cord = {
         .x = SCREEN_WIDTH / 2,
         .y = 2,
+        .z = 10,
     };
     Spawn(RemainDisplay, Number, ScreenCord, ComponentMarker, number_new(num),
           screen_cord_new(cord));
@@ -127,6 +128,7 @@ static void spawn_display() {
     ScreenCord cord = {
         .x = SCREEN_WIDTH / 2 - 4 * NUMBER_SIZE,
         .y = 2,
+        .z = 10,
     };
     Spawn(LifeDisplay, Number, ScreenCord, ComponentMarker, number_new(num),
           screen_cord_new(cord));
@@ -134,22 +136,16 @@ static void spawn_display() {
   play_sound(RTy(BeginningWav));
 }
 
-static void enter_in_game() {
+static void enter_in_game_system() {
   if (!state_is_enter(GameState, GameState_InGame))
     return;
 
-  GameInfo *info = resource_get(GameInfo);
-  info->life = 1;
-
-  // Fix cord
-  QueryIter iter = Query(AnimationCord, ScreenCord);
-  PComponent comp[2];
+  // Enable animation
+  QueryIter iter = Query(AnimationCord);
+  PComponent comp[1];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
     AnimationCord *animation_cord = (AnimationCord *)comp[0].self;
-    ScreenCord *cord = (ScreenCord *)comp[1].self;
     animation_cord->active = true;
-    cord->x = animation_cord->x;
-    cord->y = animation_cord->y;
   }
   CComponent.query_free(&iter);
 }
@@ -211,7 +207,7 @@ static void attacked_system() {
   }
 }
 
-static void display_update() {
+static void display_update_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -234,7 +230,7 @@ static void display_update() {
   }
 }
 
-static void back_to_menu() {
+static void back_to_menu_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -264,7 +260,8 @@ void in_game_display_despawn() {
 void in_game_init() {
   add_component_type(RemainDisplay);
   add_component_type(LifeDisplay);
-  AddUpdateSystem(generate_map, player_respawn, spawn_display, enter_in_game);
-  AddUpdateSystem(eat_system, attacked_system, display_update);
-  AddUpdateSystem(back_to_menu);
+  AddUpdateSystem(generate_map_system, player_respawn_system,
+                  spawn_display_system, enter_in_game_system);
+  AddUpdateSystem(eat_system, attacked_system, display_update_system);
+  AddUpdateSystem(back_to_menu_system);
 }

@@ -9,13 +9,13 @@ static BitSet raw_init() {
 
 static void raw_free(mov(BitSet *) b) { vec_free(BITSET_ITEM, &b->raw); }
 
-static BitSet raw_clone(brw(BitSet *) b) {
+static BitSet raw_clone(const brw(BitSet *) b) {
   Vec(BITSET_ITEM) new_raw = vec_clone(BITSET_ITEM, &b->raw);
   BitSet bit_set = {.raw = new_raw};
   return bit_set;
 }
 
-static void internal_resize(BitSet *b, usize vec_len) {
+static void internal_resize(brw(BitSet *) b, usize vec_len) {
   usize old_len = b->raw.len;
   vec_resize(BITSET_ITEM, &b->raw, vec_len);
   // set new item to zero
@@ -46,7 +46,7 @@ static bool raw_insert(brw(BitSet *) b, usize value) {
   return ret;
 }
 
-static bool raw_contain(brw(BitSet *) b, usize value) {
+static bool raw_contain(const brw(BitSet *) b, usize value) {
   usize index = value >> BITSET_ITEM_FAST_DIV;
   BITSET_ITEM bit = (BITSET_ITEM)1 << (value & BITSET_ITEM_FAST_MOD);
   if (index >= b->raw.len) {
@@ -56,7 +56,8 @@ static bool raw_contain(brw(BitSet *) b, usize value) {
   return *ptr & bit;
 }
 
-static bool raw_is_subset(brw(BitSet *) superset, brw(BitSet *) subset) {
+static bool raw_is_subset(const brw(BitSet *) superset,
+                          const brw(BitSet *) subset) {
   if (superset->raw.len < subset->raw.len) {
     return false;
   }
@@ -80,7 +81,7 @@ static void raw_intersect_with(brw(BitSet *) self, brw(BitSet *) other) {
   internal_shrink_len(&self->raw);
 }
 
-static BitSet raw_intersection(brw(BitSet *) a, brw(BitSet *) b) {
+static BitSet raw_intersection(const brw(BitSet *) a, const brw(BitSet *) b) {
   BitSet bit_set = raw_clone(a);
   raw_intersect_with(&bit_set, b);
   return bit_set;
@@ -95,13 +96,13 @@ static void raw_difference_with(brw(BitSet *) self, brw(BitSet *) other) {
   internal_shrink_len(&self->raw);
 }
 
-static BitSet raw_difference(brw(BitSet *) a, brw(BitSet *) b) {
+static BitSet raw_difference(const brw(BitSet *) a, const brw(BitSet *) b) {
   BitSet bit_set = raw_clone(a);
   raw_difference_with(&bit_set, b);
   return bit_set;
 }
 
-static brw(BitSetIter) raw_iter(brw(BitSet *) b) {
+static brw(BitSetIter) raw_iter(const brw(BitSet *) b) {
   BitSetIter iter = {.ptr = b, .offset = 0};
   return iter;
 }

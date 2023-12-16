@@ -79,7 +79,7 @@ static void player_move_system() {
   event_emit(PlayerEvent, CEvent.default_vtable(event));
 }
 
-static void player_extra_life() {
+static void player_extra_life_booster_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -158,7 +158,7 @@ void player_spawn(Position pos) {
       .loop_mode = LoopMode_LoopInfPingPong,
       .direction = Direction_Forward,
       .ms_per_frame = 20,
-      .active = true,
+      .active = false,
   };
   AnimationCord animation_cord = {
       .ms_per_pixel = PLAYER_ANIMATION_SPEED,
@@ -191,6 +191,6 @@ void player_despawn() {
 void player_init() {
   add_component_type(Player);
   add_event_type(PlayerEvent);
-  AddUpdateSystem(player_move_system, player_extra_life,
+  AddUpdateSystem(player_move_system, player_extra_life_booster_system,
                   enter_player_die_system, player_die_system);
 }

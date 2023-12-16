@@ -1,5 +1,8 @@
 #include "setting.h"
+#include "audio.h"
+#include "booster.h"
 #include "component.h"
+#include "food.h"
 #include "ghost.h"
 #include "global.h"
 #include "input.h"
@@ -9,20 +12,26 @@
 #include <evangel/resource.h>
 #include <stdlib.h>
 
+#define GAME_MODE_Y ((SCREEN_HIGHT - NUMBER_SIZE * 5) / 2)
+#define HEIGHT_DISPLAY_Y ((SCREEN_HIGHT - NUMBER_SIZE) / 2)
+#define WIDTH_DISPLAY_Y (SCREEN_HIGHT + NUMBER_SIZE * 3) / 2
+
+DeclareComponentType(ArrowDisplay);
 DeclareComponentType(MapCursorDisplay);
 DeclareComponentType(ModeDisplay);
 DeclareComponentType(HeightDisplay);
 DeclareComponentType(WidthDisplay);
+DeclareComponentType(BackgroundBlock);
 DeclareComponentType(BackgroundText);
 
-static void enter_read_mode() {
+static void enter_read_mode_system() {
   if (!state_is_enter(GameState, GameState_Setting_ReadMode))
     return;
 
   GameInfo *info = resource_get(GameInfo);
   info->height = 0;
   info->width = 0;
-  info->food_amount = 0;
+  info->life = 1;
   info->mode = GameMode_Default;
 
   {
@@ -41,18 +50,48 @@ static void enter_read_mode() {
         .active = true,
         .eva_img = RTy(GameModeDefaultEva),
     };
-    ScreenCord cord = {.x = SCREEN_WIDTH / 2,
-                       .y = (SCREEN_HIGHT - NUMBER_SIZE * 5) / 2,
-                       .z = 1};
+    ScreenCord cord = {.x = SCREEN_WIDTH / 2, .y = GAME_MODE_Y, .z = 1};
     Spawn(ModeDisplay, Sprite, ScreenCord, ComponentMarker, sprite_new(sprite),
+          screen_cord_new(cord));
+  }
+  {
+    Sprite sprite = {
+        .eva_img = RTy(Arrow1Eva),
+        .active = true,
+    };
+    ResourceType imgs[5] = {
+        RTy(Arrow1Eva), RTy(Arrow2Eva), RTy(Arrow3Eva),
+        RTy(Arrow4Eva), RTy(Arrow5Eva),
+    };
+    Array(ResourceType) array_imgs = array_ref(imgs);
+    AnimationSprite animation_sprite = {
+        .eva_imgs = array_clone(ResourceType, &array_imgs),
+        .loop_mode = LoopMode_LoopInfPingPong,
+        .direction = Direction_Forward,
+        .ms_per_frame = 150,
+        .active = true,
+    };
+    ScreenCord cord = {
+        .x = SCREEN_WIDTH / 2 - SETTING_WIDTH - SETTING_ARROW_SIZE,
+        .y = GAME_MODE_Y,
+        .z = 3,
+    };
+    AnimationCord animation_cord = {
+        .x = cord.x,
+        .y = cord.y,
+        .ms_per_pixel = 20,
+        .active = true,
+    };
+    Spawn(ArrowDisplay, AnimationSprite, Sprite, AnimationCord, ScreenCord,
+          ComponentMarker, animation_sprite_new(animation_sprite),
+          sprite_new(sprite), animation_cord_new(animation_cord),
           screen_cord_new(cord));
   }
   {
     Number num = {
         .len = 2,
     };
-    ScreenCord cord = {
-        .x = SCREEN_WIDTH / 2, .y = (SCREEN_HIGHT - NUMBER_SIZE) / 2, .z = 1};
+    ScreenCord cord = {.x = SCREEN_WIDTH / 2, .y = HEIGHT_DISPLAY_Y, .z = 1};
     Spawn(HeightDisplay, Number, ScreenCord, ComponentMarker, number_new(num),
           screen_cord_new(cord));
   }
@@ -61,15 +100,13 @@ static void enter_read_mode() {
         .n = 0,
         .len = 2,
     };
-    ScreenCord cord = {.x = SCREEN_WIDTH / 2,
-                       .y = (SCREEN_HIGHT + NUMBER_SIZE * 3) / 2,
-                       .z = 1};
+    ScreenCord cord = {.x = SCREEN_WIDTH / 2, .y = WIDTH_DISPLAY_Y, .z = 1};
     Spawn(WidthDisplay, Number, ScreenCord, ComponentMarker, number_new(num),
           screen_cord_new(cord));
   }
 }
 
-static void read_mode() {
+static void read_mode_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadMode))
     return;
 
@@ -83,6 +120,7 @@ static void read_mode() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER) {
+      play_sound(RTy(SelectWav));
       state_set(GameState, GameState_Setting_ReadHeight);
       return;
     }
@@ -92,22 +130,30 @@ static void read_mode() {
 
     switch (key.charater) {
     case 'w':
+      play_sound(RTy(SelectWav));
       info->mode = (info->mode + _GameMode_Size - 1) % _GameMode_Size;
       break;
     case 's':
     case ' ':
+      play_sound(RTy(SelectWav));
       info->mode = (info->mode + _GameMode_Size + 1) % _GameMode_Size;
       break;
     }
   }
 }
 
-static void enter_read_height() {
+static void enter_read_height_system() {
   if (!state_is_enter(GameState, GameState_Setting_ReadHeight))
     return;
+
+  QueryIter iter = QueryWith(With(ArrowDisplay), AnimationCord);
+  PComponent comp[1];
+  CComponent.query_next(&iter, array_ref(comp));
+  CComponent.query_free(&iter);
+  ((AnimationCord *)(comp[0].self))->y = HEIGHT_DISPLAY_Y;
 }
 
-static void read_height() {
+static void read_height_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadHeight))
     return;
 
@@ -121,23 +167,37 @@ static void read_height() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER && info->height >= 3) {
+      play_sound(RTy(SelectWav));
       state_set(GameState, GameState_Setting_ReadWidth);
       return;
     }
 
     if (key.kind == Key_Backspace) {
+      play_sound(RTy(SelectWav));
       info->height /= 10;
       continue;
     }
 
     if (key.kind != Key_Number || info->height > 9)
       continue;
+    play_sound(RTy(SelectWav));
     info->height *= 10;
     info->height += key.number;
   }
 }
 
-static void read_width() {
+static void enter_read_width_system() {
+  if (!state_is_enter(GameState, GameState_Setting_ReadWidth))
+    return;
+
+  QueryIter iter = QueryWith(With(ArrowDisplay), AnimationCord);
+  PComponent comp[1];
+  CComponent.query_next(&iter, array_ref(comp));
+  CComponent.query_free(&iter);
+  ((AnimationCord *)(comp[0].self))->y = WIDTH_DISPLAY_Y;
+}
+
+static void read_width_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
 
@@ -151,6 +211,7 @@ static void read_width() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER && info->width >= 3) {
+      play_sound(RTy(SelectWav));
       switch (info->mode) {
       case GameMode_Custom:
         state_set(GameState, GameState_Setting_ReadMap);
@@ -165,18 +226,20 @@ static void read_width() {
     }
 
     if (key.kind == Key_Backspace) {
+      play_sound(RTy(SelectWav));
       info->width /= 10;
       continue;
     }
 
     if (key.kind != Key_Number || info->width > 9)
       continue;
+    play_sound(RTy(SelectWav));
     info->width *= 10;
     info->width += key.number;
   }
 }
 
-static void exit_read_width() {
+static void exit_read_width_system() {
   if (!state_is_exit(GameState, GameState_Setting_ReadWidth))
     return;
 
@@ -204,16 +267,19 @@ static void exit_read_width() {
           .x = x,
           .y = y,
       };
-      Spawn(Sprite, Position, ScreenCord, sprite_new(block_sprite),
-            position_new(pos), screen_cord_new(block_cord));
+      Spawn(BackgroundBlock, Sprite, Position, ScreenCord, ComponentMarker,
+            sprite_new(block_sprite), position_new(pos),
+            screen_cord_new(block_cord));
     }
   }
 }
 
-static void enter_read_map() {
+static void enter_read_map_system() {
   if (!state_is_enter(GameState, GameState_Setting_ReadMap))
     return;
 
+  GameInfo *info = resource_get(GameInfo);
+  info->food_amount = 0;
   Position pos = {
       .x = 0,
       .y = 0,
@@ -230,7 +296,26 @@ static void enter_read_map() {
   state_set(GameState, GameState_Setting_ReadMap);
 }
 
-static void read_map() {
+static void despawn_at_pos(Position pos) {
+  GameInfo *info = resource_get(GameInfo);
+  QueryIter iter = QueryWithout(
+      Without(Player, BackgroundBlock, MapCursorDisplay), Position);
+  PComponent comp[1];
+  Entity *id;
+  while ((id = CComponent.query_next(&iter, array_ref(comp))) != NULL) {
+    Position comp_pos = *(Position *)comp[0].self;
+    if (comp_pos.x != pos.x || comp_pos.y != pos.y)
+      continue;
+
+    if (GetComponent(*id, array_empty(PComponent), Food))
+      info->food_amount--;
+
+    CComponent.despawn(*id);
+    break;
+  }
+}
+
+static void read_map_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadMap))
     return;
 
@@ -252,50 +337,65 @@ static void read_map() {
     Key key = *(Key *)p_event->self;
 
     if (key.kind == Key_ENTER) {
+      play_sound(RTy(SelectWav));
       state_set(GameState, GameState_InGame);
       return;
     }
 
     if (key.kind != Key_Char)
       continue;
+
     switch (key.charater) {
     case 'w':
       if (pos->y == 0)
         break;
+      play_sound(RTy(SelectWav));
       pos->y--;
       break;
     case 's':
       if (pos->y + 1 == info->height)
         break;
+      play_sound(RTy(SelectWav));
       pos->y++;
       break;
     case 'a':
       if (pos->x == 0)
         break;
+      play_sound(RTy(SelectWav));
       pos->x--;
       break;
     case 'd':
       if (pos->x + 1 == info->width)
         break;
+      play_sound(RTy(SelectWav));
       pos->x++;
       break;
     case 'p':
+      play_sound(RTy(SelectWav));
       player_move(*pos);
       break;
     case 'b':
+      play_sound(RTy(SelectWav));
+      booster_spawn(*pos);
       break;
     case 'g':
+      play_sound(RTy(SelectWav));
       ghost_spawn(*pos);
       break;
     case 'f':
+      play_sound(RTy(SelectWav));
+      food_spawn(*pos);
+      info->food_amount++;
       break;
     case ' ':
+      play_sound(RTy(SelectWav));
+      despawn_at_pos(*pos);
       break;
     }
   }
 }
 
-static void exit_read_map() {
+static void exit_read_map_system() {
   if (!state_is_exit(GameState, GameState_Setting_ReadMap))
     return;
 
@@ -304,10 +404,9 @@ static void exit_read_map() {
   Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
   CComponent.query_free(&iter);
   CComponent.despawn(id);
-  state_set(GameState, GameState_InGame);
 }
 
-static void update_mode_display() {
+static void update_mode_display_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadMode))
     return;
 
@@ -320,7 +419,7 @@ static void update_mode_display() {
   CComponent.query_free(&iter);
 }
 
-static void update_height_number_display() {
+static void update_height_number_display_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadHeight))
     return;
 
@@ -332,7 +431,7 @@ static void update_height_number_display() {
   CComponent.query_free(&iter);
 }
 
-static void update_width_number_display() {
+static void update_width_number_display_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadWidth))
     return;
 
@@ -344,7 +443,7 @@ static void update_width_number_display() {
   CComponent.query_free(&iter);
 }
 
-static void back_to_menu() {
+static void back_to_menu_system() {
   if (!state_is_in(GameState, GameState_Setting_ReadMode) &&
       !state_is_in(GameState, GameState_Setting_ReadHeight) &&
       !state_is_in(GameState, GameState_Setting_ReadWidth) &&
@@ -362,15 +461,20 @@ static void back_to_menu() {
 }
 
 void setting_init() {
+  add_component_type(ArrowDisplay);
   add_component_type(MapCursorDisplay);
   add_component_type(ModeDisplay);
   add_component_type(HeightDisplay);
   add_component_type(WidthDisplay);
+  add_component_type(BackgroundBlock);
   add_component_type(BackgroundText);
 
-  AddUpdateSystem(update_mode_display, update_height_number_display,
-                  update_width_number_display, back_to_menu);
-  AddUpdateSystem(enter_read_mode, read_mode);
-  AddUpdateSystem(enter_read_map, read_map, exit_read_map);
-  AddUpdateSystem(enter_read_height, read_height, read_width, exit_read_width);
+  AddUpdateSystem(update_mode_display_system,
+                  update_height_number_display_system,
+                  update_width_number_display_system, back_to_menu_system);
+  AddUpdateSystem(enter_read_mode_system, read_mode_system);
+  AddUpdateSystem(enter_read_height_system, read_height_system,
+                  enter_read_width_system, read_width_system,
+                  exit_read_width_system);
+  AddUpdateSystem(enter_read_map_system, read_map_system, exit_read_map_system);
 }

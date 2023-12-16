@@ -77,7 +77,7 @@ void app_start() {
   hook_app_free();
 }
 
-void raw_add_update_system(SystemFn fn) {
+static void raw_add_update_system(SystemFn fn) {
   vec_push(SystemFn, &App.on_update, fn);
 }
 

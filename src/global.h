@@ -10,6 +10,10 @@
 #define PLAYER_SIZE 9
 #define NUMBER_SIZE 9
 #define PLAYER_ANIMATION_SPEED 85.0
+#define SETTING_HEIGHT 45
+#define SETTING_WIDTH 50
+#define SETTING_ARROW_SIZE 9
+
 
 typedef enum {
   GameState_Loading,
@@ -30,9 +34,6 @@ typedef enum {
   // State Menu
   GameState_Win,
   GameState_Lose,
-
-  GameState_Test,
-
 } GameState;
 
 ExportStateType(GameState);
@@ -59,6 +60,7 @@ ExportResourceType(WalkWav);
 ExportResourceType(SirenWav);
 ExportResourceType(BoosterWav);
 ExportResourceType(GhostDeadWav);
+ExportResourceType(SelectWav);
 
 // assets
 ExportResourceType(CursorEva);

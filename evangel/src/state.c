@@ -1,5 +1,4 @@
 #include "state.h"
-#include <stdlib.h>
 
 typedef struct StateInfo StateInfo;
 

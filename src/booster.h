@@ -15,7 +15,6 @@ typedef enum {
   BoosterKind_Freeze,
   BoosterKind_LessGhost,
   BoosterKind_ExtraLife,
-  // BoosterKind_Power,
   _BoosterKind_Size
 } BoosterEvent;
 

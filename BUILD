@@ -21,12 +21,3 @@ cc_library(
     strip_include_prefix = "file/",
     visibility = ["//visibility:public"],
 )
-
-cc_test(
-    name = "main_test",
-    srcs = ["src/test.cpp"],
-    deps = [
-        "@gtest",
-        "@gtest//:gtest_main",
-    ],
-)

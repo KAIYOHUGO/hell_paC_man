@@ -1,4 +1,5 @@
 #include "menu.h"
+#include "audio.h"
 #include "component.h"
 #include "global.h"
 #include "input.h"
@@ -9,7 +10,7 @@
 
 DeclareComponentType(MenuDisplay);
 
-static void enter_menu() {
+static void enter_menu_system() {
   if (!state_is_enter(GameState, GameState_Menu))
     return;
 
@@ -51,7 +52,7 @@ static void enter_menu() {
         sprite_new(sprite));
 }
 
-static void read_input() {
+static void read_input_system() {
   if (!state_is_in(GameState, GameState_Menu))
     return;
 
@@ -71,9 +72,11 @@ static void read_input() {
   }
 }
 
-static void exit_menu() {
+static void exit_menu_system() {
   if (!state_is_exit(GameState, GameState_Menu))
     return;
+
+  play_sound(RTy(SelectWav));
 
   QueryIter iter = QueryEntity(MenuDisplay);
   Entity id = *CComponent.query_next(&iter, array_empty(PComponent));
@@ -83,5 +86,5 @@ static void exit_menu() {
 
 void menu_init() {
   add_component_type(MenuDisplay);
-  AddUpdateSystem(enter_menu, read_input, exit_menu);
+  AddUpdateSystem(enter_menu_system, read_input_system, exit_menu_system);
 }

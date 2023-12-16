@@ -103,7 +103,7 @@ static void ghost_attack_system() {
   CComponent.query_free(&iter);
 }
 
-static void freeze_booster() {
+static void freeze_booster_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -148,7 +148,7 @@ static void kill_ghost(Entity entity) {
   play_sound(RTy(GhostDeadWav));
 }
 
-static void less_ghost_booster() {
+static void less_ghost_booster_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -177,7 +177,7 @@ static void less_ghost_booster() {
   }
 }
 
-static void ghost_dead_animation() {
+static void ghost_dead_animation_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -208,7 +208,7 @@ void ghost_spawn(Position pos) {
   };
   AnimationCord animation_cord = {
       .ms_per_pixel = PLAYER_ANIMATION_SPEED,
-      .active = true,
+      .active = false,
   };
   ScreenCord cord = {
       .z = 2,
@@ -232,6 +232,6 @@ void ghost_despawn() {
 
 void ghost_init() {
   add_component_type(Ghost);
-  AddUpdateSystem(freeze_booster, less_ghost_booster, ghost_dead_animation);
+  AddUpdateSystem(freeze_booster_system, less_ghost_booster_system, ghost_dead_animation_system);
   AddUpdateSystem(ghost_move_system, ghost_attack_system);
 }

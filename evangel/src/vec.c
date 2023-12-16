@@ -14,12 +14,12 @@ static Vec raw_init(usize sizeof_T) {
   return v;
 }
 
-static void raw_free(Vec *v) {
+static void raw_free(mov(Vec *) v) {
   free(v->ptr);
   v->ptr = NULL;
 }
 
-static Vec raw_clone(Vec *v) {
+static Vec raw_clone(const brw(Vec *) v) {
   if (v->len == 0) {
     return raw_init(v->size);
   }
@@ -37,11 +37,11 @@ static Vec raw_clone(Vec *v) {
 
 static void raw_clear(Vec *v) { v->len = 0; }
 
-static void *raw_index(Vec *v, usize index) {
+static void *raw_index(brw(Vec *) v, usize index) {
   return index < v->len ? v->ptr + index * v->size : NULL;
 }
 
-static void raw_reserve(Vec *v, usize additional) {
+static void raw_reserve(brw(Vec *) v, usize additional) {
   usize new_cap = v->cap + additional;
 
   void *new_ptr = malloc(new_cap * v->size);
@@ -53,7 +53,7 @@ static void raw_reserve(Vec *v, usize additional) {
   v->cap = new_cap;
 }
 
-static void raw_resize(Vec *v, usize new_size) {
+static void raw_resize(brw(Vec *) v, usize new_size) {
   if (new_size > v->cap) {
     usize additional = max(new_size - v->cap, max(v->cap, 4));
     raw_reserve(v, additional);
@@ -61,7 +61,7 @@ static void raw_resize(Vec *v, usize new_size) {
   v->len = new_size;
 }
 
-static void raw_shrink_to(Vec *v, usize new_size) {
+static void raw_shrink_to(brw(Vec *) v, usize new_size) {
   if (new_size >= v->cap) {
     return;
   }
@@ -75,9 +75,9 @@ static void raw_shrink_to(Vec *v, usize new_size) {
   v->len = new_len;
 }
 
-static void raw_shrink_to_fit(Vec *v) { raw_shrink_to(v, v->len); }
+static void raw_shrink_to_fit(brw(Vec *) v) { raw_shrink_to(v, v->len); }
 
-static void *raw_push(Vec *v) {
+static void *raw_push(brw(Vec *) v) {
   if (v->cap > v->len) {
     void *ret = v->ptr + v->len * v->size;
     v->len++;
@@ -90,7 +90,7 @@ static void *raw_push(Vec *v) {
   return ret;
 }
 
-static void *raw_pop(Vec *v) {
+static void *raw_pop(brw(Vec *) v) {
   assert(v->len != 0);
 
   v->len--;
@@ -98,7 +98,7 @@ static void *raw_pop(Vec *v) {
   return ret;
 }
 
-static void raw_remove(Vec *v, usize index) {
+static void raw_remove(brw(Vec *) v, usize index) {
   assert(index < v->len);
 
   if (index == v->len - 1) {
@@ -112,7 +112,7 @@ static void raw_remove(Vec *v, usize index) {
   return;
 }
 
-static void raw_swap_remove(Vec *v, usize index) {
+static void raw_swap_remove(brw(Vec *) v, usize index) {
   assert(index < v->len);
 
   if (index == v->len - 1) {

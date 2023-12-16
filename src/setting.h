@@ -1,11 +1,13 @@
 #if !defined(SETTING_H)
 #define SETTING_H
 
-#define SETTING_HEIGHT 45 
-#define SETTING_WIDTH 50 
-
 #include <evangel/array.h>
 #include <evangel/component.h>
+
+typedef struct {
+} ArrowDisplay;
+
+ExportComponentType(ArrowDisplay);
 
 typedef struct {
 } MapCursorDisplay;

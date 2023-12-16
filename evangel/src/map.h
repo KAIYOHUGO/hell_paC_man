@@ -16,12 +16,12 @@ typedef struct {
 
 struct CMap {
   Map (*init)(usize size_of_T);
-  void (*free)(Map *m);
-  void *(*get)(Map *m, usize key);
-  void (*reserve)(Map *m, usize additional);
-  void *(*insert)(Map *m, usize key);
-  void (*remove)(Map *m, usize key);
-  void (*clear)(Map *m);
+  void (*free)(mov(Map *) m);
+  brw(void *) (*get)(brw(Map *) m, usize key);
+  void (*reserve)(brw(Map *) m, usize additional);
+  brw(void *) (*insert)(brw(Map *) m, usize key);
+  void (*remove)(brw(Map *) m, usize key);
+  void (*clear)(brw(Map *) m);
 };
 
 extern const struct CMap CMap;
@@ -36,7 +36,6 @@ extern const struct CMap CMap;
 
 #define map_reserve(T, m, additional) CMap.reserve(m, additional)
 
-// need to be a heap pointer
 #define map_insert(T, m, key, value) (*(T *)CMap.insert(m, key) = value)
 
 // free the element first or it will cause memory leak

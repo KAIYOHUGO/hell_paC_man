@@ -16,7 +16,7 @@ struct CVec {
 
   void (*clear)(brw(Vec *) v);
 
-  Vec (*clone)(brw(Vec *) v);
+  Vec (*clone)(const brw(Vec *) v);
 
   void *(*index)(brw(Vec *) v, usize index);
 

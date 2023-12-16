@@ -210,19 +210,23 @@ static bool raw_get_component(Entity entity,
   ArchetypeRow *row = vec_index(ArchetypeRow, &table_ptr->table, info->index);
 
   ComponentType *typed_components = array_typed(ComponentType, &components);
-  for (usize i = 0; i < min(components.len, dest.len); i++) {
-    usize col =
-        *map_get(usize, &table_ptr->type_col_id_map, typed_components[i].id);
-    *array_index(PComponent, &dest, i) =
-        *array_index(PComponent, &row->components, col);
+  for (usize i = 0; i < components.len; i++) {
+    usize *col =
+        map_get(usize, &table_ptr->type_col_id_map, typed_components[i].id);
+    if (col == NULL)
+      return false;
+
+    if (i < min(components.len, dest.len))
+      *array_index(PComponent, &dest, i) =
+          *array_index(PComponent, &row->components, *col);
   }
 
   return true;
 }
 
-brw(QueryIter) raw_query(const brw(Array(ComponentType)) components,
-                         brw(Array(ComponentType)) with,
-                         brw(Array(ComponentType)) without) {
+static brw(QueryIter) raw_query(const brw(Array(ComponentType)) components,
+                                brw(Array(ComponentType)) with,
+                                brw(Array(ComponentType)) without) {
   ComponentType *typed_components = array_typed(ComponentType, &components);
   ComponentType *typed_with = array_typed(ComponentType, &with);
   ComponentType *typed_without = array_typed(ComponentType, &without);

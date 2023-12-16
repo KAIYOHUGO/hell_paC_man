@@ -8,7 +8,7 @@
 DeclareComponentType(Booster);
 DeclareEventType(BoosterEvent);
 
-void player_get_booster_system() {
+static void player_get_booster_system() {
   if (!state_is_in(GameState, GameState_InGame))
     return;
 
@@ -32,7 +32,6 @@ void player_get_booster_system() {
 
     BoosterEvent *event = malloc(sizeof(BoosterEvent));
     *event = (BoosterEvent)(rand() % _BoosterKind_Size);
-    // *event = BoosterKind_LessGhost;
     event_emit(BoosterEvent, CEvent.default_vtable(event));
     CComponent.despawn(*id);
     play_sound(RTy(BoosterWav));

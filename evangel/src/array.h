@@ -11,15 +11,15 @@ typedef struct {
 struct CArray {
   Array (*init)(usize size_of_T, usize len);
 
-  Array (*ref)(brw(void *) ptr, usize size_of_T, usize len);
+  brw(Array) (*ref)(brw(void *) ptr, usize size_of_T, usize len);
 
-  Array (*clone)(Array *a);
+  Array (*clone)(const brw(Array *) a);
 
   Array (*empty)();
 
-  void (*free)(Array *a);
+  void (*free)(mov(Array *) a);
 
-  void *(*index)(Array *a, usize index);
+  void *(*index)(brw(Array *) a, usize index);
 };
 
 extern const struct CArray CArray;

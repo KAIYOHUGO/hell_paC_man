@@ -47,7 +47,7 @@ PComponent sprite_new(Sprite sprite) {
   return CComponent.default_vtable(ptr);
 }
 
-void despawn_animation_sprite(void *s, Entity _id) {
+static void despawn_animation_sprite(void *s, Entity _id) {
   AnimationSprite *self = (AnimationSprite *)s;
   array_free(ResourceType, &self->eva_imgs);
 }
@@ -73,7 +73,7 @@ typedef struct {
   isize x, y;
 } SpritePRender;
 
-void v_render_sprite(void *s) {
+static void v_render_sprite(void *s) {
   SpritePRender *self = (SpritePRender *)s;
   Eva *img = (Eva *)CResource.get(self->img);
   RenderBuffer *buffer = resource_get(RenderBuffer);
@@ -99,7 +99,7 @@ void v_render_sprite(void *s) {
   }
 }
 
-void v_render_sprite_rotate_180(void *s) {
+static void v_render_sprite_rotate_180(void *s) {
   SpritePRender *self = (SpritePRender *)s;
   Eva *img = (Eva *)CResource.get(self->img);
   RenderBuffer *buffer = resource_get(RenderBuffer);
@@ -127,7 +127,7 @@ void v_render_sprite_rotate_180(void *s) {
   }
 }
 
-void v_render_sprite_rotate_90(void *s) {
+static void v_render_sprite_rotate_90(void *s) {
   SpritePRender *self = (SpritePRender *)s;
   Eva *img = (Eva *)CResource.get(self->img);
   RenderBuffer *buffer = resource_get(RenderBuffer);
@@ -154,7 +154,7 @@ void v_render_sprite_rotate_90(void *s) {
   }
 }
 
-void v_render_sprite_rotate_270(void *s) {
+static void v_render_sprite_rotate_270(void *s) {
   SpritePRender *self = (SpritePRender *)s;
   Eva *img = (Eva *)CResource.get(self->img);
   RenderBuffer *buffer = resource_get(RenderBuffer);
@@ -201,7 +201,7 @@ static const VRender SpriteVRenderRotate270 = {
     .free = NULL,
 };
 
-void sprite_system() {
+static void sprite_system() {
   QueryIter iter = Query(ScreenCord, Sprite);
   PComponent comp[2];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
@@ -239,7 +239,7 @@ void sprite_system() {
   CComponent.query_free(&iter);
 }
 
-void position_to_screen_cord_system() {
+static void position_to_screen_cord_system() {
   GameInfo *info = resource_get(GameInfo);
   QueryIter iter = QueryWithout(Without(AnimationCord), Position, ScreenCord);
   PComponent comp[2];
@@ -252,7 +252,7 @@ void position_to_screen_cord_system() {
   CComponent.query_free(&iter);
 }
 
-void number_system() {
+static void number_system() {
   ResourceType num_types[10] = {RTy(Num0), RTy(Num1), RTy(Num2), RTy(Num3),
                                 RTy(Num4), RTy(Num5), RTy(Num6), RTy(Num7),
                                 RTy(Num8), RTy(Num9)};
@@ -279,9 +279,9 @@ void number_system() {
   CComponent.query_free(&iter);
 }
 
-isize get_sign(isize x) { return (x > 0) - (x < 0); }
+static isize get_sign(isize x) { return (x > 0) - (x < 0); }
 
-void animation_cord_system() {
+static void animation_cord_system() {
   QueryIter iter = Query(AnimationCord, ScreenCord);
   PComponent comp[2];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
@@ -314,20 +314,25 @@ void animation_cord_system() {
   CComponent.query_free(&iter);
 }
 
-void position_to_animation_cord_system() {
+static void position_to_animation_cord_system() {
   GameInfo *info = resource_get(GameInfo);
-  QueryIter iter = Query(Position, AnimationCord);
-  PComponent comp[2];
+  QueryIter iter = Query(Position, AnimationCord, ScreenCord);
+  PComponent comp[3];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {
     Position *pos = (Position *)comp[0].self;
     AnimationCord *animation_cord = (AnimationCord *)comp[1].self;
+    ScreenCord *cord = (ScreenCord *)comp[2].self;
     animation_cord->x = pos->x * PLAYER_SIZE + info->offset_x;
     animation_cord->y = pos->y * PLAYER_SIZE + info->offset_y;
+    if (!animation_cord->active) {
+      cord->x = animation_cord->x;
+      cord->y = animation_cord->y;
+    }
   }
   CComponent.query_free(&iter);
 }
 
-void animation_sprite_system() {
+static void animation_sprite_system() {
   QueryIter iter = Query(AnimationSprite, Sprite);
   PComponent comp[2];
   while (CComponent.query_next(&iter, array_ref(comp)) != NULL) {

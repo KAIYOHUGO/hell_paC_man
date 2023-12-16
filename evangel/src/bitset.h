@@ -23,27 +23,27 @@ typedef struct {
 struct CBitSet {
   BitSet (*init)();
 
-  void (*free)(BitSet *b);
+  void (*free)(mov(BitSet *) b);
 
-  BitSet (*clone)(brw(BitSet *) b);
+  BitSet (*clone)(const brw(BitSet *) b);
 
-  bool (*insert)(BitSet *b, usize value);
+  bool (*insert)(brw(BitSet *) b, usize value);
 
-  bool (*contain)(BitSet *b, usize value);
+  bool (*contain)(const brw(BitSet *) b, usize value);
 
-  bool (*is_subset)(BitSet *superset, BitSet *subset);
+  bool (*is_subset)(const brw(BitSet *) superset, const brw(BitSet *) subset);
 
   void (*intersect_with)(brw(BitSet *) self, brw(BitSet *) other);
 
-  BitSet (*intersection)(BitSet *a, BitSet *b);
+  BitSet (*intersection)(const brw(BitSet *) a, const brw(BitSet *) b);
 
   void (*difference_with)(brw(BitSet *) self, brw(BitSet *) other);
 
-  BitSet (*difference)(brw(BitSet *) a, brw(BitSet *) b);
+  BitSet (*difference)(const brw(BitSet *) a, const brw(BitSet *) b);
 
-  BitSetIter (*iter)(BitSet *b);
+  brw(BitSetIter) (*iter)(const brw(BitSet *) b);
 
-  usize (*iter_next)(BitSetIter *iter);
+  usize (*iter_next)(brw(BitSetIter *) iter);
 };
 
 extern const struct CBitSet CBitSet;

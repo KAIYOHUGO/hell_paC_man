@@ -20,7 +20,7 @@ static EventType raw_add_new_type() {
   return typeid;
 }
 
-static void raw_emit(EventType ty, PEvent event) {
+static void raw_emit(EventType ty, mov(PEvent) event) {
   InQueueEvent element = {
       .ty = ty,
       .event = event,
@@ -55,7 +55,7 @@ static brw(Vec(PEvent) *) raw_listen(EventType ty) {
   return vec_index(Vec(PEvent), &EventQueue.type_event_map, ty.id);
 }
 
-static PEvent raw_default_vtable(void *event) {
+static PEvent raw_default_vtable(mov(void *) event) {
   PEvent p = {.self = event};
   return p;
 }

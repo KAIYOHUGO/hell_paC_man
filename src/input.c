@@ -6,7 +6,7 @@
 DeclareEventType(Key);
 
 // https://web.archive.org/web/20170407122137/http://cc.byexamples.com/2007/04/08/non-blocking-user-input-in-loop-without-ncurses/
-bool input_ready() {
+static bool input_ready() {
   struct timeval tv = {};
   fd_set fds;
   FD_ZERO(&fds);

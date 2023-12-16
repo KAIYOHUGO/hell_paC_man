@@ -13,7 +13,7 @@ static Array raw_init(usize size_of_T, usize len) {
   return array;
 }
 
-static Array raw_clone(Array *a) {
+static Array raw_clone(const brw(Array *) a) {
   void *ptr = malloc(a->len * a->size);
   memcpy(ptr, a->ptr, a->len * a->size);
   Array array = {
@@ -24,7 +24,7 @@ static Array raw_clone(Array *a) {
   return array;
 }
 
-static Array raw_ref(void *ptr, usize size_of_T, usize len) {
+static brw(Array) raw_ref(brw(void *) ptr, usize size_of_T, usize len) {
   Array array = {
       .ptr = ptr,
       .len = len,
@@ -42,12 +42,12 @@ static Array raw_empty() {
   return array;
 }
 
-static void raw_free(Array *a) {
+static void raw_free(mov(Array *) a) {
   free(a->ptr);
   a->ptr = NULL;
 }
 
-static void *raw_index(Array *a, usize index) {
+static void *raw_index(brw(Array *) a, usize index) {
   return index < a->len ? a->ptr + index * a->size : NULL;
 }
 
