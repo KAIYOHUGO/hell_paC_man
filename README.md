@@ -8,9 +8,22 @@
 
 ![menu](images/menu.png)
 
+# What is this???
+
+> [!NOTE]
+  Disclaimer : This is not relate to any religion. 
+  The code base name `eva` / `evangel` is just a inner joke.
+  The copyright info of audio is in [copyright info section](#copyright-info)
+
+This is a school project, It is required to be written in C. The road map is the requirement of the project.
+
+This repository contain 2 part, `evangel` (ecs) and `main` (game).
+
+No, I'm not a C programmer, and this project cause some "C" pollution in my github. (Bad joke, i know)
+
 # Getting Start
 
-You need [bazel](https://bazel.build/) and [just](https://just.systems/)
+You need [bazel](https://bazel.build/) and [just](https://just.systems/) and any unix*  environment
 
 Make sure you terminal is at lease 67 lines and 240 columns, you can use following command to check.
 
